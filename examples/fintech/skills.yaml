@@ -21,48 +21,45 @@
 # catalogue connector; a server an administrator adds by URL uses the id it was given.
 skills:
   - slug: find-a-document
-    title: Find a document
-    summary: Search the connected document sources for a file and read what it says.
+    title: 查找文档
+    summary: 在已连接的文档源中搜索文件并读取内容。
     instructions: >-
-      Find the document the person is asking about before answering anything about its contents.
-      Search first, then read the file you found rather than answering from its title. If the search
-      returns nothing, say so and say what you searched for, rather than guessing at what the
-      document might contain. Name the document you used.
+      回答文档内容前，先找到用户询问的文档。先搜索，再读取找到的文件，不要仅凭标题作答。
+      如果搜索无结果，请明确说明，并说明搜索了什么，不要猜测文档可能包含的内容。
+      回答时注明所使用的文档名称。
     tools:
       - google-drive/search_files
       - google-drive/read_file_content
       - google-drive/get_file_metadata
 
   - slug: whats-changed
-    title: What changed recently
-    summary: List recently changed documents and say who changed them and when.
+    title: 最近有哪些更新
+    summary: 列出最近更新的文档，并说明更新人和更新时间。
     instructions: >-
-      List what has changed recently in the sources you can reach, newest first. Give the document
-      name, who last changed it and when, and keep it to the ones that actually moved in the period
-      asked about. Do not summarise contents unless you are asked to; this is a list of what moved.
+      按时间从新到旧列出可访问来源中的最近更新。注明文档名称、最后更新人和更新时间，
+      只列出用户所问时间范围内实际发生变化的文档。除非用户要求，否则不要总结内容；
+      这里只需要列出发生了哪些变化。
     tools:
       - google-drive/list_recent_files
       - google-drive/get_file_metadata
 
   - slug: who-owns-this
-    title: Who owns this
-    summary: Find who owns a document and when they last touched it.
+    title: 谁负责这份文档
+    summary: 查找文档负责人及其最后更新时间。
     instructions: >-
-      Identify the owner of the document being asked about, and say when it was last changed. Search
-      for the document first if you were given a name rather than a link. If more than one document
-      matches, say so and list them rather than picking one.
+      确认用户所问文档的负责人，并说明最后更新时间。如果用户提供的是名称而不是链接，
+      请先搜索该文档。如果匹配到多份文档，请明确说明并逐一列出，不要擅自选择其中一份。
     tools:
       - google-drive/search_files
       - google-drive/get_file_metadata
 
   - slug: check-a-claim
-    title: Check a claim against a source
-    summary: Take a statement and check it against what the documents actually say.
+    title: 根据来源核实说法
+    summary: 对照文档实际内容核实一项说法。
     instructions: >-
-      You are checking a claim, not answering a question. Find the source that would settle it, read
-      it, and say one of three things: the source supports the claim, the source contradicts it, or
-      the source does not address it. Quote the sentence you are relying on. Do not fill a gap in the
-      source with your own knowledge — "the source does not say" is a complete answer.
+      你的任务是核实说法，而不是回答一般问题。找到能够验证该说法的来源并阅读，然后明确给出
+      三种结论之一：来源支持该说法、来源与该说法矛盾，或来源未涉及该说法。引用作为依据的
+      句子。不要用自己的知识填补来源中的空白；“来源未说明”本身就是完整答案。
     tools:
       - google-drive/search_files
       - google-drive/read_file_content

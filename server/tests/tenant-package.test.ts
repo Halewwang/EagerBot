@@ -298,10 +298,9 @@ describe("tenant YAML validation", () => {
     expect(tenantPackage.checksum).toMatch(/^[a-f0-9]{64}$/);
     expect(tenantPackage.agents).toContainEqual({
       id: "general-assistant",
-      name: "General Assistant",
-      title: "Everyday Work",
-      roleDescription:
-        "Help with everyday work using clear, concise, and accurate answers.",
+      name: "通用助手",
+      title: "日常工作",
+      roleDescription: "用清晰、简洁、准确的回答协助处理日常工作。",
       avatarSeed: "general-assistant",
       type: "built_in",
       configuration: {
@@ -322,8 +321,8 @@ describe("tenant YAML validation", () => {
     ]);
     expect(tenantPackage.channels).toContainEqual({
       id: "general-assistant",
-      name: "General Assistant",
-      description: "Ask for help with everyday work.",
+      name: "通用助手",
+      description: "获取日常工作协助。",
       permittedAgents: ["general-assistant"],
       allowedGroups: ["all"],
     });

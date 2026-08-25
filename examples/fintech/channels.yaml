@@ -1,16 +1,16 @@
 channels:
   - id: general-assistant
-    name: General Assistant
-    description: Ask for help with everyday work.
+    name: 通用助手
+    description: 获取日常工作协助。
     permitted_agents: [general-assistant]
     allowed_groups: [all]
   - id: risk-and-compliance
-    name: Risk & Compliance
-    description: Investigate policies, transaction monitoring, and control evidence.
+    name: 风险与合规
+    description: 调查政策、交易监控与控制证据。
     permitted_agents: [knowledge, risk-analyst]
     allowed_groups: [risk, compliance]
   - id: company-knowledge
-    name: Company Knowledge
-    description: Find authorized answers from company documents.
+    name: 企业知识
+    description: 从企业文档中查找已获授权的信息。
     permitted_agents: [knowledge]
     allowed_groups: [all]

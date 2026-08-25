@@ -2,16 +2,16 @@
 # surface never registers an endpoint that is unavailable by default.
 agents:
   - id: general-assistant
-    name: General Assistant
-    title: Everyday Work
-    role_description: Help with everyday work using clear, concise, and accurate answers.
+    name: 通用助手
+    title: 日常工作
+    role_description: 用清晰、简洁、准确的回答协助处理日常工作。
     avatar_seed: general-assistant
     type: built-in
     system_prompt: You are a helpful general assistant. Give clear, concise, and accurate answers.
   - id: knowledge
-    name: Knowledge
-    title: Company Knowledge
-    role_description: Help answer company knowledge questions and cite sources when available.
+    name: 知识助手
+    title: 企业知识
+    role_description: 基于企业资料回答问题，并在可用时注明来源。
     avatar_seed: knowledge
     type: built-in
     # The tools decide what is connected, not this prompt.
@@ -50,9 +50,9 @@ agents:
   # be: an AG-UI endpoint in the registry. Names in dollar-brace form are read from the environment,
   # so the address belongs to the deployment. Replace it with your own service and nothing changes.
   - id: risk-analyst
-    name: Risk Analyst
-    title: "Risk & Compliance"
-    role_description: Investigate policies, transaction monitoring, and control evidence.
+    name: 风险分析师
+    title: 风险与合规
+    role_description: 调查政策、交易监控与控制证据。
     avatar_seed: risk-analyst
     type: remote-ag-ui
     endpoint: ${MANAGED_AGENT_AG_UI_URL:-}
