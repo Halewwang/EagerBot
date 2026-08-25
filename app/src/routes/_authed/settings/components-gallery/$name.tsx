@@ -9,7 +9,7 @@ import {
   PageShell,
 } from "@/components/layout/page-shell";
 import { SettingsItemBackground } from "@/components/settings/background";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Empty,
   EmptyDescription,
@@ -107,13 +107,12 @@ function RouteComponent() {
               it.
             </EmptyDescription>
           </EmptyHeader>
-          <Button
-            render={<Link to="/settings/components-gallery" />}
-            size="sm"
-            variant="outline"
+          <Link
+            className={buttonVariants({ size: "sm", variant: "outline" })}
+            to="/settings/components-gallery"
           >
             Back to the gallery
-          </Button>
+          </Link>
         </Empty>
       </PageShell>
     );

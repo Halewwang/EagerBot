@@ -7,7 +7,7 @@ import { StaggerItem } from "@/components/layout/stagger";
 import { AgentProfile as AgentProfileDetail } from "@/components/agents/agent-profile";
 import { NewAgent } from "@/components/agents/new-agent";
 import { DetailPanel } from "@/components/layout/detail-panel";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { agentListQueryOptions } from "@/lib/agents/queries";
 
@@ -53,16 +53,14 @@ function AgentsScreen() {
         <div className="mt-12 w-full max-w-2xl">
           <div className="flex flex-row w-full items-center justify-between">
             <h2 className="font-bold text-lg">Your agents</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              render={(props) => (
-                <Link to="/agents" search={{ new: true }} {...props} />
-              )}
+            <Link
+              className={buttonVariants({ size: "sm", variant: "ghost" })}
+              to="/agents"
+              search={{ new: true }}
             >
               <IconPlus />
               New agent
-            </Button>
+            </Link>
           </div>
           <div className="flex flex-row mt-4">
             {!!mine?.length && (

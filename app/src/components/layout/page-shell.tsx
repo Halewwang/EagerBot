@@ -2,7 +2,7 @@ import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { Link, type LinkProps } from "@tanstack/react-router";
-import { Button } from "../ui/button";
+import { buttonVariants } from "../ui/button";
 import { IconChevronLeft } from "@tabler/icons-react";
 
 /**
@@ -61,13 +61,13 @@ export function PageShell({
     <>
       {!!backButton && (
         <div className="max-w-7xl w-full h-14 flex items-center px-3">
-          <Button
-            variant="ghost"
-            render={(props) => <Link {...backButton.linkProps} {...props} />}
+          <Link
+            {...backButton.linkProps}
+            className={buttonVariants({ variant: "ghost" })}
           >
             <IconChevronLeft />
             {backButton.label}
-          </Button>
+          </Link>
         </div>
       )}
       <div

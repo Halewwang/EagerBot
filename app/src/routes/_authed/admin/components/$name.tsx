@@ -19,7 +19,7 @@ import {
   PageShell,
 } from "@/components/layout/page-shell";
 import { SettingsItemBackground } from "@/components/settings/background";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
   DialogBody,
@@ -132,13 +132,12 @@ function RouteComponent() {
               it.
             </EmptyDescription>
           </EmptyHeader>
-          <Button
-            render={<Link to="/admin/components" />}
-            size="sm"
-            variant="outline"
+          <Link
+            className={buttonVariants({ size: "sm", variant: "outline" })}
+            to="/admin/components"
           >
             Back to components
-          </Button>
+          </Link>
         </Empty>
       </PageShell>
     );

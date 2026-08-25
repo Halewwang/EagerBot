@@ -12,7 +12,7 @@ import {
 import { StaggerItem } from "@/components/layout/stagger";
 import { EditSkill } from "@/components/skills/edit-skill";
 import { NewSkill } from "@/components/skills/new-skill";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { currentUserQueryOptions } from "@/lib/auth/queries";
 import { removeSkillMutationOptions } from "@/lib/plugins/mutations";
@@ -124,16 +124,14 @@ function SkillsPage() {
 
         <PageSection
           action={
-            <Button
-              render={(props) => (
-                <Link search={{ new: true }} to="/skills" {...props} />
-              )}
-              size="sm"
-              variant="ghost"
+            <Link
+              className={buttonVariants({ size: "sm", variant: "ghost" })}
+              search={{ new: true }}
+              to="/skills"
             >
               <IconPlus />
               New skill
-            </Button>
+            </Link>
           }
           title="Your skills"
         >
