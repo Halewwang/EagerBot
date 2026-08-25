@@ -77,4 +77,20 @@ describe("a clone that has only run bun install", () => {
     expect(ignored).toContain(".env.*");
     expect(ignored).toContain("!.env.example");
   });
+
+  test("restarts a server launched with or without Bun watch mode", () => {
+    const start = readFileSync(join(root, "scripts", "start.sh"), "utf8");
+    const pattern = start.match(/pkill -f "([^"]*src\/index\.ts)"/)?.[1];
+    expect(pattern).toBeDefined();
+
+    const matches = new RegExp(pattern as string);
+    for (const command of [
+      "bun --env-file=../.env src/index.ts",
+      "bun --env-file=../.env --watch src/index.ts",
+    ]) {
+      expect(matches.test(command), `${pattern} should match ${command}`).toBe(
+        true,
+      );
+    }
+  });
 });

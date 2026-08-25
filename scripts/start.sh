@@ -211,7 +211,7 @@ require_free_or_ours "$SERVER_PORT" server
 # rather than as an error.
 if [ "$SECRETS_ROTATED" = "true" ]; then
   info "  a secret was generated this run, so the server is restarted to pick it up"
-  pkill -f "bun --env-file=../.env src/index.ts" >/dev/null 2>&1 || true
+  pkill -f "bun --env-file=../.env.*src/index.ts" >/dev/null 2>&1 || true
   sleep 1
 fi
 if ! curl -fsS --max-time 3 "http://localhost:$SERVER_PORT/api/capabilities" >/dev/null 2>&1; then
