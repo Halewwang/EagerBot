@@ -4,24 +4,25 @@
 
 ## 目标与当前结论
 
-目标是在当前 Mac 上运行官方 OpenBot 完整开发栈，并用真实浏览器验收首页与主要交互。
+目标是在当前 Mac 上运行官方 OpenBot，并用真实浏览器验收首页、主要导航和运行日志。
 
-本地基础设施已经就绪，但完整产品尚未启动。当前还需要两项用户决定或输入：
+本地核心开发栈已经可用：网页、API、PostgreSQL、CopilotKit Intelligence 和许可证均已连通，官方 Docker 镜像也已预构建。现在只缺模型凭据：`.env` 中的 `OPENAI_API_KEY` 仍为空，因此没有启动 `agent-bot`，也没有把“页面可用”误报成“真实 Bot 对话已通过”。
 
-1. 是否在 CopilotKit Intelligence 中创建一个托管项目，以及项目名称；
-2. 在本地 `.env` 中提供 OpenAI 或 OpenAI 兼容模型凭据。完整官方 Compose 栈包含只支持 OpenAI 兼容接口的 `agent-bot`，因此默认流程需要 `OPENAI_API_KEY`。
-
-不要把 API key、license token、运行时 key 或登录信息写进本文件或提交到 Git。
+CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、license token、登录信息和模型 key 都只能保存在本机私有配置中，不要写进本文件或提交到 Git。
 
 ## 仓库状态
 
 - 上游仓库：`CopilotKit/OpenBot`
 - 上游基线：`d293f23 Let a package say which skills each coworker gets (#227)`
 - 本地分支：`main`
-- 本地新增提交：`953a95a Fix tenant package paths with spaces`
-- 本地 `.env` 已创建并被 `.gitignore` 排除；Intelligence 与模型凭据仍为空。
+- 本地提交：
+  - `953a95a Fix tenant package paths with spaces`
+  - `b2934f3 Document local deployment handoff`
+  - `4a601d8 Fix Button-as-Link semantics`
+- 本地提交尚未推送。
+- `.env` 已由仓库规则忽略；`.copilotkit/` 已在本机 `.git/info/exclude` 中排除。
 
-`953a95a` 只修复测试夹具在含空格仓库路径中使用 URL `pathname` 的问题，改用 Node 标准库 `fileURLToPath`。运行时代码不受这个问题影响。
+`953a95a` 只修复测试夹具在含空格仓库路径中使用 URL `pathname` 的问题，改用 Node 标准库 `fileURLToPath`。`4a601d8` 将 6 处实际渲染为链接的 Base UI Button 改成仓库已有 `buttonVariants` 样式的原生链接，并为纯图标“新建频道”链接补充可访问名称；没有增加依赖或新抽象。
 
 ## 架构摘要
 
@@ -40,15 +41,15 @@
 
 - 仓库克隆到 `/Users/adler/Documents/ChatGPT/Open BOt`；
 - Bun 校准为仓库 CI 使用的 `1.3.14`；
-- 根目录依赖按 `bun.lock` 安装；
-- 按官方 CI 另行安装 `agent-bot` 与 `agent-langgraph` 的独立锁定依赖；
+- 根目录及 `agent-bot`、`agent-langgraph` 的锁定依赖均已安装；
 - 安装 Docker CLI、Docker Compose 与 Colima；
 - Colima 以 6 CPU、10 GiB 内存、50 GiB 磁盘运行 Docker；
-- PostgreSQL/pgvector 容器已启动并健康；
-- 数据库迁移已成功应用；
-- CopilotKit CLI 登录已成功；
-- Vite 前端已在 `http://127.0.0.1:3010/` 启动；
-- 已确认 API 未启动时前端显示 `Could not load the current user (500)`，没有把 Vite 外壳误判为可用部署。
+- PostgreSQL/pgvector 容器已启动并健康，数据库迁移已应用；
+- CopilotKit CLI 已登录，项目 `openbot-local` 已创建并选中；
+- Intelligence runtime key 与有效许可证已写入本机 `.env`；
+- `bun run dev` 已同时启动网页和 API；
+- `agent-computer`、`agent-bot`、`agent-langgraph`、`supervisor`、`migrate` 镜像均已成功预构建；
+- 真实浏览器已验收首页、Agents 导航和新建频道链接语义。
 
 ## 已验证
 
@@ -57,34 +58,38 @@
 | `bun run format:check` | 通过 |
 | `bun run lint` | 通过；仅有 Biome schema 版本提示 |
 | `bun run typecheck` | 通过 |
-| `bun run build` | 通过；仅有 bundle size 等非阻塞 warning |
-| `bun run test` | 通过：1445 passed、10 skipped、0 failed |
-| PostgreSQL health | 通过 |
-| 数据库迁移 | 通过 |
-| 浏览器基线 | 3010 可达；因 3001 未启动而显示预期错误态 |
+| `bun run build` | 通过；仅有现有 bundle size 等非阻塞 warning |
+| `bun run test` | 通过：1445 passed、10 skipped、0 failed（122 files） |
+| Docker 镜像构建 | 5/5 通过 |
+| PostgreSQL health / migration | 通过 |
+| `GET /health` | `status: ok` |
+| `/api/capabilities` | `mode: intelligence`、durable history 已启用 |
+| `/api/copilotkit/info` | license `valid`，注册 `general-assistant` 与 `knowledge` |
+| 浏览器首页 | `http://localhost:3010/` 正常显示新频道输入框和两个内置 Agent |
+| 浏览器主要导航 | 点击 Agents 后进入 `/agents`，页面状态正确 |
+| 浏览器控制台 | 无应用错误；只剩 Vite/React/Lit 开发模式提示 |
+| 新建频道链接 | DOM 为带 `href="/channel/new"` 的 `<a>`，无伪造 button role，并有 `aria-label` |
 
 ## 当前运行状态
 
 - `openbot-postgres-1`：运行中，`127.0.0.1:5432`，healthy；
-- Vite app：运行中，`127.0.0.1:3010`；
-- API server：未启动；
-- agent-computer、agent-bot、agent-langgraph、supervisor：未启动；
-- `INTELLIGENCE_API_KEY`：未配置；
-- `COPILOTKIT_LICENSE_TOKEN`：未配置；
-- `OPENAI_API_KEY`：未配置。
+- Vite app：运行中，`http://localhost:3010/`；
+- API server：运行中，`http://localhost:3001/`；
+- `INTELLIGENCE_API_KEY`：已配置；
+- `COPILOTKIT_LICENSE_TOKEN`：已配置且验证有效；
+- `OPENAI_API_KEY`：未配置；
+- Agent 与 supervisor 镜像：已构建但容器未启动；
+- 真实模型回复、computer 工具调用与 `test:smoke`：等待模型凭据后验证。
+
+当前网页/API 是开发进程，Mac 重启后不会自动恢复；PostgreSQL 由 Colima 中的 Docker 容器运行。
 
 ## 继续步骤
 
-获得用户确认后：
-
-1. 运行 `npx --yes copilotkit@latest project select`，创建或选择托管项目；
-2. 将 CLI 给出的 `cpk-...` runtime key 写入本地 `.env` 的 `INTELLIGENCE_API_KEY`，不要提交；
-3. 运行 `npx --yes copilotkit@latest license --write`，让 CLI 将 license 写入本地 `.env`；
-4. 由用户直接在本地 `.env` 中填写 `OPENAI_API_KEY`，需要兼容网关时同时填写 `OPENAI_BASE_URL`；
-5. 停止当前单独启动的 Vite 进程，运行 `bash scripts/start.sh`；
-6. 验证 `/health`、`/api/capabilities`、`/api/copilotkit/info` 与 3010 首页；
-7. 在真实浏览器中完成首页、导航或主要控制、控制台、截图与至少一个交互检查；
-8. 具备有效模型凭据后再运行 `bun run test:smoke`，不要用普通构建代替真实 Bot journey。
+1. 用户直接在本机 `.env` 填写 `OPENAI_API_KEY`；如果使用 OpenAI 兼容网关，同时填写 `OPENAI_BASE_URL`。不要把 key 发到聊天或提交到 Git。
+2. 运行 `bash scripts/start.sh`。脚本会生成本机 Bot 间认证 token、启动 Agent 与 supervisor 容器，并复用或校正当前网页/API 进程。
+3. 再次验证 `/health`、`/api/capabilities`、`/api/copilotkit/info` 与所有容器 health。
+4. 在 `/bot` 发送一条真实消息，验证流式回复、computer 工具和审计记录。
+5. 运行 `bun run test:smoke`。普通构建与静态页面不能替代真实 Bot journey。
 
 ## 常用运维命令
 
@@ -92,7 +97,7 @@
 # 查看服务
 docker compose ps
 
-# 完整启动（凭据完成后）
+# 完整启动（模型凭据完成后）
 bash scripts/start.sh
 
 # 停止 Compose 服务
