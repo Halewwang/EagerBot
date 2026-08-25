@@ -1,10 +1,17 @@
-# OpenBot 本地部署交接
+# EMKE Bot 本地开发交接
 
 更新时间：2026-08-25（Asia/Shanghai）
 
 ## 目标与当前结论
 
-目标是在当前 Mac 上运行官方 OpenBot，并用真实浏览器验收首页、主要导航和运行日志。
+目标是在当前 Mac 上基于 `Halewwang/EagerBot` fork 开发 EMKE Bot，并用真实浏览器验收品牌、中文界面、主要导航和运行日志。
+
+## 2026-08-25 界面品牌与中文化
+
+- 已将产品名、浏览器标题和全局用户可见品牌从 `OpenBot` 改为 `EMKE Bot`。品牌继续复用现有链路：`examples/fintech/brand.yaml` → `generate-app-config.ts` → `appConfig.brand.productName`。
+- 已将应用侧栏、首页、登录、频道、智能体、技能、设置、管理后台、组件画廊及服务端返回给用户的提示统一为简体中文；默认智能体、频道和技能示例也已中文化。
+- `openbot-*` 存储键、环境变量、HTTP 头、数据库标识、路由、协议值和模型工具说明保持不变，避免破坏兼容性。历史频道名称、用户自建智能体名称及第三方或模型生成内容属于业务数据，不强制改写。
+- 真实浏览器已验收 1440×900 桌面布局和 390×844 移动布局：首页、智能体、个人菜单、设置和管理页面均显示中文；页面标题为 `EMKE Bot`，用户可见页面中没有 `OpenBot`，移动端无横向页面溢出。
 
 完整本地开发栈已经部署并通过验收：网页、API、PostgreSQL、CopilotKit Intelligence、许可证、Agent 容器、Supervisor 和按 Bot 隔离的 Computer 均已连通。内置 `knowledge` 与远程 `risk-analyst` 都在真实浏览器中产生了非空模型回复，官方 smoke journey 也验证了真实 Chromium、策略拒绝与审计链路。
 
@@ -12,17 +19,22 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 
 ## 仓库状态
 
-- 上游仓库：`CopilotKit/OpenBot`
+- fork（`origin`）：`Halewwang/EagerBot`
+- 原始上游（`upstream`）：`CopilotKit/OpenBot`
 - 上游基线：`d293f23 Let a package say which skills each coworker gets (#227)`
 - 本地分支：`main`
-- 本地提交：
+- 本地部署提交：
   - `953a95a Fix tenant package paths with spaces`
   - `b2934f3 Document local deployment handoff`
   - `4a601d8 Fix Button-as-Link semantics`
   - `f4de151 Update local deployment handoff`
   - `f0436f4 Fix watched server restart matching`
   - `8917c69 Allow the local managed agent endpoint`
-- 本地提交尚未推送。
+  - `43c85c8 Record completed local deployment`
+- 本次品牌与中文化提交：
+  - `112a249 Brand the default tenant as EMKE Bot`
+  - `fd37310 Localize the EMKE Bot interface in Chinese`
+- 上述提交已推送至 fork 的 `origin/main`；发布到线上环境仍需单独执行部署流程并验收正式地址。
 - `.env` 已由仓库规则忽略；`.copilotkit/` 已在本机 `.git/info/exclude` 中排除。
 
 `953a95a` 只修复测试夹具在含空格仓库路径中使用 URL `pathname` 的问题，改用 Node 标准库 `fileURLToPath`。`4a601d8` 将 6 处实际渲染为链接的 Base UI Button 改成仓库已有 `buttonVariants` 样式的原生链接，并为纯图标“新建频道”链接补充可访问名称。`f0436f4` 让首次生成本机 token 时也能正确重启带 `--watch` 的开发 API；`8917c69` 仅对白名单中的默认受管 Agent 地址 `localhost:<LANGGRAPH_PORT>` 放行，没有开启全局私网访问。所有修复都复用了现有配置入口，没有增加依赖或新抽象。
@@ -54,7 +66,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 - 网页与 API 已启动，API 使用 Docker Supervisor 为每个 Bot 隔离 Computer；
 - `agent-computer`、`agent-bot`、`agent-langgraph`、`supervisor`、`migrate` 镜像均已成功预构建；
 - `agent-computer`、`agent-bot`、`agent-langgraph`、`supervisor` 与 PostgreSQL 容器均已启动并健康；
-- 真实浏览器已验收首页、Agents 导航、新建频道链接语义、内置 Agent 回复和远程 AG-UI Agent 回复；
+- 真实浏览器已验收首页、“智能体”导航、新建频道链接语义、内置智能体回复和远程 AG-UI 智能体回复；
 - Supervisor 已为 `risk-analyst` 创建独立、健康的 Computer 容器。
 
 ## 已验证
@@ -72,11 +84,12 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 | `/api/capabilities` | `mode: intelligence`、durable history 已启用 |
 | `/api/copilotkit/info` | license `valid`，注册 `general-assistant`、`knowledge`、`risk-analyst` |
 | `bun run test:smoke` | 5 passed、0 failed；真实浏览器、截图、策略拒绝、审计与恢复均通过 |
-| 浏览器首页 | `http://localhost:3010/` 正常显示新频道输入框和两个内置 Agent |
-| 浏览器主要导航 | 点击 Agents 后进入 `/agents`，页面状态正确 |
+| 浏览器品牌与中文首页 | `http://localhost:3010/` 标题和可见品牌均为 `EMKE Bot`，默认内容为中文，未出现用户可见 `OpenBot` |
+| 浏览器主要导航 | 点击“智能体”进入 `/agents`；个人菜单、“设置”和“管理”页面均显示中文 |
+| 移动端布局 | 390×844 下首页无页面级横向溢出，主要内容与智能体卡片正常显示 |
 | 内置模型回复 | `knowledge` 返回非空中文回复并完成运行 |
 | 远程模型回复 | `risk-analyst` 经 `agent-langgraph` 返回非空中文职责说明并完成运行 |
-| 浏览器控制台 | 最终全新对话无应用错误；只剩 Lit 开发模式提示 |
+| 浏览器控制台 | 首页、智能体、设置和管理页面无应用错误；只剩 Lit 开发模式提示 |
 | 新建频道链接 | DOM 为带 `href="/channel/new"` 的 `<a>`，无伪造 button role，并有 `aria-label` |
 
 ## 当前运行状态
