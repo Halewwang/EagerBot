@@ -77,7 +77,7 @@ export function LiveScreen({ computerId, driving, onProblem }: Props) {
         return;
       }
       if (message.type === "error") {
-        onProblem?.(message.error ?? "The screen could not be shown.");
+        onProblem?.(message.error ?? "无法显示屏幕。");
         return;
       }
       if (message.type !== "frame" || !message.data) return;
@@ -117,7 +117,7 @@ export function LiveScreen({ computerId, driving, onProblem }: Props) {
       }
     };
 
-    socket.onerror = () => onProblem?.("The live screen could not be reached.");
+    socket.onerror = () => onProblem?.("无法连接实时屏幕。");
     socket.onclose = () => setConnected(false);
 
     return () => {
@@ -252,8 +252,8 @@ export function LiveScreen({ computerId, driving, onProblem }: Props) {
         : {})}
       aria-label={
         driving
-          ? "The assistant's screen. You have control: click and type here."
-          : "The assistant's screen, live"
+          ? "助手的屏幕。你已获得控制权，可以在此点击并输入。"
+          : "助手的实时屏幕"
       }
       data-connected={connected}
     />

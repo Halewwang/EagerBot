@@ -64,7 +64,7 @@ export function resultText(content: unknown): {
   // what the model is told.
   if (joined.trim() === "") {
     return {
-      text: "The tool returned no content. Nothing was found, so there is nothing here to answer from.",
+      text: "工具未返回内容。没有找到任何内容，因此没有可据此回答的信息。",
       truncated: false,
     };
   }
@@ -167,7 +167,7 @@ function vendorFailure(error: unknown): string {
       : undefined;
 
   if (status === 401) {
-    return "The vendor rejected this credential (401). For a connector reached as the person asking, reconnecting the account is the usual fix; if it persists, the scopes it was granted may not cover this server.";
+    return "供应商拒绝了此凭据（401）。对于以提问者身份访问的连接器，通常的解决办法是重新连接账号；如果问题仍然存在，授予的权限范围可能不包含此服务器。";
   }
   if (status === 403) {
     /*
@@ -189,11 +189,11 @@ function vendorFailure(error: unknown): string {
      */
     const detail = reasonFrom(error);
     return detail
-      ? `The vendor accepted the credential and refused the request (403). It said: ${detail}`
-      : "The vendor accepted the credential and refused the request (403). The account may lack access, or the API may not be enabled for this project.";
+      ? `供应商接受了凭据，但拒绝了请求（403）。供应商返回：${detail}`
+      : "供应商接受了凭据，但拒绝了请求（403）。账号可能没有访问权限，或者此项目未启用 API。";
   }
   if (typeof status === "number") {
-    return `The vendor answered ${status}.`;
+    return `供应商返回了 ${status}。`;
   }
   return error instanceof Error ? error.message : String(error);
 }

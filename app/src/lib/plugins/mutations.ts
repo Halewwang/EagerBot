@@ -51,7 +51,7 @@ export type CustomServerInput = {
 /** Which kinds of plugin a grant can be about. */
 export type PluginKind = "mcp" | "skill";
 
-const FALLBACK = "That did not work.";
+const FALLBACK = "操作失败。";
 
 function invalidatePlugins(queryClient: QueryClient) {
   return queryClient.invalidateQueries({ queryKey: pluginKeys.all });
@@ -79,13 +79,13 @@ export function setPluginGrantMutationOptions(queryClient: QueryClient) {
             ref: variables.ref,
             agentId: variables.agentId,
           },
-          fallback: "That Agent could not be changed.",
+          fallback: "无法更改该智能体。",
         });
         return;
       }
       await client(
         `/api/plugins/grants?kind=${variables.kind}&ref=${encodeURIComponent(variables.ref)}&agentId=${encodeURIComponent(variables.agentId)}`,
-        { method: "DELETE", fallback: "That Agent could not be changed." },
+        { method: "DELETE", fallback: "无法更改该智能体。" },
       );
     },
     onSuccess: () => invalidatePlugins(queryClient),
@@ -160,7 +160,7 @@ export function saveSkillMutationOptions(queryClient: QueryClient) {
          * The server refuses for reasons a form cannot check — a slug somebody else already owns is
          * the common one — and paraphrasing that would throw away the only part worth reading.
          */
-        fallback: "The skill could not be saved.",
+        fallback: "无法保存技能。",
       }),
     onSuccess: () => invalidatePlugins(queryClient),
   });
@@ -192,7 +192,7 @@ export function registerOAuthClientMutationOptions(queryClient: QueryClient) {
         {
           method: "POST",
           body: { clientId: input.clientId, clientSecret: input.clientSecret },
-          fallback: "That OAuth client could not be registered.",
+          fallback: "无法注册该 OAuth 客户端。",
         },
       );
     },
@@ -225,7 +225,7 @@ export function connectAccountMutationOptions(
       client<string>(
         `/api/plugins/servers/${encodeURIComponent(serverId)}/connect?returnTo=${returnTo}`,
         "authorizationUrl",
-        { method: "POST", fallback: "That account could not be connected." },
+        { method: "POST", fallback: "无法连接该账户。" },
       ),
   });
 }

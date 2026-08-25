@@ -64,7 +64,7 @@ function RouteComponent() {
   return (
     <div className="flex h-full flex-col">
       <div className="h-12 border-b border-border sticky top-0 flex flex-row px-2 items-center">
-        <span className="text-sm text-muted-foreground">To:</span>
+        <span className="text-sm text-muted-foreground">发送给：</span>
         <Combobox
           // Do not auto-open when the recipient came from the URL; the field is already answered.
           defaultOpen={!agent}
@@ -85,13 +85,13 @@ function RouteComponent() {
           value={chosen ?? null}
         >
           <ComboboxInput
-            placeholder="Choose a coworker…"
+            placeholder="选择智能体…"
             // InputGroup owns focus rings via `has-[…:focus-visible]`; disable that wrapper ring here.
             className="border-none w-full bg-transparent! text-sm has-[[data-slot=input-group-control]:focus-visible]:ring-0"
           />
           {/* Allow max-w to constrain the popup even though its anchor is full-width. */}
           <ComboboxContent className="min-w-0 max-w-lg" sideOffset={12}>
-            <ComboboxEmpty>No agents found.</ComboboxEmpty>
+            <ComboboxEmpty>未找到智能体。</ComboboxEmpty>
             <ComboboxList>
               {(item: AgentProfile) => (
                 <ComboboxItem key={item.id} value={item} className="h-10">
@@ -131,9 +131,7 @@ function RouteComponent() {
             // Preserve the unsent draft when channel creation fails.
             setSent(null);
             setError(
-              caught instanceof Error
-                ? caught.message
-                : "Could not start the conversation.",
+              caught instanceof Error ? caught.message : "无法开始对话。",
             );
             throw caught;
           }

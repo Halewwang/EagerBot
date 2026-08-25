@@ -151,7 +151,7 @@ describe("what a model is told", () => {
     });
 
     expect(result.isError).toBe(false);
-    expect(result.text).toContain("Nothing was found");
+    expect(result.text).toContain("没有找到任何内容");
   });
 
   test("Google's own refusal is passed through, not replaced", async () => {

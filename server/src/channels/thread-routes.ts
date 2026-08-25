@@ -69,7 +69,7 @@ export function createThreadRoutes(
     routes.get("/:threadId", requireUser, async (context) => {
       const threadId = context.req.param("threadId");
       if (!PLAUSIBLE_THREAD_ID.test(threadId)) {
-        return context.json({ error: "Not a thread id." }, 400);
+        return context.json({ error: "这不是线程 ID。" }, 400);
       }
 
       try {
@@ -87,7 +87,7 @@ export function createThreadRoutes(
             note: "Could not determine whether Intelligence still has this thread.",
           }),
         );
-        return context.json({ error: "Could not check thread status." }, 502);
+        return context.json({ error: "无法检查线程状态。" }, 502);
       }
     });
   }

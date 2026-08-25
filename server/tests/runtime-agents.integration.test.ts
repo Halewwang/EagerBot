@@ -163,8 +163,7 @@ describe("runtime agent loading", () => {
       id: profile.id,
       name: "Expense Manager",
       type: "unavailable",
-      reason:
-        "Expense Manager has been deleted and can no longer run. Its conversations remain readable.",
+      reason: "Expense Manager 已被删除，无法继续运行。其对话仍可读取。",
     });
     // Somebody with no channel of their own gets no tombstone: history is what authorizes it.
     expect(idsOf(await loadAgents(otherUser))).not.toContain(profile.id);

@@ -76,14 +76,14 @@ export function AgentFields({
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                <FieldLabel htmlFor={field.name}>名称</FieldLabel>
                 <Input
                   aria-invalid={isInvalid}
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
-                  placeholder="Expense Manager"
+                  placeholder="费用管理"
                   value={field.state.value}
                 />
                 {isInvalid ? (
@@ -99,14 +99,14 @@ export function AgentFields({
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Title</FieldLabel>
+                <FieldLabel htmlFor={field.name}>称谓</FieldLabel>
                 <Input
                   aria-invalid={isInvalid}
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
-                  placeholder="Finance Operations"
+                  placeholder="财务运营"
                   value={field.state.value}
                 />
                 {isInvalid ? (
@@ -122,14 +122,14 @@ export function AgentFields({
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Role</FieldLabel>
+                <FieldLabel htmlFor={field.name}>角色</FieldLabel>
                 <Textarea
                   aria-invalid={isInvalid}
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
-                  placeholder="Review receipts, categorize expenses, and prepare reimbursement reports."
+                  placeholder="审核收据、归类费用并准备报销报告。"
                   rows={4}
                   value={field.state.value}
                 />
@@ -143,7 +143,7 @@ export function AgentFields({
         <form.Field name="visibility">
           {(field) => (
             <Field>
-              <FieldLabel htmlFor={field.name}>Visibility</FieldLabel>
+              <FieldLabel htmlFor={field.name}>可见性</FieldLabel>
               <Select
                 onValueChange={(value) =>
                   field.handleChange(value as AgentFormValues["visibility"])
@@ -155,12 +155,8 @@ export function AgentFields({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="private">
-                      Private, only you can see it
-                    </SelectItem>
-                    <SelectItem value="public">
-                      Public, everybody can see it
-                    </SelectItem>
+                    <SelectItem value="private">私有，仅自己可见</SelectItem>
+                    <SelectItem value="public">公开，所有人可见</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -173,9 +169,7 @@ export function AgentFields({
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>
-                  Agent endpoint (optional)
-                </FieldLabel>
+                <FieldLabel htmlFor={field.name}>智能体端点（可选）</FieldLabel>
                 <div className="flex gap-2">
                   <Input
                     aria-invalid={isInvalid}
@@ -200,7 +194,7 @@ export function AgentFields({
                     type="button"
                     variant="outline"
                   >
-                    {testing ? "Testing…" : "Test"}
+                    {testing ? "测试中…" : "测试"}
                   </Button>
                 </div>
                 {isInvalid ? (
@@ -212,14 +206,13 @@ export function AgentFields({
                     role="status"
                   >
                     {connection.ok
-                      ? `It answered: ${connection.events.join(", ")}`
+                      ? `已收到响应：${connection.events.join("、")}`
                       : connection.reason}
                   </p>
                 ) : (
                   <p className="text-muted-foreground text-sm">
-                    Leave empty to use the built-in Bot. Anything that speaks
-                    AG-UI works. This server dials your agent, so an agent on
-                    your own machine has to be reachable from here.
+                    留空即可使用内置 Bot。任何支持 AG-UI 的智能体都可以使用。
+                    连接由本服务器发起，因此你本机上的智能体必须能从这里访问。
                   </p>
                 )}
               </Field>
@@ -229,9 +222,7 @@ export function AgentFields({
         <form.Field name="authValue">
           {(field) => (
             <Field>
-              <FieldLabel htmlFor={field.name}>
-                Key for that agent (optional)
-              </FieldLabel>
+              <FieldLabel htmlFor={field.name}>智能体密钥（可选）</FieldLabel>
               <Input
                 autoComplete="off"
                 id={field.name}
@@ -239,18 +230,15 @@ export function AgentFields({
                 onBlur={field.handleBlur}
                 onChange={(event) => field.handleChange(event.target.value)}
                 placeholder={
-                  hasAuth
-                    ? "A key is set. Type a new one to replace it."
-                    : "Bearer …"
+                  hasAuth ? "已设置密钥。如需替换，请输入新密钥。" : "Bearer …"
                 }
                 // Never repopulated; `hasAuth` communicates that a key exists without exposing it.
                 type="password"
                 value={field.state.value}
               />
               <p className="text-muted-foreground text-sm">
-                Sent as an <code>Authorization</code> header on every run, and
-                kept in the credential vault. Leave empty to keep the current
-                key.
+                每次运行都会作为 <code>Authorization</code>{" "}
+                请求头发送，并保存在凭据 保管库中。留空则保留当前密钥。
               </p>
             </Field>
           )}
@@ -269,13 +257,13 @@ export function AgentFields({
         >
           {([canSubmit, isSubmitting]) => (
             <Button disabled={!canSubmit || isSubmitting} type="submit">
-              {isSubmitting ? "Saving…" : submitLabel}
+              {isSubmitting ? "保存中…" : submitLabel}
             </Button>
           )}
         </form.Subscribe>
         {onCancel ? (
           <Button onClick={onCancel} type="button" variant="outline">
-            Cancel
+            取消
           </Button>
         ) : null}
       </div>

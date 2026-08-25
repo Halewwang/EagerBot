@@ -122,7 +122,7 @@ describe("who may call a tool back, and as whom", () => {
     expect(await call(tokenB, runForA())).toEqual({
       ok: false,
       status: 403,
-      reason: "That token is not for this Bot.",
+      reason: "该令牌不属于此智能体。",
     });
   });
 
@@ -130,7 +130,7 @@ describe("who may call a tool back, and as whom", () => {
     expect(await call(tokenA, undefined)).toEqual({
       ok: false,
       status: 401,
-      reason: "Not authorised.",
+      reason: "未获授权。",
     });
   });
 
@@ -138,7 +138,7 @@ describe("who may call a tool back, and as whom", () => {
     expect(await call(mintCallbackToken(), runForA())).toEqual({
       ok: false,
       status: 401,
-      reason: "Not authorised.",
+      reason: "未获授权。",
     });
   });
 
@@ -146,7 +146,7 @@ describe("who may call a tool back, and as whom", () => {
     expect(await call("", runForA())).toEqual({
       ok: false,
       status: 401,
-      reason: "Not authorised.",
+      reason: "未获授权。",
     });
   });
 
@@ -170,7 +170,7 @@ describe("who may call a tool back, and as whom", () => {
     expect(await call("legacy-secret", runForA())).toEqual({
       ok: false,
       status: 401,
-      reason: "Not authorised.",
+      reason: "未获授权。",
     });
   });
 
@@ -182,7 +182,7 @@ describe("who may call a tool back, and as whom", () => {
     expect(await call("legacy-secret", undefined, "legacy-secret")).toEqual({
       ok: false,
       status: 401,
-      reason: "Not authorised.",
+      reason: "未获授权。",
     });
   });
 });

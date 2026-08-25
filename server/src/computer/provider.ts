@@ -1,10 +1,9 @@
 import type { ComputerConfig } from "../config";
+import type { ComputerStatus } from "./schema";
 import {
   createDockerSupervisorProvider,
   type SupervisorOptions,
 } from "./supervisor";
-
-import type { ComputerStatus } from "./schema";
 
 /** The address and lifecycle details for one Bot's computer. */
 export type ComputerLocation = {
@@ -37,22 +36,22 @@ export function describeComputerIsolation(
   if (!provider) {
     return {
       isolation: "off",
-      note: "The computer feature is off. No computer provider is configured.",
+      note: "计算机功能已关闭。未配置计算机提供商。",
     };
   }
 
   if (provider.isolation === "per-bot") {
     return {
       isolation: "one computer per Bot",
-      note: "Each Bot gets its own isolated computer with its own /workspace and browser profile.",
+      note: "每个智能体都有独立的计算机，以及独立的 /workspace 和浏览器配置文件。",
     };
   }
 
   return {
     isolation: "one shared computer",
-    note: "No supervisor is configured, so every Bot uses the same browser. Sessions, files and logins are shared between them. Set COMPUTER_SUPERVISOR_URL to give each Bot its own.",
+    note: "未配置监管器，因此所有智能体使用同一个浏览器。它们共享会话、文件和登录状态。设置 COMPUTER_SUPERVISOR_URL 可为每个智能体提供独立计算机。",
     warning:
-      "Every Bot shares one browser. Set COMPUTER_SUPERVISOR_URL for a computer each.",
+      "所有智能体共享一个浏览器。设置 COMPUTER_SUPERVISOR_URL 可为每个智能体提供独立计算机。",
   };
 }
 
@@ -138,7 +137,7 @@ export function createSharedComputerProvider(
       });
     } catch (error) {
       throw new ProviderError(
-        `The shared computer at ${base} could not be reached (${error instanceof Error ? error.message : String(error)}).`,
+        `无法访问 ${base} 上的共享计算机（${error instanceof Error ? error.message : String(error)}）。`,
       );
     }
 
@@ -147,7 +146,7 @@ export function createSharedComputerProvider(
     } | null;
     if (!response.ok) {
       throw new ProviderError(
-        body?.error ?? `The shared computer answered ${response.status}.`,
+        body?.error ?? `共享计算机返回了 ${response.status}。`,
       );
     }
     return body;
@@ -172,7 +171,7 @@ export function createSharedComputerProvider(
           reason:
             error instanceof Error && error.message.length > 0
               ? error.message
-              : "Unknown failure.",
+              : "未知故障。",
         };
       }
     },

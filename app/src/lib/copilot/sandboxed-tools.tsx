@@ -86,7 +86,7 @@ function SandboxedTool({
       if (!isHeld) {
         return (
           <RefusedCard
-            reason={`${component.name} is not available to this Bot at the moment. An administrator grants components per Bot.`}
+            reason={`此智能体当前无法使用${component.name}。管理员可以按智能体授予组件。`}
             title={component.name}
           />
         );
@@ -94,7 +94,7 @@ function SandboxedTool({
 
       // Wait for complete arguments because sandbox source is injected once per keyed instance.
       if (props.status !== "complete") {
-        return <ToolLine label="Drawing" detail={component.name} running />;
+        return <ToolLine label="绘制中" detail={component.name} running />;
       }
 
       return (
@@ -134,12 +134,12 @@ function SandboxedTool({
     ) => {
       const decision = await decideComponent(component.name, botId);
       if (!decision.allowed) {
-        const reason = decision.reason ?? "That component is not allowed here.";
+        const reason = decision.reason ?? "此组件当前不允许使用。";
         const id = context?.toolCall?.id;
         if (id) setRefusals((current) => new Map(current).set(id, reason));
         return reason;
       }
-      return "It is now on screen for the person.";
+      return "内容已显示在用户屏幕上。";
     },
     render,
   });

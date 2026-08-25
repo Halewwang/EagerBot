@@ -13,7 +13,7 @@ export function createChannelMutationOptions(queryClient: QueryClient) {
       const response = await client("/api/channels", {
         method: "POST",
         body: { agentIds },
-        fallback: "Could not start a channel",
+        fallback: "无法开始频道",
       });
       return ((await response.json()) as { channel: AgentChannel }).channel;
     },
@@ -39,7 +39,7 @@ export function deleteChannelMutationOptions(queryClient: QueryClient) {
     mutationFn: async (channelId: string): Promise<boolean> => {
       const response = await client(`/api/channels/${channelId}`, {
         method: "DELETE",
-        fallback: "Could not delete this conversation",
+        fallback: "无法删除此对话",
       });
       const body = (await response.json()) as { historyLeftBehind?: boolean };
       return body.historyLeftBehind === true;

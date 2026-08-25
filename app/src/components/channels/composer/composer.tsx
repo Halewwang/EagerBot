@@ -234,7 +234,7 @@ export function Composer({
    * the two it is about to do. "Send" on a button that will not send for another minute is a small
    * lie told to exactly the people who cannot see the queue it lands in.
    */
-  const sendLabel = parking ? "Queue message" : "Send message";
+  const sendLabel = parking ? "排队发送消息" : "发送消息";
 
   if (compact) {
     return (
@@ -257,7 +257,7 @@ export function Composer({
         onSubmit={handleFormSubmit}
       >
         <Button
-          aria-label="More message options unavailable"
+          aria-label="更多消息选项（不可用）"
           className="disabled:opacity-100"
           disabled
           size="icon"
@@ -267,21 +267,21 @@ export function Composer({
           <IconPlus className="size-5" />
         </Button>
         <PromptArea
-          aria-label="Message"
+          aria-label="消息"
           className="min-w-0 flex-1 border-0 bg-transparent p-0 text-sm shadow-none"
           disabled={disabled}
           maxHeight={COMPACT_MAX_HEIGHT_PX}
           minHeight={COMPACT_MIN_HEIGHT_PX}
           onChange={handleChange}
           onSubmit={submitDraft}
-          placeholder="Ask anything"
+          placeholder="问点什么"
           ref={promptAreaRef}
           triggers={triggers}
           value={value}
         />
         {canStop ? (
           <Button
-            aria-label="Stop the Bot"
+            aria-label="停止智能体"
             className="size-8 rounded-full p-0"
             data-testid="composer-stop"
             onClick={onStop}
@@ -312,18 +312,24 @@ export function Composer({
         className="overflow-hidden rounded-2xl border border-border bg-card"
         onSubmit={handleFormSubmit}
       >
-        <input className="sr-only" multiple onChange={() => {}} type="file" />
+        <input
+          aria-label="选择文件"
+          className="sr-only"
+          multiple
+          onChange={() => {}}
+          type="file"
+        />
 
         <div className="grow px-3 pt-3 pb-2">
           <PromptArea
-            aria-label="Message"
+            aria-label="消息"
             autoGrow
             className="w-full border-0 bg-transparent p-0 text-sm shadow-none"
             disabled={disabled}
             maxHeight={MAX_HEIGHT_PX}
             onChange={handleChange}
             onSubmit={submitDraft}
-            placeholder="Ask anything"
+            placeholder="问点什么"
             ref={promptAreaRef}
             triggers={triggers}
             value={value}
@@ -336,7 +342,7 @@ export function Composer({
           <div>
             {canStop ? (
               <Button
-                aria-label="Stop the Bot"
+                aria-label="停止智能体"
                 className="size-7 rounded-full bg-primary p-0"
                 data-testid="composer-stop"
                 onClick={onStop}

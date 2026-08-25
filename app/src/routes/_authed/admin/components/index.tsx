@@ -26,8 +26,8 @@ function RouteComponent() {
 
   return (
     <PageShell
-      description="What each Bot may answer with. Every published component is available to every Bot; switch one off here and that Bot is never told about it. Each change and each refusal is a row in Audit."
-      title="UI Components"
+      description="每个智能体可以使用哪些组件回答。每个已发布组件默认对所有智能体可用；在此关闭后，对应智能体将不会获知它。每次更改和拒绝都会记录在审计中。"
+      title="UI 组件"
     >
       {/*
        * Pending, error, empty, rows — in that order. Pending draws nothing rather than a
@@ -36,14 +36,14 @@ function RouteComponent() {
        */}
       {components.isPending ? null : components.error ? (
         <p className="mt-12 text-destructive text-sm" role="alert">
-          Could not load components.
+          无法加载组件。
         </p>
       ) : components.data?.length === 0 ? (
         <Empty className="mt-12 min-h-[30dvh] border border-dashed">
           <EmptyHeader>
-            <EmptyTitle>No components yet</EmptyTitle>
+            <EmptyTitle>暂无组件</EmptyTitle>
             <EmptyDescription className="text-pretty">
-              Components that your Agents can use will be shown here.
+              你的 Agent 可以使用的组件会显示在这里。
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

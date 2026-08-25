@@ -50,7 +50,7 @@ describe("routing a message with no @mention", () => {
     const r = await throwing().route("anything", ROSTER, "general-assistant");
     expect(r.agentId).toBe("general-assistant");
     expect(r.fallback).toBe(true);
-    expect(r.reason).toContain("unreachable");
+    expect(r.reason).toContain("不可访问");
   });
 
   test("falls back when the answer does not parse", async () => {
@@ -69,7 +69,7 @@ describe("routing a message with no @mention", () => {
     ).route("x", ROSTER, "general-assistant");
     expect(r.agentId).toBe("general-assistant");
     expect(r.fallback).toBe(true);
-    expect(r.reason).toContain("no coworker on your roster");
+    expect(r.reason).toContain("没有指定名册中的协作者");
   });
 
   test("defers to the default when confidence is low", async () => {

@@ -222,7 +222,7 @@ export function parseActionPolicy(
   input: unknown,
 ): { ok: true; policy: ActionPolicy } | { ok: false; error: string } {
   if (!input || typeof input !== "object") {
-    return { ok: false, error: "A policy must be an object." };
+    return { ok: false, error: "策略必须是对象。" };
   }
   const candidate = input as Record<string, unknown>;
 
@@ -230,7 +230,7 @@ export function parseActionPolicy(
   if (mode !== "enforce" && mode !== "dry-run") {
     return {
       ok: false,
-      error: 'mode must be "enforce" or "dry-run".',
+      error: 'mode 必须是 "enforce" 或 "dry-run"。',
     };
   }
 
@@ -238,7 +238,7 @@ export function parseActionPolicy(
   for (const key of ["deny", "allow"] as const) {
     const value = candidate[key] ?? [];
     if (!Array.isArray(value) || value.some((v) => typeof v !== "string")) {
-      return { ok: false, error: `${key} must be a list of expressions.` };
+      return { ok: false, error: `${key} 必须是表达式列表。` };
     }
     lists[key] = value as string[];
   }

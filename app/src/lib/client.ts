@@ -93,7 +93,7 @@ export async function client<T>(
       .json()
       .then((body: { error?: string }) => body.error)
       .catch(() => undefined);
-    throw new Error(message ?? options.fallback ?? "That request failed.");
+    throw new Error(message ?? options.fallback ?? "请求失败。");
   }
 
   if (key === undefined) return response;

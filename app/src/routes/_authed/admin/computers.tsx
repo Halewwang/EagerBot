@@ -51,7 +51,7 @@ function ComputersPage() {
    * both "this did not work", and the page has one place to say so.
    */
   const problem = fleet.error
-    ? "The computers could not be listed."
+    ? "无法列出计算机。"
     : setState.error
       ? setState.error.message
       : null;
@@ -64,8 +64,8 @@ function ComputersPage() {
 
   return (
     <PageShell
-      description="Each Bot's browser and the profile it keeps. A profile is what makes a Bot still signed in tomorrow, and resetting one signs it out of everything."
-      title="Computers"
+      description="每个智能体的浏览器及其保留的配置文件。配置文件让智能体明天仍保持登录，重置配置文件会退出所有服务。"
+      title="计算机"
     >
       {problem ? (
         <p
@@ -78,27 +78,22 @@ function ComputersPage() {
 
       {isolation === "shared" ? (
         <p className="mt-4 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm">
-          <span className="font-medium">
-            Every Bot is sharing one computer.
-          </span>{" "}
-          They share its logins, its files and its session, so a Bot can reach
-          what another signed into. Set <code>COMPUTER_SUPERVISOR_URL</code> to
-          give each Bot its own.
+          <span className="font-medium">所有智能体正在共享一台计算机。</span>{" "}
+          它们共享登录状态、文件和会话，因此一个 Bot 可以访问另一个 Bot
+          登录过的内容。设置
+          <code>COMPUTER_SUPERVISOR_URL</code> 可为每个智能体分配独立计算机。
         </p>
       ) : isolation === "per-bot" ? (
         <p className="mt-4 rounded-md border border-border bg-muted/40 px-3 py-2 text-muted-foreground text-sm">
-          Each Bot has a computer of its own: its own container, its own files
-          and its own browser profile.
+          每个 Bot 都有独立的计算机，包括独立容器、文件和浏览器配置文件。
         </p>
       ) : null}
 
-      <PageSection title="Computers in this deployment">
+      <PageSection title="此部署中的计算机">
         {computers === null && problem ? (
-          <PageEmpty>The list could not be loaded.</PageEmpty>
+          <PageEmpty>无法加载列表。</PageEmpty>
         ) : computers === null ? null : computers.length === 0 ? (
-          <PageEmpty>
-            No computers yet. One appears the first time a Bot opens a page.
-          </PageEmpty>
+          <PageEmpty>暂无计算机。智能体首次打开页面时会创建一台。</PageEmpty>
         ) : (
           <PageRows>
             {computers.map((computer, index) => (
@@ -110,14 +105,14 @@ function ComputersPage() {
                     </ItemTitle>
                     <ItemDescription>
                       {computer.running
-                        ? `Browser running since ${new Date(computer.startedAt ?? "").toLocaleTimeString()}`
-                        : "No browser running. It starts when the Bot next needs it."}
+                        ? `浏览器运行于 ${new Date(computer.startedAt ?? "").toLocaleTimeString("zh-CN")}`
+                        : "浏览器未运行。智能体下次需要时会启动。"}
                       {" · "}
                       {computer.egress === undefined
-                        ? "Egress not reported"
+                        ? "未报告出口信息"
                         : computer.egress === null
-                          ? "Leaves directly"
-                          : `Leaves through ${computer.egress}`}
+                          ? "直接访问"
+                          : `通过 ${computer.egress} 访问`}
                     </ItemDescription>
                   </ItemContent>
                   <ItemActions>
@@ -127,7 +122,7 @@ function ComputersPage() {
                       size="sm"
                       variant="outline"
                     >
-                      {busy === computer.botId ? "Working…" : "Stop browser"}
+                      {busy === computer.botId ? "处理中…" : "停止浏览器"}
                     </Button>
                     <Button
                       disabled={busy === computer.botId}
@@ -135,7 +130,7 @@ function ComputersPage() {
                       size="sm"
                       variant="outline"
                     >
-                      Reset
+                      重置
                     </Button>
                   </ItemActions>
                 </Item>
@@ -161,11 +156,11 @@ function ComputersPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Reset {confirming ? nameFor(confirming) : ""}'s computer?
+              要重置 {confirming ? nameFor(confirming) : ""} 的计算机吗？
             </DialogTitle>
             <DialogDescription>
-              Its profile is deleted, so the Bot is signed out of every service
-              it had logged into and starts clean. This cannot be undone.
+              配置文件会被删除，Bot
+              将退出曾登录的所有服务并从全新状态开始。此操作无法撤销。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -174,7 +169,7 @@ function ComputersPage() {
               size="sm"
               variant="ghost"
             >
-              Cancel
+              取消
             </Button>
             <Button
               disabled={busy === confirming}
@@ -184,21 +179,20 @@ function ComputersPage() {
               size="sm"
               variant="destructive"
             >
-              {busy === confirming ? "Resetting…" : "Reset it"}
+              {busy === confirming ? "重置中…" : "确认重置"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <p className="mt-4 text-muted-foreground text-sm">
-        <strong>Stop</strong> closes the browser and keeps its logins: the next
-        thing the Bot does starts it again where it left off.{" "}
-        <strong>Reset</strong> deletes the profile, so the Bot is signed out of
-        everything and starts clean. Both are recorded in{" "}
+        <strong>停止</strong> 会关闭浏览器并保留登录状态：智能体
+        下次操作时会从上次停留处重新启动。 <strong>重置</strong>{" "}
+        会删除配置文件，使 Bot 退出所有服务并从全新状态开始。两者都会记录在{" "}
         <Link className="underline" to="/admin/audit">
-          Audit
+          审计
         </Link>
-        .
+        。
       </p>
     </PageShell>
   );

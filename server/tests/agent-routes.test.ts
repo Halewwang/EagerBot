@@ -116,48 +116,32 @@ describe("agent input parser", () => {
     (input) => {
       expect(parseAgentInput(input)).toEqual({
         ok: false,
-        error: "Agent input must be a JSON object.",
+        error: "智能体输入必须是 JSON 对象。",
       });
     },
   );
 
   test.each([
-    ["name", undefined, "Name must be text between 1 and 80 characters."],
-    ["name", 12, "Name must be text between 1 and 80 characters."],
-    ["name", "   ", "Name must be text between 1 and 80 characters."],
-    ["name", "n".repeat(81), "Name must be text between 1 and 80 characters."],
-    ["title", undefined, "Title must be text between 1 and 120 characters."],
-    ["title", false, "Title must be text between 1 and 120 characters."],
-    ["title", "\n\t", "Title must be text between 1 and 120 characters."],
-    [
-      "title",
-      "t".repeat(121),
-      "Title must be text between 1 and 120 characters.",
-    ],
-    [
-      "roleDescription",
-      undefined,
-      "Role description must be text between 1 and 1000 characters.",
-    ],
-    [
-      "roleDescription",
-      {},
-      "Role description must be text between 1 and 1000 characters.",
-    ],
-    [
-      "roleDescription",
-      "   ",
-      "Role description must be text between 1 and 1000 characters.",
-    ],
+    ["name", undefined, "名称必须是 1 到 80 个字符的文本。"],
+    ["name", 12, "名称必须是 1 到 80 个字符的文本。"],
+    ["name", "   ", "名称必须是 1 到 80 个字符的文本。"],
+    ["name", "n".repeat(81), "名称必须是 1 到 80 个字符的文本。"],
+    ["title", undefined, "标题必须是 1 到 120 个字符的文本。"],
+    ["title", false, "标题必须是 1 到 120 个字符的文本。"],
+    ["title", "\n\t", "标题必须是 1 到 120 个字符的文本。"],
+    ["title", "t".repeat(121), "标题必须是 1 到 120 个字符的文本。"],
+    ["roleDescription", undefined, "角色描述必须是 1 到 1000 个字符的文本。"],
+    ["roleDescription", {}, "角色描述必须是 1 到 1000 个字符的文本。"],
+    ["roleDescription", "   ", "角色描述必须是 1 到 1000 个字符的文本。"],
     [
       "roleDescription",
       "r".repeat(1001),
-      "Role description must be text between 1 and 1000 characters.",
+      "角色描述必须是 1 到 1000 个字符的文本。",
     ],
-    ["visibility", undefined, "Visibility must be public or private."],
-    ["visibility", 1, "Visibility must be public or private."],
-    ["visibility", "   ", "Visibility must be public or private."],
-    ["visibility", "friends", "Visibility must be public or private."],
+    ["visibility", undefined, "可见性必须是 public 或 private。"],
+    ["visibility", 1, "可见性必须是 public 或 private。"],
+    ["visibility", "   ", "可见性必须是 public 或 private。"],
+    ["visibility", "friends", "可见性必须是 public 或 private。"],
   ])("rejects invalid %s values", (field, value, error) => {
     expect(parseAgentInput({ ...validInput, [field]: value })).toEqual({
       ok: false,
@@ -465,11 +449,11 @@ describe("agent lifecycle routes", () => {
 
     expect(malformed.status).toBe(400);
     expect(await json(malformed)).toEqual({
-      error: "Agent input must be a JSON object.",
+      error: "智能体输入必须是 JSON 对象。",
     });
     expect(partial.status).toBe(400);
     expect(await json(partial)).toEqual({
-      error: "Title must be text between 1 and 120 characters.",
+      error: "标题必须是 1 到 120 个字符的文本。",
     });
     expect(store.calls).toEqual([]);
   });
@@ -480,21 +464,13 @@ describe("agent lifecycle routes", () => {
     const response = await appFor(store).request("http://openbot.test/missing");
 
     expect(response.status).toBe(404);
-    expect(await json(response)).toEqual({ error: "Agent not found." });
+    expect(await json(response)).toEqual({ error: "找不到智能体。" });
   });
 
   test.each([
-    [new AgentNotFoundError("agent-1"), 404, "Agent not found."],
-    [
-      new AgentNotManageableError("agent-1"),
-      403,
-      "You do not have permission to manage this agent.",
-    ],
-    [
-      new ProtectedAgentError("agent-1"),
-      403,
-      "System-owned agents are protected.",
-    ],
+    [new AgentNotFoundError("agent-1"), 404, "找不到智能体。"],
+    [new AgentNotManageableError("agent-1"), 403, "你没有管理此智能体的权限。"],
+    [new ProtectedAgentError("agent-1"), 403, "系统所有的智能体受到保护。"],
   ])("maps known store errors", async (error, status, message) => {
     const store = fakeStore({
       update: async () => {

@@ -191,14 +191,14 @@ export function checkComputerAddress(raw: string): TargetVerdict {
   } catch {
     return {
       allowed: false,
-      reason: `The computer's address is not a URL: ${raw}`,
+      reason: `计算机地址不是 URL：${raw}`,
     };
   }
 
   if (!ALLOWED_PROTOCOLS.has(url.protocol)) {
     return {
       allowed: false,
-      reason: `A computer must be reached over http or https, not ${url.protocol.replace(":", "")}.`,
+      reason: `计算机必须通过 http 或 https 访问，不能使用 ${url.protocol.replace(":", "")}。`,
     };
   }
 
@@ -209,8 +209,7 @@ export function checkComputerAddress(raw: string): TargetVerdict {
   ) {
     return {
       allowed: false,
-      reason:
-        "That address holds this deployment's own cloud credentials, so it is never called as a computer.",
+      reason: "该地址承载此部署自身的云凭据，因此不会将其作为计算机调用。",
     };
   }
 
@@ -231,13 +230,13 @@ export function checkNavigationTarget(
   try {
     url = new URL(raw);
   } catch {
-    return { allowed: false, reason: "That is not a web address." };
+    return { allowed: false, reason: "这不是网址。" };
   }
 
   if (!ALLOWED_PROTOCOLS.has(url.protocol)) {
     return {
       allowed: false,
-      reason: `Only web addresses are allowed, and that one is ${url.protocol.replace(":", "")}.`,
+      reason: `只允许使用网址，而该地址使用的是 ${url.protocol.replace(":", "")}。`,
     };
   }
 
@@ -247,8 +246,7 @@ export function checkNavigationTarget(
   if (NEVER_ALLOWED_HOSTNAMES.has(hostname)) {
     return {
       allowed: false,
-      reason:
-        "That address holds this deployment's own cloud credentials, so the assistant is never allowed to open it.",
+      reason: "该地址承载此部署自身的云凭据，智能体永远不能打开它。",
     };
   }
 
@@ -265,8 +263,7 @@ export function checkNavigationTarget(
   ) {
     return {
       allowed: false,
-      reason:
-        "That address is inside this deployment's own network, so the assistant is not allowed to open it.",
+      reason: "该地址位于此部署自身的网络内，智能体不能打开它。",
     };
   }
 

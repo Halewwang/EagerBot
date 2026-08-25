@@ -98,9 +98,7 @@ export class ProtectedAgentError extends Error {
 
 export class ManagedAgentUnavailableError extends Error {
   constructor() {
-    super(
-      "This deployment has no managed Bot. Give the coworker its own AG-UI endpoint.",
-    );
+    super("此部署没有托管智能体。请为该协作者提供独立的 AG-UI 端点。");
     this.name = "ManagedAgentUnavailableError";
   }
 }

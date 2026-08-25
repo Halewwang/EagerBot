@@ -77,16 +77,15 @@ export function SkillTools({
 
   return (
     <Field>
-      <FieldLabel>Tools it needs</FieldLabel>
+      <FieldLabel>所需工具</FieldLabel>
 
       {plugins.isPending ? null : plugins.error ? (
         <p className="text-destructive text-xs" role="alert">
-          Could not load the tools this deployment has.
+          无法加载此部署拥有的工具。
         </p>
       ) : servers.length === 0 ? (
         <p className="text-muted-foreground text-xs">
-          No connected server offers a tool yet. A skill can still be written —
-          most are instructions rather than tool use.
+          当前没有已连接的服务器提供工具。仍然可以编写技能——大多数技能是指令，而不是工具调用。
         </p>
       ) : (
         <div className="flex flex-col gap-3">
@@ -117,7 +116,7 @@ export function SkillTools({
                        */}
                       {tool.effect === "write" ? (
                         <span
-                          aria-label="changes something"
+                          aria-label="会修改内容"
                           className="ml-1 opacity-60"
                           role="img"
                         >
@@ -135,7 +134,7 @@ export function SkillTools({
 
       {elsewhere.length > 0 ? (
         <div className="flex flex-col gap-1.5">
-          <p className="text-muted-foreground text-xs">Not connected here</p>
+          <p className="text-muted-foreground text-xs">此处未连接</p>
           <div className="flex flex-wrap gap-2">
             {elsewhere.map((ref) => (
               <Button
@@ -146,7 +145,7 @@ export function SkillTools({
                  * The whole ref, not a tool name. There is no server here to put it under, and the
                  * server id is the part that says which connector is missing.
                  */
-                title={`${ref} — no connected server offers this`}
+                title={`${ref} — 没有已连接的服务器提供此工具`}
                 type="button"
                 variant="secondary"
               >
@@ -155,18 +154,15 @@ export function SkillTools({
             ))}
           </div>
           <p className="text-muted-foreground text-xs">
-            This skill names these, and no server connected here offers them —
-            because the connector has not been added, or was removed. They cost
-            nothing and load nothing until it exists. Click one to stop naming
-            it.
+            此技能声明了这些工具，但此处没有已连接的服务器提供它们——可能是连接器尚未添加，或已被移除。
+            在连接器存在前，它们不会产生影响，也不会加载。点击工具即可取消声明。
           </p>
         </div>
       ) : null}
 
       <p className="text-muted-foreground text-xs">
-        Picking this skill is what loads these tools for a turn. It does not
-        grant them — a Bot still only calls what it was granted, so naming a
-        tool here gives nobody access to it.
+        选择此技能会在一次运行中加载这些工具。它不会授予工具权限——Bot
+        仍然只能调用已获授权的工具， 在此声明工具不会让任何人获得访问权限。
       </p>
     </Field>
   );

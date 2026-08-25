@@ -110,11 +110,11 @@ function SkillsPage() {
       <PageShell
         description={
           <>
-            A skill is a named instruction you invoke with <code>/</code> and a
-            Bot follows. Yours are yours alone, and go on the Bots you own.
+            技能是一条命名指令，你可以使用 <code>/</code> 调用，智能体会遵循它。
+            你的技能仅归你所有，并会应用到你拥有的 Bot。
           </>
         }
-        title="Agent Skills"
+        title="智能体技能"
       >
         {error ? (
           <p className="text-sm text-destructive" role="alert">
@@ -130,10 +130,10 @@ function SkillsPage() {
               to="/skills"
             >
               <IconPlus />
-              New skill
+              新建技能
             </Link>
           }
-          title="Your skills"
+          title="我的技能"
         >
           {/*
            * Nothing while the two queries are still in flight. The alternative is the empty state
@@ -144,7 +144,7 @@ function SkillsPage() {
             <Empty className="mt-4 h-[180px] border border-dashed">
               <EmptyHeader>
                 <EmptyTitle className="text-muted-foreground">
-                  You don't have any skills yet.
+                  你还没有技能。
                 </EmptyTitle>
               </EmptyHeader>
             </Empty>
@@ -186,7 +186,7 @@ function SkillsPage() {
                                 navigate({ search: { edit: skill.slug } })
                               }
                             >
-                              Edit
+                              编辑
                             </DropdownMenuItem>
                             {/*
                              * Deleting is immediate and there is no undo. It is behind a menu rather
@@ -201,7 +201,7 @@ function SkillsPage() {
                               }}
                               variant="destructive"
                             >
-                              Delete /{skill.slug}
+                              删除 /{skill.slug}
                             </DropdownMenuItem>
                           </DropdownMenuGroup>
                         </DropdownMenuContent>
@@ -227,8 +227,8 @@ function SkillsPage() {
          */}
         {deployment.length > 0 ? (
           <PageSection
-            description="Written for everyone by an administrator. Which Bots carry them is decided in Admin."
-            title="Workspace skills"
+            description="管理员为所有人编写。哪些智能体使用这些技能由管理后台决定。"
+            title="工作区技能"
           >
             <PageRows>
               {deployment.map((skill, index) => (

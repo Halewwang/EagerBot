@@ -24,21 +24,19 @@ type QuoteArgs = z.infer<typeof QuoteCardProps>;
 export function QuoteCard({ quote, attribution, context }: Partial<QuoteArgs>) {
   if (!quote) {
     return (
-      <GalleryFrame title="Quotation">
-        <p className="text-sm text-muted-foreground">
-          There is nothing to quote.
-        </p>
+      <GalleryFrame title="引述">
+        <p className="text-sm text-muted-foreground">没有可引述的内容。</p>
       </GalleryFrame>
     );
   }
 
   return (
-    <GalleryFrame caption={context} title="Quotation">
+    <GalleryFrame caption={context} title="引述">
       <blockquote className="border-l-2 border-border pl-4">
         <p className="text-sm leading-relaxed">{quote}</p>
         {attribution ? (
           <footer className="mt-2 text-xs text-muted-foreground">
-            , {attribution}
+            ——{attribution}
           </footer>
         ) : null}
       </blockquote>
@@ -49,18 +47,18 @@ export function QuoteCard({ quote, attribution, context }: Partial<QuoteArgs>) {
 export const GALLERY: GalleryComponent[] = [
   {
     name: "showQuote",
-    title: "Quotation",
+    title: "引述",
     kind: "card",
     description:
-      "Show a quotation with its attribution. Use when the exact words matter, something a person said, or a line from a document you were given.",
+      "显示引述及其出处。适合用于强调原话、某人说过的话或用户提供的文档中的句子。",
     parameters: QuoteCardProps,
     Component: QuoteCard as GalleryComponent["Component"],
     preview: {
       quote:
-        "Meals under $75 need no receipt. Anything above needs one, and anything above $500 needs your manager before you spend it.",
-      attribution: "the expense policy",
-      context: "Last changed in March.",
+        "低于 $75 的餐费无需收据。超过 $75 需要收据，超过 $500 则需要在支出前获得经理批准。",
+      attribution: "费用政策",
+      context: "上次更新于 3 月。",
     },
-    confirmation: "The quotation is now on screen for the person.",
+    confirmation: "引述已显示在用户屏幕上。",
   },
 ];

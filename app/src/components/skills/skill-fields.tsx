@@ -68,7 +68,7 @@ export function SkillFields({
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Command</FieldLabel>
+                <FieldLabel htmlFor={field.name}>命令</FieldLabel>
                 <Input
                   aria-invalid={isInvalid}
                   disabled={slugLocked}
@@ -91,10 +91,10 @@ export function SkillFields({
                 ) : (
                   <p className="text-muted-foreground text-xs">
                     {slugLocked ? (
-                      "A command cannot be changed. To rename a skill, write a new one and delete this."
+                      "命令无法更改。如需重命名技能，请新建一个技能并删除当前技能。"
                     ) : (
                       <>
-                        What you type after a slash.{" "}
+                        在斜杠后输入的内容。{" "}
                         <code>
                           /{"{"}command{"}"}
                         </code>
@@ -113,14 +113,14 @@ export function SkillFields({
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Title</FieldLabel>
+                <FieldLabel htmlFor={field.name}>标题</FieldLabel>
                 <Input
                   aria-invalid={isInvalid}
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
-                  placeholder="My standup skill"
+                  placeholder="我的站会技能"
                   value={field.state.value}
                 />
                 {isInvalid ? (
@@ -137,22 +137,21 @@ export function SkillFields({
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>One-liner</FieldLabel>
+                <FieldLabel htmlFor={field.name}>一句话简介</FieldLabel>
                 <Input
                   aria-invalid={isInvalid}
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
-                  placeholder="Turns yesterday's work into a standup update"
+                  placeholder="将昨天的工作整理成站会更新"
                   value={field.state.value}
                 />
                 {isInvalid ? (
                   <FieldError errors={field.state.meta.errors} />
                 ) : (
                   <p className="text-muted-foreground text-xs">
-                    Shown beside the command in this list and in the{" "}
-                    <code>/</code> menu. Optional.
+                    显示在此列表的命令旁以及 <code>/</code> 菜单中。可选。
                   </p>
                 )}
               </Field>
@@ -166,7 +165,7 @@ export function SkillFields({
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Instructions</FieldLabel>
+                <FieldLabel htmlFor={field.name}>指令</FieldLabel>
                 <Textarea
                   aria-invalid={isInvalid}
                   className="min-h-40"
@@ -174,15 +173,15 @@ export function SkillFields({
                   name={field.name}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
-                  placeholder="Summarise what I did yesterday from the channel, then list what is left."
+                  placeholder="总结我昨天在频道中的工作，然后列出剩余事项。"
                   value={field.state.value}
                 />
                 {isInvalid ? (
                   <FieldError errors={field.state.meta.errors} />
                 ) : (
                   <p className="text-muted-foreground text-xs">
-                    Added to the run when the command is used. Write it as
-                    instructions to the Bot, not as a description of them.
+                    使用命令时会添加到运行中。请将其写成给 Bot
+                    的指令，而不是对它的描述。
                   </p>
                 )}
               </Field>
@@ -221,13 +220,13 @@ export function SkillFields({
         >
           {([canSubmit, isSubmitting]) => (
             <Button disabled={!canSubmit || isSubmitting} type="submit">
-              {isSubmitting ? "Saving…" : submitLabel}
+              {isSubmitting ? "保存中…" : submitLabel}
             </Button>
           )}
         </form.Subscribe>
         {onCancel ? (
           <Button onClick={onCancel} type="button" variant="outline">
-            Cancel
+            取消
           </Button>
         ) : null}
       </div>

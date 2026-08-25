@@ -55,7 +55,7 @@ export function computerFleetQueryOptions() {
     queryKey: computerKeys.fleet(),
     queryFn: async (): Promise<ComputerFleet> => {
       const response = await client(FLEET_PATH, {
-        fallback: "The computers could not be listed.",
+        fallback: "无法列出电脑。",
       });
       return response.json();
     },
@@ -67,7 +67,7 @@ export function actionPolicyQueryOptions() {
     queryKey: computerKeys.policy(),
     queryFn: (): Promise<ActionPolicy> =>
       client("/api/computers/policy", "policy", {
-        fallback: "The boundary could not be read.",
+        fallback: "无法读取边界策略。",
       }),
   });
 }

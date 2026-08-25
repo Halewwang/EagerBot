@@ -91,11 +91,11 @@ function CredentialsPage() {
       action={
         <Button onClick={() => setAdding(true)} size="sm" variant="ghost">
           <IconPlus />
-          Add credential
+          添加凭据
         </Button>
       }
-      description="Credentials are write-only. OpenBot never displays their secret values."
-      title="Credentials"
+      description="凭据仅可写入。EMKE Bot 永远不会显示其中的秘密值。"
+      title="凭据"
     >
       {/*
        * THE FORM IS NOT ON THE PAGE. A credential is added once and then lived with, so a permanent
@@ -112,9 +112,9 @@ function CredentialsPage() {
             }}
           >
             <DialogHeader>
-              <DialogTitle>Add credential</DialogTitle>
+              <DialogTitle>添加凭据</DialogTitle>
               <DialogDescription>
-                Held for this deployment and never shown again once saved.
+                凭据将由此部署持有，保存后不会再次显示。
               </DialogDescription>
             </DialogHeader>
             <DialogBody className="mt-4">
@@ -125,7 +125,7 @@ function CredentialsPage() {
                       field.state.meta.isTouched && !field.state.meta.isValid;
                     return (
                       <Field data-invalid={isInvalid}>
-                        <FieldLabel htmlFor={field.name}>Type</FieldLabel>
+                        <FieldLabel htmlFor={field.name}>类型</FieldLabel>
                         <Select
                           onValueChange={(value) =>
                             field.handleChange(value as "model" | "connector")
@@ -140,10 +140,8 @@ function CredentialsPage() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectGroup>
-                              <SelectItem value="model">Model</SelectItem>
-                              <SelectItem value="connector">
-                                Connector
-                              </SelectItem>
+                              <SelectItem value="model">模型</SelectItem>
+                              <SelectItem value="connector">连接器</SelectItem>
                             </SelectGroup>
                           </SelectContent>
                         </Select>
@@ -160,7 +158,7 @@ function CredentialsPage() {
                       field.state.meta.isTouched && !field.state.meta.isValid;
                     return (
                       <Field data-invalid={isInvalid}>
-                        <FieldLabel htmlFor={field.name}>Provider</FieldLabel>
+                        <FieldLabel htmlFor={field.name}>提供商</FieldLabel>
                         <Input
                           aria-invalid={isInvalid}
                           id={field.name}
@@ -185,7 +183,7 @@ function CredentialsPage() {
                       field.state.meta.isTouched && !field.state.meta.isValid;
                     return (
                       <Field data-invalid={isInvalid}>
-                        <FieldLabel htmlFor={field.name}>Key ID</FieldLabel>
+                        <FieldLabel htmlFor={field.name}>密钥 ID</FieldLabel>
                         <Input
                           aria-invalid={isInvalid}
                           id={field.name}
@@ -210,7 +208,7 @@ function CredentialsPage() {
                       field.state.meta.isTouched && !field.state.meta.isValid;
                     return (
                       <Field data-invalid={isInvalid}>
-                        <FieldLabel htmlFor={field.name}>Secret</FieldLabel>
+                        <FieldLabel htmlFor={field.name}>秘密</FieldLabel>
                         <Input
                           aria-invalid={isInvalid}
                           autoComplete="off"
@@ -250,15 +248,14 @@ function CredentialsPage() {
                 {([kind, provider, keyId]) =>
                   liveCredentialFor(credentials.data, kind, provider, keyId) ? (
                     <p className="text-amber-600 text-sm dark:text-amber-500">
-                      This key already holds a live credential. Saving replaces
-                      it, and the one it replaces is revoked.
+                      此密钥已有有效凭据。保存后会替换该凭据，原凭据将被撤销。
                     </p>
                   ) : null
                 }
               </form.Subscribe>
               {createCredential.error ? (
                 <p className="text-destructive text-sm" role="alert">
-                  Could not save the credential. Try again.
+                  无法保存凭据，请重试。
                 </p>
               ) : null}
             </DialogBody>
@@ -269,7 +266,7 @@ function CredentialsPage() {
                 type="button"
                 variant="ghost"
               >
-                Cancel
+                取消
               </Button>
               <form.Subscribe
                 selector={(state) => [state.canSubmit, state.isSubmitting]}
@@ -283,8 +280,8 @@ function CredentialsPage() {
                     type="submit"
                   >
                     {isSubmitting || createCredential.isPending
-                      ? "Saving…"
-                      : "Save credential"}
+                      ? "保存中…"
+                      : "保存凭据"}
                   </Button>
                 )}
               </form.Subscribe>
@@ -293,13 +290,13 @@ function CredentialsPage() {
         </DialogContent>
       </Dialog>
 
-      <PageSection title="Configured credentials">
+      <PageSection title="已配置凭据">
         {credentials.isPending ? null : credentials.error ? (
           <p className="mt-4 text-destructive text-sm" role="alert">
-            Could not load credentials.
+            无法加载凭据。
           </p>
         ) : credentials.data?.length === 0 ? (
-          <PageEmpty>No credentials are configured.</PageEmpty>
+          <PageEmpty>尚未配置凭据。</PageEmpty>
         ) : (
           <PageRows>
             {credentials.data?.map((credential, index) => (
@@ -308,8 +305,9 @@ function CredentialsPage() {
                   <ItemContent>
                     <ItemTitle>{credential.provider}</ItemTitle>
                     <ItemDescription>
-                      {credential.kind} · {credential.keyId} ·{" "}
-                      {credential.revokedAt ? "revoked" : "active"}
+                      {credential.kind === "model" ? "模型" : "连接器"} ·{" "}
+                      {credential.keyId} ·{" "}
+                      {credential.revokedAt ? "已撤销" : "有效"}
                     </ItemDescription>
                   </ItemContent>
                   <ItemActions>
@@ -322,7 +320,7 @@ function CredentialsPage() {
                       size="sm"
                       variant="outline"
                     >
-                      Revoke
+                      撤销
                     </Button>
                   </ItemActions>
                 </Item>

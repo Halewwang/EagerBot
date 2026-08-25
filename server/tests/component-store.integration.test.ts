@@ -93,7 +93,7 @@ describe("deciding whether a Bot may use a component", () => {
     const decision = await store.decide(componentName, botA);
     expect(decision.allowed).toBeFalse();
     if (!decision.allowed) {
-      expect(decision.reason).toContain("withheld from this Bot");
+      expect(decision.reason).toContain("已被禁止此智能体使用");
     }
   });
 
@@ -107,7 +107,7 @@ describe("deciding whether a Bot may use a component", () => {
     const decision = await store.decide(otherName, botB);
     expect(decision.allowed).toBeFalse();
     if (!decision.allowed) {
-      expect(decision.reason).toContain("not published");
+      expect(decision.reason).toContain("尚未在此部署中发布");
     }
   });
 
@@ -116,7 +116,7 @@ describe("deciding whether a Bot may use a component", () => {
     const decision = await store.decide(`nothing_${suite}`, botA);
     expect(decision.allowed).toBeFalse();
     if (!decision.allowed) {
-      expect(decision.reason).toContain("no component called");
+      expect(decision.reason).toContain("此部署中没有名为");
     }
   });
 

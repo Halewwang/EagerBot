@@ -10,7 +10,7 @@ import "./styles.css";
 const rootElement = document.getElementById("root");
 
 if (!rootElement) {
-  throw new Error("OpenBot could not find the application root element.");
+  throw new Error("EMKE Bot 找不到应用根节点。");
 }
 
 createRoot(rootElement).render(

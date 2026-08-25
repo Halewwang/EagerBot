@@ -166,7 +166,7 @@ export function createPluginRoutes(
       credentialId?: string;
     } | null;
     if (!body?.key) {
-      return context.json({ error: "A catalogue key is required." }, 400);
+      return context.json({ error: "必须提供目录键。" }, 400);
     }
 
     try {
@@ -203,10 +203,7 @@ export function createPluginRoutes(
       credentialId?: string;
     } | null;
     if (!body?.id || !body.title || !body.url) {
-      return context.json(
-        { error: "A name, a title and a URL are required." },
-        400,
-      );
+      return context.json({ error: "必须提供名称、标题和 URL。" }, 400);
     }
 
     try {
@@ -247,7 +244,7 @@ export function createPluginRoutes(
     } | null;
     if (!body?.clientId?.trim() || !body.clientSecret?.trim()) {
       return context.json(
-        { error: "A client id and a client secret are both required." },
+        { error: "必须同时提供客户端 ID 和客户端密钥。" },
         400,
       );
     }
@@ -334,7 +331,7 @@ export function createPluginRoutes(
       return context.json(
         {
           error:
-            "This deployment has no public URL configured, so it cannot complete a consent flow. Set OPENBOT_PUBLIC_URL.",
+            "此部署未配置公开 URL，因此无法完成授权流程。请设置 OPENBOT_PUBLIC_URL。",
         },
         503,
       );
@@ -342,17 +339,14 @@ export function createPluginRoutes(
 
     const entry = catalogueEntry(serverId);
     if (entry?.auth.kind !== "user-oauth") {
-      return context.json(
-        { error: `${serverId} is not connected as an individual person.` },
-        400,
-      );
+      return context.json({ error: `${serverId} 未配置为个人连接。` }, 400);
     }
 
     const client = await store.oauthClientFor(serverId);
     if (!client) {
       return context.json(
         {
-          error: `${entry.title} has no OAuth client registered yet. An administrator has to add one first.`,
+          error: `${entry.title} 尚未注册 OAuth 客户端。管理员需要先添加一个。`,
         },
         409,
       );
@@ -461,24 +455,18 @@ export function createPluginRoutes(
       tools?: unknown;
     } | null;
     if (!body?.slug || !body.title || !body.instructions) {
-      return context.json(
-        { error: "A slug, a title and instructions are required." },
-        400,
-      );
+      return context.json({ error: "必须提供 slug、标题和说明。" }, 400);
     }
     if (!/^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]$/.test(body.slug)) {
       return context.json(
-        { error: "A slug is lower-case letters, numbers and hyphens." },
+        { error: "slug 只能包含小写字母、数字和连字符。" },
         400,
       );
     }
 
     const actor = skillActor(context);
     if (body.global && !actor.isAdmin) {
-      return context.json(
-        { error: "Only an administrator writes a skill for the deployment." },
-        403,
-      );
+      return context.json({ error: "只有管理员可以为此部署编写技能。" }, 403);
     }
 
     // Editing an existing slug, which is what a repeated save is, needs the right to edit that
@@ -492,7 +480,7 @@ export function createPluginRoutes(
      */
     if (body.tools !== undefined && !Array.isArray(body.tools)) {
       return context.json(
-        { error: "Tools are a list of serverId/toolName references." },
+        { error: "Tools 必须是 serverId/toolName 引用列表。" },
         400,
       );
     }
@@ -554,23 +542,23 @@ export function createPluginRoutes(
     const actor = skillActor(context);
     if (actor.isAdmin) return null;
     if (kind === "mcp") {
-      return "An administrator decides which Bots may reach a tool.";
+      return "由管理员决定哪些智能体可以访问工具。";
     }
 
     const owner = await store.skillOwner(ref);
-    if (owner === undefined) return `There is no skill called ${ref}.`;
+    if (owner === undefined) return `找不到名为 ${ref} 的技能。`;
     if (owner !== actor.id) {
       return owner === null
-        ? `${ref} belongs to this deployment. An administrator decides which Bots use it.`
-        : `${ref} is somebody else's skill.`;
+        ? `${ref} 属于此部署。由管理员决定哪些智能体可以使用它。`
+        : `${ref} 属于其他人的技能。`;
     }
 
     const botOwner = await store.agentOwner(agentId);
-    if (botOwner === undefined) return "There is no such Bot.";
+    if (botOwner === undefined) return "找不到该智能体。";
     if (botOwner !== actor.id) {
       // Including the shared Bots this deployment publishes, which have no owner at all: a skill
       // one person wrote would otherwise change how a Bot answers everybody.
-      return "You can only put your own skills on Bots you own.";
+      return "只能将自己的技能添加到自己拥有的智能体上。";
     }
     return null;
   }
@@ -582,10 +570,7 @@ export function createPluginRoutes(
       agentId?: string;
     } | null;
     if (!body?.kind || !body.ref || !body.agentId) {
-      return context.json(
-        { error: "A kind, a ref and a Bot are required." },
-        400,
-      );
+      return context.json({ error: "必须提供类型、引用和智能体。" }, 400);
     }
     const refusal = await enablementRefusal(
       context,
@@ -604,10 +589,7 @@ export function createPluginRoutes(
     const ref = context.req.query("ref");
     const agentId = context.req.query("agentId");
     if ((kind !== "mcp" && kind !== "skill") || !ref || !agentId) {
-      return context.json(
-        { error: "A kind, a ref and a Bot are required." },
-        400,
-      );
+      return context.json({ error: "必须提供类型、引用和智能体。" }, 400);
     }
     const refusal = await enablementRefusal(context, kind, ref, agentId);
     if (refusal) return context.json({ error: refusal }, 403);
@@ -622,7 +604,7 @@ export function createPluginRoutes(
     // A grant list is a fact about the Bot it belongs to. Left open it says which tools somebody
     // else's private coworker has been given.
     if (!(await canUseBot(context.var.actor, agentId))) {
-      return context.json({ error: "There is no such Bot." }, 404);
+      return context.json({ error: "找不到该智能体。" }, 404);
     }
     return context.json(await store.listForAgent(agentId));
   });
@@ -646,14 +628,14 @@ export function createPluginRoutes(
       agentId?: string;
     } | null;
     if (!body?.ref || !body.agentId) {
-      return context.json({ error: "A tool and a Bot are required." }, 400);
+      return context.json({ error: "必须提供工具和智能体。" }, 400);
     }
 
     // Asked before the grant is looked up, and before anything reaches a vendor. The grant says this
     // Bot may use the tool; it says nothing about whether this person may act as this Bot, and the
     // call goes out on the deployment's own credential either way.
     if (!(await canUseBot(context.var.actor, body.agentId))) {
-      return context.json({ error: "There is no such Bot." }, 404);
+      return context.json({ error: "找不到该智能体。" }, 404);
     }
 
     try {
@@ -687,10 +669,7 @@ export function createPluginRoutes(
       // decided against it, the other means somebody else's software did not answer.
       return context.json(
         {
-          error:
-            error instanceof Error
-              ? error.message
-              : "The server did not answer.",
+          error: error instanceof Error ? error.message : "服务器未响应。",
           failed: true,
         },
         502,

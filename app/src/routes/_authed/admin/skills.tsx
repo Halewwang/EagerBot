@@ -91,11 +91,11 @@ function RouteComponent() {
       action={
         <Button onClick={() => setWriting(true)} size="lg" type="button">
           <IconPlus />
-          Write a skill
+          编写技能
         </Button>
       }
-      description="Named instructions anybody here can invoke with a slash. A skill adds no capability: it can only ask a Bot to use what that Bot already holds, and every one of those calls is still decided and recorded."
-      title="Skills"
+      description="任何人都可以通过斜杠调用的命名指令。技能不会增加能力，只能要求智能体使用它已有的内容，每次调用仍会经过决定并记录。"
+      title="技能"
     >
       {error ? (
         <p className="text-destructive text-sm" role="alert">
@@ -104,11 +104,11 @@ function RouteComponent() {
       ) : null}
 
       <PageSection
-        description="Written for the whole deployment. People write their own on their Skills page."
-        title="Installed"
+        description="为整个部署编写。用户可以在自己的技能页面编写个人技能。"
+        title="已安装"
       >
         {plugins.isPending ? null : skills.length === 0 ? (
-          <PageEmpty>No skills yet.</PageEmpty>
+          <PageEmpty>暂无技能。</PageEmpty>
         ) : (
           <PageRows>
             {skills.map((skill, index) => (
@@ -159,7 +159,7 @@ function RouteComponent() {
                       type="button"
                       variant="ghost"
                     >
-                      Remove
+                      移除
                     </Button>
                   </ItemActions>
                 </Item>
@@ -173,17 +173,16 @@ function RouteComponent() {
       <Dialog onOpenChange={setWriting} open={writing}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Write a skill for the deployment</DialogTitle>
+            <DialogTitle>为部署编写技能</DialogTitle>
             <DialogDescription>
-              The slug is what a person types after a slash, and the
-              instructions are added to the run when they do. Everybody here can
-              use it, and you decide which Bots have it.
+              技能标识（slug）是用户在斜杠后输入的内容，指令会在调用时添加到运行中。所有人都可以使用它，你可以决定哪些
+              Bot 拥有它。
             </DialogDescription>
           </DialogHeader>
           <DialogBody className="mt-4">
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="skill-slug">Slug</FieldLabel>
+                <FieldLabel htmlFor="skill-slug">技能标识（Slug）</FieldLabel>
                 <Input
                   id="skill-slug"
                   onChange={(event) =>
@@ -197,7 +196,7 @@ function RouteComponent() {
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="skill-title">Title</FieldLabel>
+                <FieldLabel htmlFor="skill-title">标题</FieldLabel>
                 <Input
                   id="skill-title"
                   onChange={(event) =>
@@ -206,12 +205,12 @@ function RouteComponent() {
                       title: event.target.value,
                     }))
                   }
-                  placeholder="Title"
+                  placeholder="标题"
                   value={draft.title}
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="skill-summary">Summary</FieldLabel>
+                <FieldLabel htmlFor="skill-summary">摘要</FieldLabel>
                 <Input
                   id="skill-summary"
                   onChange={(event) =>
@@ -220,14 +219,12 @@ function RouteComponent() {
                       summary: event.target.value,
                     }))
                   }
-                  placeholder="One line"
+                  placeholder="一句话简介"
                   value={draft.summary}
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="skill-instructions">
-                  Instructions
-                </FieldLabel>
+                <FieldLabel htmlFor="skill-instructions">指令</FieldLabel>
                 <Textarea
                   className="h-28 font-mono text-sm"
                   id="skill-instructions"
@@ -237,7 +234,7 @@ function RouteComponent() {
                       instructions: event.target.value,
                     }))
                   }
-                  placeholder="What the Bot should do when this skill is used."
+                  placeholder="使用此技能时智能体应执行的操作。"
                   value={draft.instructions}
                 />
               </Field>
@@ -245,7 +242,7 @@ function RouteComponent() {
           </DialogBody>
           <DialogFooter className="mt-4">
             <Button onClick={() => setWriting(false)} size="sm" variant="ghost">
-              Cancel
+              取消
             </Button>
             <Button
               disabled={!(draft.slug && draft.title && draft.instructions)}
@@ -257,7 +254,7 @@ function RouteComponent() {
               }}
               size="sm"
             >
-              Install skill
+              安装技能
             </Button>
           </DialogFooter>
         </DialogContent>

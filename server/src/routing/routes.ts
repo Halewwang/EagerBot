@@ -85,7 +85,7 @@ export function createRoutingRoutes(
       agentId?: unknown;
     } | null;
     const text = typeof body?.text === "string" ? body.text.trim() : "";
-    if (!text) return context.json({ error: "A message is required." }, 400);
+    if (!text) return context.json({ error: "必须提供消息。" }, 400);
     const named =
       typeof body?.agentId === "string" && body.agentId.trim()
         ? body.agentId.trim()
@@ -97,7 +97,7 @@ export function createRoutingRoutes(
     const preferred =
       roster.find((a) => a.visibility === "public") ?? roster[0];
     if (!preferred) {
-      return context.json({ error: "No coworker is available." }, 409);
+      return context.json({ error: "没有可用的协作者。" }, 409);
     }
 
     /*
@@ -111,10 +111,7 @@ export function createRoutingRoutes(
     if (named) {
       const chosen = roster.find((a) => a.id === named);
       if (!chosen) {
-        return context.json(
-          { error: "That coworker is not on your roster." },
-          404,
-        );
+        return context.json({ error: "该协作者不在你的名册中。" }, 404);
       }
       /*
        * Third person, because the audit page is not read by the person who chose.
@@ -125,7 +122,7 @@ export function createRoutingRoutes(
        *
        * @zopeVaibhav had this right in #134.
        */
-      const reason = "named by the person asking";
+      const reason = "由提问者指定";
       await record(actorId(actor), chosen.id, reason, false, true, [chosen.id]);
       return context.json({
         agentId: chosen.id,

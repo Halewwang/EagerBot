@@ -28,14 +28,14 @@ const ICONS = {
 
 /** What the line says was done. The subject beside it says what it was done to. */
 const LABELS = {
-  command: "Ran",
-  read_file: "Read",
-  write_file: "Saved",
-  list_files: "Listed",
+  command: "执行",
+  read_file: "读取",
+  write_file: "保存",
+  list_files: "列出",
 } as const;
 
 function timeOf(at: number): string {
-  return new Date(at).toLocaleTimeString(undefined, {
+  return new Date(at).toLocaleTimeString("zh-CN", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -75,7 +75,7 @@ function Entry({ entry }: { entry: ComputerActivity }) {
 
       {entry.refused === true ? (
         <p className="mt-1 pl-5 text-destructive text-xs">
-          {entry.output || "A boundary refused it."}
+          {entry.output || "边界策略拒绝了此操作。"}
         </p>
       ) : (
         <div className="mt-1 max-h-64 overflow-auto pl-5">
@@ -103,8 +103,7 @@ export function ActivityLog({ computerId }: { computerId: string }) {
   if (entries.length === 0) {
     return (
       <p className="py-6 text-center text-muted-foreground text-sm">
-        Nothing yet. Commands the Bot runs, and files it reads, appear here as
-        they happen.
+        暂无记录。Bot 执行的命令和读取的文件会在这里实时显示。
       </p>
     );
   }

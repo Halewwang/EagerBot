@@ -72,7 +72,7 @@ describe("a Bot that stops streaming", () => {
     guard.stop();
 
     expect(body).toContain('"RUN_ERROR"');
-    expect(body).toContain("Risk Analyst stopped responding");
+    expect(body).toContain("Risk Analyst 已停止响应");
     expect(body).toContain("AGENT_STREAM_STALLED");
     // The framing has to be one an AG-UI client parses, which is a `data:` line and a blank line.
     expect(body.startsWith("data: ")).toBe(true);
@@ -116,11 +116,11 @@ describe("the sentence a person is left with", () => {
     // Both surfaces draw this message and nothing else: no banner, no heading, no error code beside
     // it. So it has to name what went quiet, say the turn is over, and say what to do about it.
     expect(message).toContain("Risk Analyst");
-    expect(message).toContain("this turn was ended");
-    expect(message).toContain("Ask again");
+    expect(message).toContain("本轮已结束");
+    expect(message).toContain("请重试");
     // Said in words a person reads, not in the milliseconds a deployment configured, and never as
     // "0 seconds": the timeout here is a test's, and a floor keeps the sentence sane at any value.
-    expect(message).toContain("for a second");
+    expect(message).toContain("连续 1 秒");
     // No identifiers. The thread and run are in the audit row, where somebody is looking for them.
     expect(message).not.toContain("thread-7");
     expect(message).not.toContain("run-9");
@@ -235,7 +235,7 @@ describe("what the watch refuses to touch", () => {
     const body = await new Response(response.body).text();
     guard.stop();
 
-    expect(body).toContain("Risk Analyst stopped responding");
+    expect(body).toContain("Risk Analyst 已停止响应");
   });
 });
 
@@ -255,7 +255,7 @@ describe("the recovery a person is waiting on", () => {
     const body = await new Response(response.body).text();
     guard.stop();
 
-    expect(body).toContain("Risk Analyst stopped responding");
+    expect(body).toContain("Risk Analyst 已停止响应");
   });
 });
 

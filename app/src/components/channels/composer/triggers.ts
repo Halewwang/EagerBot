@@ -54,9 +54,9 @@ function matches(query: string, ...fields: (string | undefined)[]): boolean {
 export function agentTrigger(agents: readonly AgentOption[]): TriggerConfig {
   return mentionTrigger({
     char: AGENT_TRIGGER,
-    accessibilityLabel: "agent",
+    accessibilityLabel: "智能体",
     reopenOnChipClick: true,
-    emptyMessage: "No agents in this channel",
+    emptyMessage: "此频道没有智能体",
     onSearch: (query): TriggerSuggestion[] =>
       agents
         .filter((agent) => matches(query, agent.name, agent.description))
@@ -80,8 +80,8 @@ export function slashCommandTrigger(
   return commandTrigger({
     char: COMMAND_TRIGGER,
     position: "start",
-    accessibilityLabel: "command",
-    emptyMessage: "No matching commands",
+    accessibilityLabel: "命令",
+    emptyMessage: "没有匹配的命令",
     onSearch: (query): TriggerSuggestion[] =>
       commands
         .filter((command) => matches(query, command.name, command.description))

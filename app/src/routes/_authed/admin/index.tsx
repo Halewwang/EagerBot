@@ -52,88 +52,86 @@ const SECTIONS: {
   }[];
 }[] = [
   {
-    title: "What Bots can reach",
-    description:
-      "Everything a Bot can touch outside this app, and the limits on it.",
+    title: "智能体可访问的内容",
+    description: "智能体可以在此应用之外接触的所有内容，以及相关限制。",
     items: [
       {
-        title: "Credentials",
-        description: "Keys and tokens held for this deployment.",
+        title: "凭据",
+        description: "此部署持有的密钥和令牌。",
         icon: IconKey,
         linkOptions: { to: "/admin/credentials" },
       },
       {
-        title: "Boundaries",
-        description: "Rules that decide what a Bot may never do.",
+        title: "边界",
+        description: "决定智能体永远不能执行哪些操作的规则。",
         icon: IconShieldCheck,
         linkOptions: { to: "/admin/boundaries" },
       },
       {
-        title: "Computers",
-        description: "The machines Bots run their tools on.",
+        title: "计算机",
+        description: "智能体运行工具所使用的机器。",
         icon: IconDeviceDesktop,
         linkOptions: { to: "/admin/computers" },
       },
     ],
   },
   {
-    title: "What Bots can do",
-    description: "Capabilities and interface pieces available across Bots.",
+    title: "智能体可执行的操作",
+    description: "所有智能体可用的能力和界面组件。",
     items: [
       {
-        title: "Plugins",
-        description:
-          "The services this deployment can reach, and which Bots may.",
+        title: "插件",
+        description: "此部署可以访问的服务，以及允许访问的智能体。",
         icon: IconPuzzle,
         linkOptions: { to: "/admin/plugins" },
       },
       {
-        title: "Skills",
-        description: "Named instructions anybody can invoke with a slash.",
+        title: "技能",
+        description: "任何人都可以通过斜杠调用的命名指令。",
         icon: IconFileText,
         linkOptions: { to: "/admin/skills" },
       },
       {
-        title: "UI Components",
-        description: "Custom pieces a Bot can draw in a conversation.",
+        title: "UI 组件",
+        description: "智能体可以在对话中绘制的自定义组件。",
         icon: IconLayoutGrid,
         linkOptions: { to: "/admin/components" },
       },
       {
-        title: "Playground",
-        description: "Write a component and watch it render as you type.",
+        title: "组件试验场",
+        description: "编写组件，并在输入时查看实时渲染结果。",
         icon: IconCode,
         linkOptions: { to: "/admin/playground" },
       },
     ],
   },
   {
-    title: "Who can get in",
+    title: "谁可以登录",
     description: "",
     items: [
       {
-        title: "People",
+        title: "用户",
         description:
-          "Everybody who has signed in, who administers this deployment, and whose access has been removed.",
+          "所有登录过的用户、管理此部署的用户，以及访问权限已被移除的用户。",
         icon: IconUsers,
         linkOptions: { to: "/admin/people" },
       },
       {
-        title: "Identity providers",
+        title: "身份提供商",
         description:
-          "A company's own SAML or OpenID Connect provider, routed by email domain.",
+          "公司的 SAML 或 OpenID Connect 提供商，根据邮箱域名进行路由。",
         icon: IconBuildingBank,
         linkOptions: { to: "/admin/identity-providers" },
       },
     ],
   },
   {
-    title: "What happened",
+    title: "操作记录",
     description: "",
     items: [
       {
-        title: "Audit",
-        description: "Every action taken in this deployment, and by whom.",
+        title: "审计",
+        description: "此部署中执行的每项操作，以及执行者。",
         icon: IconListDetails,
         linkOptions: { to: "/admin/audit" },
       },
@@ -144,8 +142,8 @@ const SECTIONS: {
 function RouteComponent() {
   return (
     <PageShell
-      description="Settings that apply to everybody in this deployment. Anything here affects every person and every Bot, which is what separates it from your own preferences."
-      title="Admin"
+      description="应用于此部署所有用户的设置。这里的任何更改都会影响每个人和每个智能体，这也是它与个人偏好设置的区别。"
+      title="管理"
     >
       {SECTIONS.map((section) => (
         <PageSection

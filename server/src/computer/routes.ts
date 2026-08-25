@@ -3,19 +3,19 @@ import { Hono } from "hono";
 import type { BotAccessCheck } from "../agents/profile-policy";
 import type { AppVariables } from "../auth/guards";
 import { requireAdmin } from "../auth/guards";
+import { DEPLOYMENT_ROUTES } from "./deployment-routes";
 import {
   type ActionActor,
   ActionRefusedError,
   type ComputerGateway,
   ComputerUnavailableError,
   ElementNotFoundError,
-  NavigationRefusedError,
   HumanHasControlError,
+  NavigationRefusedError,
   StaleSnapshotError,
   WorkspaceRefusedError,
   WorkspaceRequestError,
 } from "./gateway";
-import { DEPLOYMENT_ROUTES } from "./deployment-routes";
 import { type PolicyStore, parseActionPolicy } from "./policy-store";
 
 /**
@@ -73,7 +73,7 @@ export function createComputerRoutes(
     }
 
     if (botId && !(await canUseBot(context.var.actor, botId))) {
-      return context.json({ error: "There is no such Bot." }, 404);
+      return context.json({ error: "找不到该智能体。" }, 404);
     }
     await next();
   });
@@ -104,7 +104,7 @@ export function createComputerRoutes(
       url?: unknown;
     } | null;
     if (typeof body?.url !== "string" || !body.url.trim()) {
-      return context.json({ error: "A web address is required." }, 400);
+      return context.json({ error: "必须提供网址。" }, 400);
     }
 
     try {
@@ -161,7 +161,7 @@ export function createComputerRoutes(
       const ref = asRef(body);
       if (!ref) return badRef;
       if (typeof body?.text !== "string") {
-        return { error: "The text to enter is required." };
+        return { error: "必须提供要输入的文本。" };
       }
       return gateway.type(
         botId,
@@ -179,7 +179,7 @@ export function createComputerRoutes(
   routes.post("/:botId/key", (context) =>
     act(context, (botId, actor, body, signal) => {
       if (typeof body?.key !== "string" || !body.key) {
-        return { error: "A key name is required, such as Enter or Tab." };
+        return { error: "必须提供按键名称，例如 Enter 或 Tab。" };
       }
       const ref = asRef(body);
       return gateway.key(
@@ -221,7 +221,7 @@ export function createComputerRoutes(
         actor,
         typeof body?.reason === "string" && body.reason.trim()
           ? body.reason.trim()
-          : "The assistant needs a person to continue.",
+          : "智能体需要人员继续操作。",
       ),
     ),
   );
@@ -290,18 +290,17 @@ export function createComputerRoutes(
     act(context, (botId, actor, body) => {
       if (typeof body?.ref !== "string" || !body.ref) {
         return {
-          error:
-            "Say which field the value goes in, using a ref from your snapshot.",
+          error: "请使用快照中的 ref 说明该值应填入哪个字段。",
         };
       }
       if (typeof body?.snapshotId !== "number") {
-        return { error: "The snapshotId the ref came from is required." };
+        return { error: "必须提供该 ref 所属快照的 snapshotId。" };
       }
       return gateway.requestSecret(botId, actor, {
         label:
           typeof body?.label === "string" && body.label.trim()
             ? body.label.trim()
-            : "the value this page is asking for",
+            : "此页面请求的值",
         ref: body.ref,
         snapshotId: body.snapshotId,
       });
@@ -318,7 +317,7 @@ export function createComputerRoutes(
   routes.post("/:botId/human/secret", (context) =>
     act(context, (botId, actor, body) => {
       if (typeof body?.text !== "string" || !body.text) {
-        return { error: "A value is required." };
+        return { error: "必须提供值。" };
       }
       return gateway.supplySecret(botId, actor, body.text);
     }),
@@ -339,7 +338,7 @@ export function createComputerRoutes(
       kind !== "key" &&
       kind !== "scroll"
     ) {
-      return context.json({ error: "Unknown input." }, 400);
+      return context.json({ error: "未知输入。" }, 400);
     }
     const body = (await context.req.json().catch(() => null)) as Record<
       string,
@@ -374,7 +373,7 @@ export function createComputerRoutes(
   routes.post("/:botId/files/read", (context) =>
     act(context, (botId, actor, body) => {
       if (typeof body?.path !== "string" || !body.path.trim()) {
-        return { error: "A file path is required." };
+        return { error: "必须提供文件路径。" };
       }
       return gateway.readFile(botId, actor, { path: body.path.trim() });
     }),
@@ -390,7 +389,7 @@ export function createComputerRoutes(
   routes.post("/:botId/exec", (context) =>
     act(context, (botId, actor, body, signal) => {
       if (typeof body?.command !== "string" || !body.command.trim()) {
-        return { error: "A command is required." };
+        return { error: "必须提供命令。" };
       }
       // The fourth argument, like every other acting route. Without it the plumbing through
       // gateway.runCommand and into the shell's own abort listener was dead code, and Stop ended the
@@ -412,10 +411,10 @@ export function createComputerRoutes(
   routes.post("/:botId/files/write", (context) =>
     act(context, (botId, actor, body) => {
       if (typeof body?.path !== "string" || !body.path.trim()) {
-        return { error: "A file path is required." };
+        return { error: "必须提供文件路径。" };
       }
       if (typeof body?.contents !== "string") {
-        return { error: "The contents to write are required." };
+        return { error: "必须提供要写入的内容。" };
       }
       return gateway.writeFile(botId, actor, {
         path: body.path.trim(),
@@ -457,8 +456,7 @@ export function createComputerRoutes(
        */
       return context.json(
         {
-          error:
-            "That rule could not be saved, so it has not been applied. The previous boundary is still in force.",
+          error: "无法保存该规则，因此规则尚未应用。之前的边界仍然生效。",
         },
         503,
       );
@@ -477,8 +475,7 @@ type ComputerContext = Context<{ Variables: AppVariables }>;
 type BadRequest = { error: string };
 
 const badRef: BadRequest = {
-  error:
-    "A ref and the snapshotId it came from are both required. Take a snapshot first.",
+  error: "必须同时提供 ref 及其所属快照的 snapshotId。请先获取快照。",
 };
 
 /**
@@ -579,7 +576,7 @@ function asRef(
 }
 
 function describe(error: unknown): string {
-  return error instanceof Error ? error.message : "Something went wrong.";
+  return error instanceof Error ? error.message : "出了点问题。";
 }
 
 /**

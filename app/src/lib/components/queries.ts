@@ -37,7 +37,7 @@ export function componentListQueryOptions() {
     queryFn: async (): Promise<ComponentRecord[]> => {
       return (
         (await client("/api/components", "components", {
-          fallback: "The components could not be loaded.",
+          fallback: "无法加载组件。",
         })) ?? []
       );
     },
@@ -63,7 +63,7 @@ export function agentComponentsQueryOptions(agentId: string | undefined) {
         (await client(
           `/api/components/for-agent/${encodeURIComponent(agentId ?? "")}`,
           "components",
-          { fallback: "This Bot's components could not be loaded." },
+          { fallback: "无法加载此智能体的组件。" },
         )) ?? []
       );
     },
@@ -104,7 +104,7 @@ export function dataFunctionsQueryOptions() {
     queryFn: async (): Promise<DataFunctionSummary[]> => {
       return (
         (await client("/api/components/functions", "functions", {
-          fallback: "The data functions could not be loaded.",
+          fallback: "无法加载数据函数。",
         })) ?? []
       );
     },
@@ -139,12 +139,12 @@ export async function callComponentFunction(
     }
     return {
       allowed: false,
-      reason: "This deployment could not be asked for that data.",
+      reason: "无法向此部署请求该数据。",
     };
   } catch {
     return {
       allowed: false,
-      reason: "This deployment could not be reached to read that data.",
+      reason: "无法连接到此部署读取该数据。",
     };
   }
 }
@@ -168,16 +168,14 @@ export async function decideComponent(
     if (!response.ok) {
       return {
         allowed: false,
-        reason:
-          "This deployment could not be asked whether that component is allowed, so it was not shown.",
+        reason: "无法向此部署确认该组件是否允许使用，因此未显示该组件。",
       };
     }
     return await response.json();
   } catch {
     return {
       allowed: false,
-      reason:
-        "This deployment could not be reached to check whether that component is allowed, so it was not shown.",
+      reason: "无法连接到此部署检查该组件是否允许使用，因此未显示该组件。",
     };
   }
 }

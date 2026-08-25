@@ -353,7 +353,7 @@ describe("the policy is asked as well as the grant", () => {
      */
     expect(thrown).toBeInstanceOf(PluginRefusedError);
     expect((thrown as PluginRefusedError).rule).toBeNull();
-    expect((thrown as PluginRefusedError).message).toContain("connected");
+    expect((thrown as PluginRefusedError).message).toContain("尚未连接");
   });
 });
 
@@ -387,7 +387,7 @@ describe("the trail says what happened, not what was permitted", () => {
     // The reason travels with the row. For a 403 this is where the vendor names the API that is not
     // enabled, which is the sentence that turns a guess into a fix.
     expect((failed[0].payload as { failure?: string }).failure).toContain(
-      "connected",
+      "尚未连接",
     );
 
     // The point of the whole test: nothing claims this worked.
@@ -434,7 +434,7 @@ describe("a boundary written about the browser does not refuse tool calls", () =
     // The rule did not decide this: `rule` is null. What refuses it is the missing connection for a
     // vendor reached as the person asking, which is a different sentence and a different cause.
     expect((thrown as PluginRefusedError).rule).toBeNull();
-    expect((thrown as PluginRefusedError).message).toContain("connected");
+    expect((thrown as PluginRefusedError).message).toContain("尚未连接");
   });
 });
 

@@ -81,13 +81,13 @@ function summaryFor(
   auth: CatalogueItem["auth"] | undefined,
   youConnected: boolean,
 ): string {
-  if (auth === "user-oauth" && !youConnected) return "Not connected";
-  if (server.tools.length === 0) return "No tools yet";
+  if (auth === "user-oauth" && !youConnected) return "未连接";
+  if (server.tools.length === 0) return "暂无工具";
 
   const bots = new Set(server.tools.flatMap((tool) => tool.grantedTo)).size;
-  const tools = `${server.tools.length} ${server.tools.length === 1 ? "tool" : "tools"}`;
-  if (bots === 0) return `${tools} · no Bots`;
-  return `${tools} · ${bots} ${bots === 1 ? "Bot" : "Bots"}`;
+  const tools = `${server.tools.length} 个工具`;
+  if (bots === 0) return `${tools} · 无智能体`;
+  return `${tools} · ${bots} 个智能体`;
 }
 
 function RouteComponent() {
@@ -108,24 +108,22 @@ function RouteComponent() {
 
   return (
     <PageShell
-      description="What this deployment can reach, and which Bots may reach it. Adding a plugin is account-wide; which Bots hold its tools is decided on its own page."
-      title="Plugins"
+      description="此部署可以访问的内容，以及允许访问的智能体。添加插件会应用于整个账户；哪些智能体拥有其工具在插件详情页中决定。"
+      title="插件"
     >
       {/* Pending, error, empty, rows — pending first, so no sentence asserts anything mid-fetch. */}
       {plugins.isPending ? null : plugins.error ? (
         <p className="mt-12 text-destructive text-sm" role="alert">
-          Plugins could not be loaded.
+          无法加载插件。
         </p>
       ) : (
         <>
           <PageSection
-            description="Added for the whole deployment. Open one to set what it needs and which Bots hold its tools."
-            title="Connected"
+            description="已添加到整个部署。打开插件可设置其需求，以及哪些智能体拥有其工具。"
+            title="已连接"
           >
             {plugins.data?.servers.length === 0 ? (
-              <PageEmpty>
-                Nothing connected yet. Everything available is below.
-              </PageEmpty>
+              <PageEmpty>暂无已连接内容。所有可用内容都列在下方。</PageEmpty>
             ) : (
               <PageRows>
                 {plugins.data?.servers.map((server, index) => {
@@ -187,11 +185,11 @@ function RouteComponent() {
           </PageSection>
 
           <PageSection
-            description="Reviewed, first-party servers this build will talk to. Open one to add it."
-            title="Explore plugins"
+            description="此构建将连接的已审核官方服务器。打开服务器即可添加。"
+            title="探索插件"
           >
             {explore.length === 0 ? (
-              <PageEmpty>Everything in the catalogue is connected.</PageEmpty>
+              <PageEmpty>目录中的所有内容都已连接。</PageEmpty>
             ) : (
               <PageRows>
                 {explore.map((entry: CatalogueItem, index) => {
@@ -217,7 +215,7 @@ function RouteComponent() {
                         </ItemContent>
                         <ItemActions>
                           <span className="text-muted-foreground text-xs">
-                            Not added
+                            未添加
                           </span>
                           <IconChevronRight className="size-4 shrink-0 text-muted-foreground" />
                         </ItemActions>

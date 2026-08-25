@@ -51,14 +51,14 @@ test("marks unavailable agents with safe reasons", () => {
       name: "Knowledge",
       type: "built_in",
       available: false,
-      reason: "Model credential is not configured.",
+      reason: "未配置模型凭据。",
     },
     {
       id: "risk",
       name: "Risk",
       type: "remote_ag_ui",
       available: false,
-      reason: "AG-UI endpoint is invalid.",
+      reason: "AG-UI 端点无效。",
     },
   ]);
 });

@@ -40,7 +40,7 @@ export function EditSkill({ slug }: { slug: string }) {
          * not own.
          */}
         <p className="text-muted-foreground text-sm">
-          That skill no longer exists, or it is not yours to edit.
+          此技能已不存在，或你无权编辑它。
         </p>
       </div>
     );
@@ -49,10 +49,10 @@ export function EditSkill({ slug }: { slug: string }) {
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6 p-8">
       <header>
-        <h1 className="text-2xl font-semibold">Edit skill</h1>
+        <h1 className="text-2xl font-semibold">编辑技能</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Changes apply the next time <code>/{skill.slug}</code> is used. Agents
-          already carrying it keep it.
+          更改会在下次使用 <code>/{skill.slug}</code> 时生效。已经携带它的智能体
+          仍会保留该技能。
         </p>
       </header>
 
@@ -78,7 +78,7 @@ export function EditSkill({ slug }: { slug: string }) {
           await navigate({ search: {}, to: "/skills" });
         }}
         slugLocked
-        submitLabel="Save changes"
+        submitLabel="保存更改"
       />
     </div>
   );

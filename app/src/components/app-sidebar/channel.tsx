@@ -112,7 +112,7 @@ export const Channel = memo(function Channel({
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label={`Options for ${name}`}
+                aria-label={`频道“${name}”的操作`}
               >
                 <IconDots />
               </Button>
@@ -125,7 +125,7 @@ export const Channel = memo(function Channel({
                 onClick={() => setDeleteDialogOpen(true)}
                 variant="destructive"
               >
-                Delete
+                删除
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
@@ -134,11 +134,11 @@ export const Channel = memo(function Channel({
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this conversation?</AlertDialogTitle>
+            <AlertDialogTitle>确定删除此对话吗？</AlertDialogTitle>
             <AlertDialogDescription>
-              This deletes your conversation with{" "}
-              <span className="font-medium text-foreground">{name}</span>,
-              including its message history. This cannot be undone.
+              这将删除你与
+              <span className="font-medium text-foreground">「{name}」</span>
+              的对话及其消息记录，且无法撤销。
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteChannel.isError ? (
@@ -148,7 +148,7 @@ export const Channel = memo(function Channel({
           ) : null}
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleteChannel.isPending}>
-              Cancel
+              取消
             </AlertDialogCancel>
             {/*
              * A plain button, not `AlertDialogAction`.
@@ -164,7 +164,7 @@ export const Channel = memo(function Channel({
               onClick={() => void handleDelete()}
               variant="destructive"
             >
-              {deleteChannel.isPending ? "Deleting…" : "Delete"}
+              {deleteChannel.isPending ? "删除中…" : "删除"}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -57,7 +57,7 @@ export function channelListQueryOptions() {
         ? `?cursor=${encodeURIComponent(pageParam as string)}`
         : "";
       const response = await client(`/api/channels${suffix}`, {
-        fallback: "Could not load channels",
+        fallback: "无法加载频道",
       });
       return (await response.json()) as ChannelPage;
     },
@@ -72,7 +72,7 @@ export function channelQueryOptions(channelId: string) {
     queryKey: channelKeys.detail(channelId),
     queryFn: async (): Promise<AgentChannel> => {
       return client(`/api/channels/${channelId}`, "channel", {
-        fallback: "Could not load this channel",
+        fallback: "无法加载此频道",
       });
     },
   });

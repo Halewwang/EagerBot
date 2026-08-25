@@ -71,7 +71,7 @@ export function createDockerSupervisorProvider(
       });
     } catch (error) {
       throw new SupervisorError(
-        `The container supervisor at ${base} could not be reached (${error instanceof Error ? error.message : String(error)}).`,
+        `无法访问 ${base} 上的容器监管器（${error instanceof Error ? error.message : String(error)}）。`,
       );
     }
 
@@ -83,7 +83,7 @@ export function createDockerSupervisorProvider(
     } | null;
     if (!response.ok) {
       throw new SupervisorError(
-        body?.error ?? `The supervisor answered ${response.status}.`,
+        body?.error ?? `监管器返回了 ${response.status}。`,
       );
     }
     return body;
@@ -132,13 +132,13 @@ export function createDockerSupervisorProvider(
         return {
           botId,
           state: "unreachable",
-          reason: `The computer reported state "${location.status}".`,
+          reason: `计算机报告状态为“${location.status}”。`,
         };
       default:
         return {
           botId,
           state: "unreachable",
-          reason: `The computer reported unknown state "${location.status}".`,
+          reason: `计算机报告未知状态“${location.status}”。`,
         };
     }
   }
@@ -175,7 +175,7 @@ export function createDockerSupervisorProvider(
       if (state?.url) return state.url;
       if (state?.port) return hostForPort(state.port);
       throw new SupervisorError(
-        `The computer for ${botId} started but reported no address, so it cannot be reached.`,
+        `智能体 ${botId} 的计算机已启动，但未报告地址，因此无法访问。`,
       );
     },
 
@@ -193,7 +193,7 @@ export function createDockerSupervisorProvider(
           reason:
             error instanceof Error && error.message.length > 0
               ? error.message
-              : "Unknown failure.",
+              : "未知故障。",
         };
       }
     },

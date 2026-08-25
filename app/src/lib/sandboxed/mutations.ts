@@ -20,7 +20,7 @@ export type SandboxedDraftInput = {
   sampleArguments: Record<string, unknown>;
 };
 
-const FALLBACK = "That did not work.";
+const FALLBACK = "操作失败。";
 
 function invalidateSandboxed(queryClient: QueryClient) {
   return queryClient.invalidateQueries({ queryKey: sandboxedKeys.all });

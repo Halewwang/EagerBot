@@ -104,7 +104,7 @@ describe("computer fleet listing", () => {
 
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({
-      error: "Administrator access required.",
+      error: "需要管理员权限。",
     });
     // Refused before the gateway is asked: a check that runs after the fleet has been read is not a
     // check, it is a filter on the response.

@@ -28,7 +28,7 @@ function RouteComponent() {
           {appConfig.brand.productName}
         </h2>
         <h1 className="text-2xl font-bold tracking-tight mt-1.5 text-center">
-          Start a new channel
+          新建频道
         </h1>
       </div>
       <div className="mt-8 w-full flex flex-col items-center">
@@ -62,9 +62,7 @@ function RouteComponent() {
               await start(agentId, draft.text);
             } catch (caught) {
               setError(
-                caught instanceof Error
-                  ? caught.message
-                  : "Could not start the conversation.",
+                caught instanceof Error ? caught.message : "无法开始对话。",
               );
               throw caught;
             }
@@ -75,8 +73,7 @@ function RouteComponent() {
           // Said out loud: a message that silently reaches somebody you did not choose is the
           // kind of surprise that costs trust the first time it happens.
           <p className="mt-2 w-full max-w-2xl text-xs text-muted-foreground text-center">
-            Sent to the coworker it is for. Type <code>@</code> to choose one
-            yourself.
+            将发送给最匹配的智能体。输入 <code>@</code> 可自行选择。
           </p>
         ) : null}
         {error ? (
@@ -89,7 +86,7 @@ function RouteComponent() {
         ) : null}
       </div>
       <div className="mt-10 w-full max-w-2xl">
-        <h2 className="font-bold text-lg">Explore agents</h2>
+        <h2 className="font-bold text-lg">探索智能体</h2>
         <div className="flex flex-row gap-4 mt-4">
           {!!explore?.length &&
             explore.map((agent) => (

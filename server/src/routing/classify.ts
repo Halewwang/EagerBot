@@ -155,7 +155,7 @@ export function createIntentRouter(deps: {
           return {
             agentId: reachable.id,
             name: reachable.name,
-            reason: `the only coworker that can reach ${reachable.system}`,
+            reason: `唯一能够访问 ${reachable.system} 的协作者`,
             fallback: true,
           };
         }
@@ -168,16 +168,14 @@ export function createIntentRouter(deps: {
 
       // Nothing to decide between: one coworker, or none but the default.
       if (candidates.length <= 1) {
-        return fallback("the only coworker available");
+        return fallback("唯一可用的协作者");
       }
 
       let raw: string;
       try {
         raw = await this._complete(text, candidates);
       } catch {
-        return fallback(
-          "sent to your default while the router was unreachable",
-        );
+        return fallback("路由器不可访问，已发送给你的默认协作者");
       }
 
       let parsed: { agentId?: unknown; reason?: unknown; confidence?: unknown };
@@ -186,31 +184,25 @@ export function createIntentRouter(deps: {
         const match = raw.match(/\{[\s\S]*\}/);
         parsed = match ? JSON.parse(match[0]) : {};
       } catch {
-        return fallback(
-          "sent to your default; the router's answer did not parse",
-        );
+        return fallback("路由器的回答无法解析，已发送给你的默认协作者");
       }
 
       const id = typeof parsed.agentId === "string" ? parsed.agentId : "";
       const match = byId.get(id);
       if (!match) {
         // A returned id that is not on the roster is the dangerous case: never act on it.
-        return fallback(
-          "sent to your default; the router named no coworker on your roster",
-        );
+        return fallback("路由器没有指定名册中的协作者，已发送给你的默认协作者");
       }
       const confidence =
         typeof parsed.confidence === "number" ? parsed.confidence : 0;
       if (confidence < MIN_CONFIDENCE) {
-        return fallback(
-          "sent to your default; no specialist was a confident match",
-        );
+        return fallback("没有足够匹配的专业协作者，已发送给你的默认协作者");
       }
 
       const reason =
         typeof parsed.reason === "string" && parsed.reason.trim()
           ? parsed.reason.trim()
-          : `matches ${match.name}`;
+          : `与 ${match.name} 匹配`;
       return { agentId: match.id, name: match.name, reason, fallback: false };
     },
 

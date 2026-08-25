@@ -92,14 +92,14 @@ function ComputerViewPanel({
             size="sm"
             variant={showing === "screen" ? "default" : "outline"}
           >
-            Screen
+            屏幕
           </Button>
           <Button
             onClick={() => setChosen("activity")}
             size="sm"
             variant={showing === "activity" ? "default" : "outline"}
           >
-            Activity
+            活动
             {activity.length > 0 ? (
               <span className="ml-1.5 tabular-nums opacity-70">
                 {activity.length}
@@ -122,8 +122,8 @@ function ComputerViewPanel({
           */}
           <span className="mt-4 flex w-full items-center justify-center text-balance px-4 text-center text-muted-foreground text-sm">
             {browsed
-              ? `${name || "Agent"}'s screen`
-              : `${name || "Agent"} has not opened a page in this conversation. This is whatever its computer had open last.`}
+              ? `${name || "智能体"} 的屏幕`
+              : `${name || "智能体"} 尚未在此对话中打开网页。这里显示的是它的电脑上次打开的页面。`}
           </span>
         </div>
 
@@ -237,15 +237,15 @@ function RouteComponent() {
                 ease: EASE_OUT,
               }}
             >
-              {channel.data?.name ?? "Channel"}
+              {channel.data?.name ?? "频道"}
             </motion.span>
           </div>
           <div className="flex flex-row gap-1.5">
             <Button
               aria-label={
                 needsYou
-                  ? "This Bot is waiting for you. Open its screen"
-                  : "Watch this Bot's screen"
+                  ? "此智能体正在等待你。打开它的屏幕"
+                  : "查看此智能体的屏幕"
               }
               aria-pressed={isWatching}
               className={`relative ${isWatching ? "bg-foreground/5" : ""}`}
@@ -261,7 +261,7 @@ function RouteComponent() {
               ) : null}
             </Button>
             <Button
-              aria-label="Channel coworker"
+              aria-label="频道智能体"
               aria-pressed={isSettingsOpen}
               className={isSettingsOpen ? "bg-foreground/5" : undefined}
               disabled={agentId === undefined}
@@ -301,7 +301,7 @@ function ChannelBody({
   if (hasError || !channel) {
     return (
       <p className="p-8 text-sm text-destructive" role="alert">
-        Could not load this channel.
+        无法加载此频道。
       </p>
     );
   }
@@ -311,7 +311,7 @@ function ChannelBody({
   if (!runtimeAgentId) {
     return (
       <p className="p-8 text-sm text-muted-foreground">
-        This channel has more than one coworker, which is not supported yet.
+        此频道包含多个智能体，当前暂不支持。
       </p>
     );
   }

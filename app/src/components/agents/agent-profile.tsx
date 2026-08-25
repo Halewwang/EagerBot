@@ -77,7 +77,7 @@ export function AgentProfile({ agentId }: { agentId: string }) {
   if (agent.error || !agent.data) {
     return (
       <p className="p-8 text-sm text-destructive" role="alert">
-        Could not load this coworker.
+        无法加载该智能体。
       </p>
     );
   }
@@ -104,8 +104,8 @@ export function AgentProfile({ agentId }: { agentId: string }) {
         </div>
 
         <div className="flex flex-wrap justify-center gap-1.5">
-          <Tag>{profile.visibility === "private" ? "Private" : "Public"}</Tag>
-          {profile.systemOwned ? <Tag>System owned</Tag> : null}
+          <Tag>{profile.visibility === "private" ? "私有" : "公开"}</Tag>
+          {profile.systemOwned ? <Tag>系统拥有</Tag> : null}
         </div>
       </header>
 
@@ -130,12 +130,12 @@ export function AgentProfile({ agentId }: { agentId: string }) {
             });
             setEditingId(null);
           }}
-          submitLabel="Save changes"
+          submitLabel="保存更改"
         />
       ) : (
         <section className="grid gap-2">
           <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Role
+            角色
           </h2>
           <p className="text-sm whitespace-pre-wrap text-pretty">
             {profile.roleDescription}
@@ -171,7 +171,7 @@ export function AgentProfile({ agentId }: { agentId: string }) {
               });
             }}
           >
-            Start channel
+            开始频道
           </Button>
 
           <Button
@@ -183,7 +183,7 @@ export function AgentProfile({ agentId }: { agentId: string }) {
             }}
             variant="outline"
           >
-            {duplicateAgent.isPending ? "Duplicating…" : "Duplicate"}
+            {duplicateAgent.isPending ? "复制中…" : "复制"}
           </Button>
 
           <Button
@@ -201,17 +201,16 @@ export function AgentProfile({ agentId }: { agentId: string }) {
           >
             {setHidden.isPending
               ? profile.hidden
-                ? "Unhiding…"
-                : "Hiding…"
+                ? "取消隐藏中…"
+                : "隐藏中…"
               : profile.hidden
-                ? "Unhide"
-                : "Hide"}
+                ? "取消隐藏"
+                : "隐藏"}
           </Button>
 
           {profile.hidden ? (
             <p className="-mt-1 text-xs text-muted-foreground">
-              Hidden from your agents list. This changes nothing for anyone
-              else.
+              已从你的智能体列表中隐藏。此操作不会影响其他人。
             </p>
           ) : null}
 
@@ -221,7 +220,7 @@ export function AgentProfile({ agentId }: { agentId: string }) {
               onClick={() => setEditingId(agentId)}
               variant="outline"
             >
-              Edit
+              编辑
             </Button>
           ) : null}
 
@@ -232,8 +231,8 @@ export function AgentProfile({ agentId }: { agentId: string }) {
               {isConfirmingDelete ? (
                 <div className="flex flex-col gap-2">
                   <p className="text-sm">
-                    Delete <span className="font-medium">{profile.name}</span>?
-                    This cannot be undone.
+                    确定删除 <span className="font-medium">{profile.name}</span>
+                    ？ 此操作无法撤销。
                   </p>
                   {/* Cancel remains closest to the original Delete button position. */}
                   <Button
@@ -241,7 +240,7 @@ export function AgentProfile({ agentId }: { agentId: string }) {
                     onClick={() => setConfirmingDeleteId(null)}
                     variant="outline"
                   >
-                    Cancel
+                    取消
                   </Button>
                   <Button
                     className="w-full text-sm!"
@@ -252,7 +251,7 @@ export function AgentProfile({ agentId }: { agentId: string }) {
                     }}
                     variant="destructive"
                   >
-                    {deleteAgent.isPending ? "Deleting…" : "Delete"}
+                    {deleteAgent.isPending ? "删除中…" : "删除"}
                   </Button>
                 </div>
               ) : (
@@ -261,7 +260,7 @@ export function AgentProfile({ agentId }: { agentId: string }) {
                   onClick={() => setConfirmingDeleteId(agentId)}
                   variant="destructive"
                 >
-                  Delete
+                  删除
                 </Button>
               )}
             </>

@@ -12,10 +12,9 @@ export function NewAgent() {
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6 p-8">
       <header>
-        <h1 className="text-2xl font-semibold">New coworker</h1>
+        <h1 className="text-2xl font-semibold">新建智能体</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          The role you write here applies in every channel this coworker works
-          in.
+          在这里填写的角色，会应用于该智能体所参与的每个频道。
         </p>
       </header>
 
@@ -28,7 +27,7 @@ export function NewAgent() {
           const agent = await createAgent.mutateAsync(agentInputFrom(values));
           await navigate({ search: { agent: agent.id }, to: "/agents" });
         }}
-        submitLabel="Create coworker"
+        submitLabel="创建智能体"
       />
     </div>
   );

@@ -110,29 +110,29 @@ describe("channel input parser", () => {
     (input) => {
       expect(parseChannelInput(input)).toEqual({
         ok: false,
-        error: "Channel input must be a JSON object.",
+        error: "频道输入必须是 JSON 对象。",
       });
     },
   );
 
   test.each([
-    [undefined, "Agent IDs must be a non-empty array."],
-    [null, "Agent IDs must be a non-empty array."],
-    ["agent-1", "Agent IDs must be a non-empty array."],
-    [{}, "Agent IDs must be a non-empty array."],
-    [[], "Agent IDs must be a non-empty array."],
+    [undefined, "智能体 ID 必须是非空数组。"],
+    [null, "智能体 ID 必须是非空数组。"],
+    ["agent-1", "智能体 ID 必须是非空数组。"],
+    [{}, "智能体 ID 必须是非空数组。"],
+    [[], "智能体 ID 必须是非空数组。"],
   ])("rejects invalid agentIds: %p", (agentIds, error) => {
     expect(parseChannelInput({ agentIds })).toEqual({ ok: false, error });
   });
 
   test.each([
-    [[""], "Agent IDs must be non-empty strings."],
-    [["  "], "Agent IDs must be non-empty strings."],
-    [[1], "Agent IDs must be non-empty strings."],
-    [[false], "Agent IDs must be non-empty strings."],
-    [[null], "Agent IDs must be non-empty strings."],
-    [[{}], "Agent IDs must be non-empty strings."],
-    [["agent-1", " agent-1 "], "Agent IDs must be unique."],
+    [[""], "智能体 ID 必须是非空字符串。"],
+    [["  "], "智能体 ID 必须是非空字符串。"],
+    [[1], "智能体 ID 必须是非空字符串。"],
+    [[false], "智能体 ID 必须是非空字符串。"],
+    [[null], "智能体 ID 必须是非空字符串。"],
+    [[{}], "智能体 ID 必须是非空字符串。"],
+    [["agent-1", " agent-1 "], "智能体 ID 必须唯一。"],
   ])("rejects invalid agent ID members: %p", (agentIds, error) => {
     expect(parseChannelInput({ agentIds })).toEqual({ ok: false, error });
   });
@@ -221,9 +221,9 @@ describe("channel routes", () => {
   });
 
   test.each([
-    ["{", "Channel input must be a JSON object."],
-    [JSON.stringify([]), "Channel input must be a JSON object."],
-    [JSON.stringify({ agentIds: [] }), "Agent IDs must be a non-empty array."],
+    ["{", "频道输入必须是 JSON 对象。"],
+    [JSON.stringify([]), "频道输入必须是 JSON 对象。"],
+    [JSON.stringify({ agentIds: [] }), "智能体 ID 必须是非空数组。"],
   ])(
     "returns safe validation errors for malformed POST bodies",
     async (body, error) => {
@@ -246,12 +246,12 @@ describe("channel routes", () => {
     const response = await appFor(store).request("http://openbot.test/missing");
 
     expect(response.status).toBe(404);
-    expect(await json(response)).toEqual({ error: "Channel not found." });
+    expect(await json(response)).toEqual({ error: "找不到频道。" });
   });
 
   test.each([
-    ["create", new AgentNotFoundError("agent-1"), 404, "Agent not found."],
-    ["get", new ChannelNotFoundError("channel-1"), 404, "Channel not found."],
+    ["create", new AgentNotFoundError("agent-1"), 404, "找不到智能体。"],
+    ["get", new ChannelNotFoundError("channel-1"), 404, "找不到频道。"],
   ] as const)(
     "maps known store errors from %s",
     async (method, error, status, message) => {
@@ -362,7 +362,7 @@ describe("channel delete route", () => {
     );
 
     expect(response.status).toBe(404);
-    expect(await json(response)).toEqual({ error: "Channel not found." });
+    expect(await json(response)).toEqual({ error: "找不到频道。" });
   });
 
   test("calls forgetThread with the derived channel-scoped agent id", async () => {
@@ -745,7 +745,7 @@ describe("channel store integration", () => {
       `http://openbot.test/${created.id}`,
     );
     expect(response.status).toBe(404);
-    expect(await json(response)).toEqual({ error: "Channel not found." });
+    expect(await json(response)).toEqual({ error: "找不到频道。" });
   });
 
   test("reads linked agent IDs in lexicographic order", async () => {

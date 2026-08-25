@@ -28,7 +28,7 @@ import { componentListQueryOptions } from "@/lib/components/queries";
 
 /** The same way back from every state this route can be in. */
 const BACK = {
-  label: "Components gallery",
+  label: "组件画廊",
   linkProps: { to: "/settings/components-gallery" },
 } as const;
 
@@ -76,9 +76,9 @@ function RouteComponent() {
 
   if (components.error) {
     return (
-      <PageShell backButton={BACK} title="Components gallery">
+      <PageShell backButton={BACK} title="组件画廊">
         <p className="mt-8 text-destructive text-sm" role="alert">
-          Could not load components.
+          无法加载组件。
         </p>
       </PageShell>
     );
@@ -96,22 +96,21 @@ function RouteComponent() {
     return (
       <PageShell
         backButton={BACK}
-        description="Nothing here answers to that name."
-        title="No such component"
+        description="没有匹配此名称的组件。"
+        title="组件不存在"
       >
         <Empty className="mt-12 min-h-[30dvh] border border-dashed">
           <EmptyHeader>
             <EmptyTitle>{name}</EmptyTitle>
             <EmptyDescription className="text-pretty">
-              It may have been withdrawn, or this deployment may no longer ship
-              it.
+              组件可能已撤回，或此部署已不再提供它。
             </EmptyDescription>
           </EmptyHeader>
           <Link
             className={buttonVariants({ size: "sm", variant: "outline" })}
             to="/settings/components-gallery"
           >
-            Back to the gallery
+            返回组件画廊
           </Link>
         </Empty>
       </PageShell>
@@ -133,13 +132,13 @@ function RouteComponent() {
         </div>
       </div>
 
-      <PageSection title="Details">
+      <PageSection title="详细信息">
         <PageRows>
-          <FactRow icon={<IconTag />} label="Kind">
+          <FactRow icon={<IconTag />} label="类型">
             {component.kind}
           </FactRow>
           <Separator />
-          <FactRow icon={<IconCode />} label="Called as">
+          <FactRow icon={<IconCode />} label="调用名称">
             <code className="rounded bg-foreground/5 px-1.5 py-0.5 text-xs">
               {component.name}
             </code>

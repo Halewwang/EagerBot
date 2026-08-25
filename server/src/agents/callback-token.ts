@@ -173,7 +173,7 @@ export async function authoriseAgentCall(options: {
 }): Promise<CallVerdict> {
   const { presented, run, encryptionKey, legacyToken, lookup, now } = options;
 
-  if (!presented) return { ok: false, status: 401, reason: "Not authorised." };
+  if (!presented) return { ok: false, status: 401, reason: "未获授权。" };
 
   const assertion = readRunAssertion(run, encryptionKey, now);
   /*
@@ -182,7 +182,7 @@ export async function authoriseAgentCall(options: {
    * A caller learning that its token was accepted but its assertion was stale has learned that its
    * token is good, which is the useful half of a guess.
    */
-  if (!assertion) return { ok: false, status: 401, reason: "Not authorised." };
+  if (!assertion) return { ok: false, status: 401, reason: "未获授权。" };
 
   const caller = looksLikeCallbackToken(presented)
     ? await lookup(hashCallbackToken(presented))
@@ -190,7 +190,7 @@ export async function authoriseAgentCall(options: {
       ? { id: assertion.botId }
       : null;
 
-  if (!caller) return { ok: false, status: 401, reason: "Not authorised." };
+  if (!caller) return { ok: false, status: 401, reason: "未获授权。" };
 
   /*
    * An agent may only act as the Bot it was issued for.
@@ -202,7 +202,7 @@ export async function authoriseAgentCall(options: {
     return {
       ok: false,
       status: 403,
-      reason: "That token is not for this Bot.",
+      reason: "该令牌不属于此智能体。",
     };
   }
 

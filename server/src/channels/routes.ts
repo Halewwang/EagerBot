@@ -517,23 +517,23 @@ type ChannelInputObject = { agentIds?: unknown };
 
 export function parseChannelInput(input: unknown): ChannelInputParseResult {
   if (!isChannelInputObject(input)) {
-    return { ok: false, error: "Channel input must be a JSON object." };
+    return { ok: false, error: "频道输入必须是 JSON 对象。" };
   }
 
   if (!Array.isArray(input.agentIds) || input.agentIds.length === 0) {
-    return { ok: false, error: "Agent IDs must be a non-empty array." };
+    return { ok: false, error: "智能体 ID 必须是非空数组。" };
   }
 
   const agentIds: string[] = [];
   for (const agentId of input.agentIds) {
     if (typeof agentId !== "string" || agentId.trim().length === 0) {
-      return { ok: false, error: "Agent IDs must be non-empty strings." };
+      return { ok: false, error: "智能体 ID 必须是非空字符串。" };
     }
     agentIds.push(agentId.trim());
   }
 
   if (new Set(agentIds).size !== agentIds.length) {
-    return { ok: false, error: "Agent IDs must be unique." };
+    return { ok: false, error: "智能体 ID 必须唯一。" };
   }
 
   return { ok: true, value: { agentIds: agentIds.sort() } };
@@ -555,22 +555,22 @@ type ActivityInputParseResult =
  */
 export function parseActivityInput(input: unknown): ActivityInputParseResult {
   if (!isChannelInputObject(input)) {
-    return { ok: false, error: "Activity must be a JSON object." };
+    return { ok: false, error: "活动必须是 JSON 对象。" };
   }
   const object = input as { text?: unknown; agentId?: unknown; at?: unknown };
 
   if (typeof object.text !== "string" || object.text.trim().length === 0) {
-    return { ok: false, error: "Text is required." };
+    return { ok: false, error: "必须提供文本。" };
   }
   if (object.agentId !== null && typeof object.agentId !== "string") {
-    return { ok: false, error: "Agent ID must be a string or null." };
+    return { ok: false, error: "智能体 ID 必须是字符串或 null。" };
   }
   if (typeof object.at !== "string") {
-    return { ok: false, error: "Timestamp is required." };
+    return { ok: false, error: "必须提供时间戳。" };
   }
   const at = new Date(object.at);
   if (Number.isNaN(at.getTime())) {
-    return { ok: false, error: "Timestamp must be an ISO-8601 date." };
+    return { ok: false, error: "时间戳必须是 ISO-8601 日期。" };
   }
 
   return {
@@ -730,7 +730,7 @@ export function createChannelRoutes(
         context.req.param("channelId"),
       );
       if (!channel) {
-        return context.json({ error: "Channel not found." }, 404);
+        return context.json({ error: "找不到频道。" }, 404);
       }
       return context.json({ channel: channelDto(channel) });
     } catch (error) {
@@ -820,10 +820,10 @@ function channelSummaryDto(channel: ChannelSummary) {
 
 function mapStoreError(context: Context, error: unknown): Response {
   if (error instanceof AgentNotFoundError) {
-    return context.json({ error: "Agent not found." }, 404);
+    return context.json({ error: "找不到智能体。" }, 404);
   }
   if (error instanceof ChannelNotFoundError) {
-    return context.json({ error: "Channel not found." }, 404);
+    return context.json({ error: "找不到频道。" }, 404);
   }
   throw error;
 }

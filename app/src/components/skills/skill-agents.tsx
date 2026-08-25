@@ -36,10 +36,10 @@ export function SkillAgents({
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-sm font-medium">Agents</h2>
+      <h2 className="text-sm font-medium">智能体</h2>
       {mine.length === 0 ? (
         <p className="text-muted-foreground text-xs">
-          You do not own an Agent to put this on yet.
+          你还没有可添加此技能的智能体。
         </p>
       ) : (
         <>
@@ -66,7 +66,7 @@ export function SkillAgents({
             })}
           </div>
           <p className="text-muted-foreground text-xs">
-            An Agent carrying this offers <code>/{slug}</code> in its composer.
+            携带此技能的智能体会在其输入框中提供 <code>/{slug}</code>。
           </p>
         </>
       )}

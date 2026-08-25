@@ -31,21 +31,19 @@ function RouteComponent() {
    */
   return (
     <PageShell
-      description="How OpenBot looks and behaves for you. These apply to your account alone, on every deployment you sign in to."
-      title="Preferences"
+      description="EMKE Bot 的外观和行为设置。它们仅应用于你的账户，以及你登录的每个部署。"
+      title="偏好设置"
     >
-      <PageSection title="General">
+      <PageSection title="常规">
         <PageRows>
           <Item size="sm">
             <ItemContent>
-              <ItemTitle>Dark theme</ItemTitle>
-              <ItemDescription>
-                Use the dark appearance across OpenBot.
-              </ItemDescription>
+              <ItemTitle>深色主题</ItemTitle>
+              <ItemDescription>在 EMKE Bot 中使用深色外观。</ItemDescription>
             </ItemContent>
             <ItemActions>
               <Switch
-                aria-label="Dark theme"
+                aria-label="深色主题"
                 checked={dark}
                 onCheckedChange={setDark}
               />

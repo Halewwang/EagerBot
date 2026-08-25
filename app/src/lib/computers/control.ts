@@ -64,11 +64,11 @@ export async function supplySecret(
     const body = (await response.json().catch(() => null)) as {
       error?: string;
     } | null;
-    return { ok: false, error: body?.error ?? "That could not be entered." };
+    return { ok: false, error: body?.error ?? "无法输入该内容。" };
   } catch {
     return {
       ok: false,
-      error: "The assistant's computer could not be reached.",
+      error: "无法连接助手的电脑。",
     };
   }
 }

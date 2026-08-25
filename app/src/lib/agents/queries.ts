@@ -50,7 +50,7 @@ export function agentListQueryOptions(hidden = false) {
     queryKey: agentKeys.list(hidden),
     queryFn: (): Promise<AgentProfile[]> =>
       client(`/api/agents${hidden ? "?hidden=true" : ""}`, "agents", {
-        fallback: "Could not load coworkers",
+        fallback: "无法加载智能体",
       }),
   });
 }
@@ -60,7 +60,7 @@ export function agentQueryOptions(agentId: string) {
     queryKey: agentKeys.detail(agentId),
     queryFn: (): Promise<AgentProfile> =>
       client(`/api/agents/${agentId}`, "agent", {
-        fallback: "Could not load this coworker",
+        fallback: "无法加载此智能体",
       }),
   });
 }
@@ -98,11 +98,9 @@ export async function testAgentConnection(
     if (body && "ok" in body) return body;
     return {
       ok: false,
-      reason:
-        (body as { error?: string } | null)?.error ??
-        "The connection could not be tested.",
+      reason: (body as { error?: string } | null)?.error ?? "无法测试连接。",
     };
   } catch {
-    return { ok: false, reason: "The connection could not be tested." };
+    return { ok: false, reason: "无法测试连接。" };
   }
 }

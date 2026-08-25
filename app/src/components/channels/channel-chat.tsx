@@ -403,15 +403,14 @@ export function ChannelChat({
             {unreadable > 0 ? (
               <p className="pb-2 text-sm text-muted-foreground" role="status">
                 {unreadable === 1
-                  ? "One earlier message could not be read and is not shown."
-                  : `${unreadable} earlier messages could not be read and are not shown.`}{" "}
-                The rest of this conversation is complete.
+                  ? "有 1 条较早消息无法读取，因此未显示。"
+                  : `${unreadable} 条较早消息无法读取，因此未显示。`}{" "}
+                此对话的其余内容完整可读。
               </p>
             ) : null}
             {channel.active ? null : (
               <p className="pb-2 text-sm text-muted-foreground" role="status">
-                This coworker has been deleted. The conversation stays readable,
-                but it can no longer reply.
+                该智能体已被删除。对话仍可阅读，但它无法继续回复。
               </p>
             )}
           </>

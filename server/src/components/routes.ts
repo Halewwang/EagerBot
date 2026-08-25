@@ -84,7 +84,7 @@ export function createComponentRoutes(
     } | null;
     const entries = Array.isArray(body?.components) ? body.components : null;
     if (!entries) {
-      return context.json({ error: "A list of components is required." }, 400);
+      return context.json({ error: "必须提供组件列表。" }, 400);
     }
 
     const valid = entries.flatMap((entry) => {
@@ -111,7 +111,7 @@ export function createComponentRoutes(
     // bury the trail it is written into.
     for (const name of added) {
       await audit(context, "component.published", name, {
-        note: "First seen in a build, published and available to every Bot.",
+        note: "首次在构建中发现，已发布并对所有智能体可用。",
       });
     }
     return context.json({ added });
@@ -126,7 +126,7 @@ export function createComponentRoutes(
   routes.get("/for-agent/:agentId", requireUser, async (context) => {
     const agentId = context.req.param("agentId");
     if (!(await canUseBot(context.var.actor, agentId))) {
-      return context.json({ error: "There is no such Bot." }, 404);
+      return context.json({ error: "找不到该智能体。" }, 404);
     }
     return context.json({ components: await store.listForAgent(agentId) });
   });
@@ -147,12 +147,12 @@ export function createComponentRoutes(
     } | null;
     const agentId = typeof body?.agentId === "string" ? body.agentId : "";
     if (!agentId) {
-      return context.json({ error: "The Bot is required." }, 400);
+      return context.json({ error: "必须提供智能体。" }, 400);
     }
     // Asked before the grant is, because the grant belongs to the Bot and says nothing about who is
     // asking on its behalf.
     if (!(await canUseBot(context.var.actor, agentId))) {
-      return context.json({ error: "There is no such Bot." }, 404);
+      return context.json({ error: "找不到该智能体。" }, 404);
     }
     const functions = Array.isArray(body?.functions)
       ? body.functions.filter(
@@ -178,7 +178,7 @@ export function createComponentRoutes(
      */
     for (const functionName of functions) {
       if (await store.mayCall(name, functionName)) continue;
-      const reason = `${name} has not been granted the function ${functionName}. An administrator grants each function to each component.`;
+      const reason = `${name} 尚未获授予函数 ${functionName}。管理员可以为每个组件授予函数。`;
       await audit(context, "component.function_refused", name, {
         bot: agentId,
         function: functionName,
@@ -222,15 +222,12 @@ export function createComponentRoutes(
       typeof body?.function === "string" ? body.function : "";
     const agentId = typeof body?.agentId === "string" ? body.agentId : "";
     if (!functionName || !agentId) {
-      return context.json(
-        { error: "The function and the Bot are both required." },
-        400,
-      );
+      return context.json({ error: "必须同时提供函数和智能体。" }, 400);
     }
     // Before the grant, and before anything runs. This is the route that executes, so borrowing a
     // Bot here borrows whatever its components were granted.
     if (!(await canUseBot(context.var.actor, agentId))) {
-      return context.json({ error: "There is no such Bot." }, 404);
+      return context.json({ error: "找不到该智能体。" }, 404);
     }
 
     const refuse = async (reason: string) => {
@@ -250,14 +247,12 @@ export function createComponentRoutes(
     if (!fn) {
       // Named separately from a refusal so an administrator is not sent looking for a grant to give
       // for something this build does not have.
-      return refuse(
-        `There is no data function called ${functionName} in this deployment.`,
-      );
+      return refuse(`此部署中没有名为 ${functionName} 的数据函数。`);
     }
 
     if (!(await store.mayCall(name, functionName))) {
       return refuse(
-        `${name} has not been granted the function ${functionName}. An administrator grants each function to each component.`,
+        `${name} 尚未获授予函数 ${functionName}。管理员可以为每个组件授予函数。`,
       );
     }
 
@@ -278,12 +273,9 @@ export function createComponentRoutes(
       await audit(context, "component.function_failed", name, {
         bot: agentId,
         function: functionName,
-        failure: error instanceof Error ? error.message : "The read failed.",
+        failure: error instanceof Error ? error.message : "读取失败。",
       });
-      return context.json(
-        { allowed: true, error: "That data could not be read." },
-        502,
-      );
+      return context.json({ allowed: true, error: "无法读取该数据。" }, 502);
     }
   });
 
@@ -298,10 +290,7 @@ export function createComponentRoutes(
     const functionName =
       typeof body?.function === "string" ? body.function : "";
     if (!functionName || !dataFunction(functionName)) {
-      return context.json(
-        { error: "A function this deployment ships is required." },
-        400,
-      );
+      return context.json({ error: "必须提供此部署提供的函数。" }, 400);
     }
 
     try {
@@ -342,7 +331,7 @@ export function createComponentRoutes(
     } | null;
     const agentId = typeof body?.agentId === "string" ? body.agentId : "";
     if (!agentId) {
-      return context.json({ error: "The Bot is required." }, 400);
+      return context.json({ error: "必须提供智能体。" }, 400);
     }
     try {
       await store.grant(name, agentId);
@@ -422,7 +411,7 @@ export function createComponentRoutes(
     const description =
       typeof body?.description === "string" ? body.description.trim() : "";
     if (!description) {
-      return context.json({ error: "A description is required." }, 400);
+      return context.json({ error: "必须提供描述。" }, 400);
     }
 
     try {

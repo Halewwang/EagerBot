@@ -169,7 +169,7 @@ export class PluginRefusedError extends Error {
 
 export class CatalogueEntryUnknownError extends Error {
   constructor(key: string) {
-    super(`${key} is not a server this deployment will connect to.`);
+    super(`${key} 不是此部署会连接的服务器。`);
     this.name = "CatalogueEntryUnknownError";
   }
 }
@@ -269,7 +269,7 @@ async function exchangeRefreshTokenOverHttp(input: {
 
   if (!response.ok) {
     throw new McpServerError(
-      `The vendor would not renew this access (${response.status}).`,
+      `供应商不愿续订此访问权限（${response.status}）。`,
     );
   }
 
@@ -278,7 +278,7 @@ async function exchangeRefreshTokenOverHttp(input: {
     expires_in?: unknown;
   };
   if (typeof body.access_token !== "string" || !body.access_token) {
-    throw new McpServerError("The vendor renewed this access with no token.");
+    throw new McpServerError("供应商续订了此访问权限，但未返回令牌。");
   }
   return {
     accessToken: body.access_token,
@@ -494,7 +494,7 @@ export function createPluginStore(options: PluginStoreOptions) {
       const token = row.credentialId
         ? await secretFor(
             row.credentialId,
-            `${row.id} needs a credential this deployment no longer holds. An administrator has to add it again.`,
+            `${row.id} 需要此部署已不再持有的凭据。管理员必须重新添加凭据。`,
           )
         : undefined;
       return { token };
@@ -509,7 +509,7 @@ export function createPluginStore(options: PluginStoreOptions) {
      */
     if (!actorId) {
       throw new PluginRefusedError(
-        `${row.id} answers as the person asking, and this run is not attributed to anybody.`,
+        `${row.id} 以提问者身份响应，但此次运行没有归属到任何人。`,
         null,
       );
     }
@@ -527,28 +527,28 @@ export function createPluginStore(options: PluginStoreOptions) {
 
     if (!held) {
       throw new PluginRefusedError(
-        `You have not connected your ${entry.title} account. Connect it in Settings and ask again.`,
+        `你尚未连接 ${entry.title} 账号。请在设置中连接后重试。`,
         null,
       );
     }
 
     const refreshToken = await secretFor(
       held.credentialId,
-      `Your ${entry.title} access was withdrawn. Connect it again in Settings.`,
+      `你的 ${entry.title} 访问权限已撤回。请在设置中重新连接。`,
     );
 
     if (!row.credentialId) {
       // The person did their part; the deployment has not. Said plainly, because the person cannot
       // fix it and should not be told to try.
       throw new PluginRefusedError(
-        `${entry.title} has no OAuth client registered for this deployment, so this cannot be called. An administrator has to add one.`,
+        `${entry.title} 未为此部署注册 OAuth 客户端，因此无法调用。管理员需要添加一个。`,
         null,
       );
     }
     const client = JSON.parse(
       await secretFor(
         row.credentialId,
-        `${entry.title} has no usable OAuth client for this deployment. An administrator has to add one again.`,
+        `${entry.title} 没有可供此部署使用的 OAuth 客户端。管理员需要重新添加一个。`,
       ),
     ) as OAuthClient;
 
@@ -663,12 +663,12 @@ export function createPluginStore(options: PluginStoreOptions) {
       // server inherit rules an operator wrote about the vendor.
       if (catalogueEntry(input.id)) {
         throw new CustomServerRefusedError(
-          `${input.id} is the name of a server this deployment already knows. Choose another.`,
+          `${input.id} 是此部署已知服务器的名称。请选择其他名称。`,
         );
       }
       if (!/^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]$/.test(input.id)) {
         throw new CustomServerRefusedError(
-          "A server name is lower-case letters, numbers and hyphens.",
+          "服务器名称只能包含小写字母、数字和连字符。",
         );
       }
 
@@ -712,7 +712,7 @@ export function createPluginStore(options: PluginStoreOptions) {
 
         if (named?.kind !== "mcp") {
           throw new CustomServerRefusedError(
-            "That is not a credential this server can use. Add the server's own token instead.",
+            "这不是此服务器可以使用的凭据。请改为添加服务器自身的令牌。",
           );
         }
       }
@@ -933,7 +933,7 @@ export function createPluginStore(options: PluginStoreOptions) {
               // The refs, because that is what a grant is keyed on and what an administrator revokes.
               refs: stranded.map(([ref]) => ref),
               bots: [...new Set(stranded.flatMap(([, agents]) => agents))],
-              note: "Held by a Bot and not offered to any model, because this server no longer advertises the tool. Offered again if it starts.",
+              note: "智能体持有该工具，但由于服务器不再提供该工具，因此未将其提供给任何模型。服务器恢复后将再次提供。",
             },
           });
         }
@@ -1119,7 +1119,7 @@ export function createPluginStore(options: PluginStoreOptions) {
         const unknown = declared.filter((ref) => !known.has(ref));
         if (unknown.length > 0) {
           throw new PluginRefusedError(
-            `No tool by that name has been seen here: ${unknown.join(", ")}. A skill names tools as serverId/toolName, and the server has to have been refreshed at least once.`,
+            `这里没有找到名为 ${unknown.join(", ")} 的工具。技能使用 serverId/toolName 指定工具，服务器必须至少刷新过一次。`,
             // No policy rule refused this; the name simply matches nothing. `rule` is what an audit
             // reader is shown as the reason, and inventing one here would put a rule in the trail
             // that nobody wrote.
@@ -1355,7 +1355,7 @@ export function createPluginStore(options: PluginStoreOptions) {
       const { row, entry } = await requireServer(input.serverId);
       if (entry?.auth.kind !== "user-oauth") {
         throw new CustomServerRefusedError(
-          `${input.serverId} is not reached with an OAuth client.`,
+          `${input.serverId} 不是通过 OAuth 客户端访问的。`,
         );
       }
 
@@ -1645,8 +1645,8 @@ export function createPluginStore(options: PluginStoreOptions) {
           allowed: false,
           reason:
             kind === "mcp"
-              ? `This Bot has not been given the tool ${ref}.`
-              : `This Bot has not been given the skill ${ref}.`,
+              ? `此智能体尚未获授予工具 ${ref}。`
+              : `此智能体尚未获授予技能 ${ref}。`,
         };
       }
       return { allowed: true };
@@ -1669,7 +1669,7 @@ export function createPluginStore(options: PluginStoreOptions) {
       const [serverId, ...rest] = input.ref.split("/");
       const toolName = rest.join("/");
       if (!serverId || !toolName) {
-        throw new PluginRefusedError(`${input.ref} is not a tool.`, null);
+        throw new PluginRefusedError(`${input.ref} 不是工具。`, null);
       }
 
       const decision = await this.decide("mcp", input.ref, input.botId);
@@ -1829,8 +1829,7 @@ export function createPluginStore(options: PluginStoreOptions) {
           payload: result.isError
             ? {
                 ...decided,
-                failure:
-                  result.text.slice(0, 400) || "the tool reported an error",
+                failure: result.text.slice(0, 400) || "工具报告了错误",
               }
             : decided,
         });

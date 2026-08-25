@@ -83,7 +83,7 @@ describe("locating a Bot's computer", () => {
         throw new Error("connection refused");
       }) as unknown as typeof fetch,
     });
-    expect(client.locate("sales")).rejects.toThrow(/could not be reached/);
+    expect(client.locate("sales")).rejects.toThrow(/无法访问/);
   });
 
   test("the bot id is escaped into the path", async () => {

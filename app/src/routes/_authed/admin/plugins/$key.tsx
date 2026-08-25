@@ -72,9 +72,9 @@ type OpenDialog = "token" | "client" | "instance" | null;
  * case that gets a number.
  */
 function grantSummary(held: number, total: number): string {
-  if (held === 0) return "No Bots";
-  if (held === total) return total === 1 ? "1 Bot" : "All Bots";
-  return `${held} of ${total} Bots`;
+  if (held === 0) return "无智能体";
+  if (held === total) return total === 1 ? "1 个智能体" : "所有智能体";
+  return `${held}/${total} 个智能体`;
 }
 
 function RouteComponent() {
@@ -175,23 +175,23 @@ function RouteComponent() {
 
   /* Nothing rather than a placeholder, so no sentence asserts anything while the fetch is open. */
   if (plugins.isPending) {
-    return <PageShell title="Plugin">{null}</PageShell>;
+    return <PageShell title="插件">{null}</PageShell>;
   }
   if (!(entry || server)) {
     return (
       <PageShell
-        backButton={{ label: "Plugins", linkProps: { to: "/admin/plugins" } }}
-        description="This deployment does not have a plugin by that name, and the catalogue does not offer one."
-        title="Not a plugin"
+        backButton={{ label: "插件", linkProps: { to: "/admin/plugins" } }}
+        description="此部署没有名为此名称的插件，目录中也没有提供该插件。"
+        title="插件不存在"
       >
-        <PageEmpty>Nothing to configure.</PageEmpty>
+        <PageEmpty>暂无可配置内容。</PageEmpty>
       </PageShell>
     );
   }
 
   return (
     <PageShell
-      backButton={{ label: "Plugins", linkProps: { to: "/admin/plugins" } }}
+      backButton={{ label: "插件", linkProps: { to: "/admin/plugins" } }}
       description={entry?.summary ?? server?.summary}
       title={title}
     >
@@ -219,16 +219,16 @@ function RouteComponent() {
            */}
           <Item size="sm">
             <ItemContent>
-              <ItemTitle>Enable for this deployment</ItemTitle>
+              <ItemTitle>为此部署启用</ItemTitle>
               <ItemDescription>
                 {server
-                  ? "Bots may be granted its tools. Switching this off removes it and every grant on its tools."
-                  : "No Bot can reach this vendor. Switch it on to configure it and grant its tools."}
+                  ? "可以向智能体授予其工具。关闭后会移除插件及其工具上的所有授权。"
+                  : "没有智能体可以访问此服务提供商。打开开关即可配置并授予其工具。"}
               </ItemDescription>
             </ItemContent>
             <ItemActions>
               <Switch
-                aria-label={`Enable ${title} for this deployment`}
+                aria-label={`为此部署启用 ${title}`}
                 checked={server !== undefined}
                 onCheckedChange={(next) => {
                   setError(null);
@@ -245,10 +245,10 @@ function RouteComponent() {
         <PageSection
           description={
             auth === "user-oauth"
-              ? "This vendor answers as whoever is asking. The deployment registers an OAuth client, and each person connects their own account, so a Bot only ever sees what that person can see."
-              : "What this deployment presents to the vendor. One credential, used for everybody."
+              ? "此服务提供商会以请求者身份响应。部署注册 OAuth 客户端，每个人连接自己的账户，因此智能体只能看到该用户能看到的内容。"
+              : "此部署向服务提供商提供的内容。所有人共用一个凭据。"
           }
-          title="Connection"
+          title="连接"
         >
           {/*
            * Rows that DO something, and nothing else. The layout skill's third row kind — a value
@@ -265,14 +265,14 @@ function RouteComponent() {
                 size="sm"
               >
                 <ItemContent>
-                  <ItemTitle>Access token</ItemTitle>
+                  <ItemTitle>访问令牌</ItemTitle>
                   <ItemDescription>
-                    Sent as a bearer token on every call to this vendor.
+                    每次调用此服务提供商时都会作为 bearer 令牌发送。
                   </ItemDescription>
                 </ItemContent>
                 <ItemActions>
                   <span className="text-muted-foreground text-xs">
-                    {server?.hasCredential ? "Held" : "Not set"}
+                    {server?.hasCredential ? "已保存" : "未设置"}
                   </span>
                   <IconChevronRight className="size-4 shrink-0 text-muted-foreground" />
                 </ItemActions>
@@ -287,15 +287,14 @@ function RouteComponent() {
                 size="sm"
               >
                 <ItemContent>
-                  <ItemTitle>OAuth client</ItemTitle>
+                  <ItemTitle>OAuth 客户端</ItemTitle>
                   <ItemDescription>
-                    Identifies this deployment to the vendor. It reaches
-                    nobody's documents on its own.
+                    用于向服务提供商标识此部署。它本身无法访问任何人的文档。
                   </ItemDescription>
                 </ItemContent>
                 <ItemActions>
                   <span className="text-muted-foreground text-xs">
-                    {server?.hasCredential ? "Registered" : "Not registered"}
+                    {server?.hasCredential ? "已注册" : "未注册"}
                   </span>
                   <IconChevronRight className="size-4 shrink-0 text-muted-foreground" />
                 </ItemActions>
@@ -322,11 +321,11 @@ function RouteComponent() {
                 <Separator />
                 <Item size="sm">
                   <ItemContent>
-                    <ItemTitle>Your account</ItemTitle>
+                    <ItemTitle>你的账户</ItemTitle>
                     <ItemDescription>
                       {youConnected
-                        ? "Connected, so a Bot granted these tools reads your Drive as you. Everybody else connects their own."
-                        : "Connect your own account to try this connector. Setup is complete without it, and it reaches your documents only."}
+                        ? "已连接，因此获得这些工具授权的智能体会以你的身份读取 Drive。其他用户需要连接自己的账户。"
+                        : "连接你的账户以试用此连接器。不连接也不影响配置完成，连接后只会访问你的文档。"}
                     </ItemDescription>
                   </ItemContent>
                   <ItemActions>
@@ -338,7 +337,7 @@ function RouteComponent() {
                           className="size-1.5 rounded-full bg-emerald-500"
                         />
                         <span className="text-muted-foreground text-xs">
-                          Connected
+                          已连接
                         </span>
                       </>
                     ) : (
@@ -353,7 +352,7 @@ function RouteComponent() {
                         type="button"
                         variant="outline"
                       >
-                        Connect
+                        连接
                         <IconArrowUpRight />
                       </Button>
                     )}
@@ -375,15 +374,14 @@ function RouteComponent() {
                   size="sm"
                 >
                   <ItemContent>
-                    <ItemTitle>Instance host</ItemTitle>
+                    <ItemTitle>实例主机</ItemTitle>
                     <ItemDescription>
-                      This vendor gives every customer their own hostname,
-                      checked against its pattern before anything is stored.
+                      此服务提供商为每个客户提供独立主机名，保存前会根据其格式进行检查。
                     </ItemDescription>
                   </ItemContent>
                   <ItemActions>
                     <span className="text-muted-foreground text-xs">
-                      {server?.url ?? "Not set"}
+                      {server?.url ?? "未设置"}
                     </span>
                     <IconChevronRight className="size-4 shrink-0 text-muted-foreground" />
                   </ItemActions>
@@ -401,9 +399,9 @@ function RouteComponent() {
                   size="sm"
                 >
                   <ItemContent>
-                    <ItemTitle>Vendor documentation</ItemTitle>
+                    <ItemTitle>服务提供商文档</ItemTitle>
                     <ItemDescription>
-                      What this server offers, from the people who maintain it.
+                      维护此服务器的团队提供的服务说明。
                     </ItemDescription>
                   </ItemContent>
                   <ItemActions>
@@ -417,9 +415,8 @@ function RouteComponent() {
           {auth === "user-oauth" ? (
             <div className="mt-3 p-3">
               <p className="text-muted-foreground text-sm">
-                Add this to the client's authorised redirect URIs at the vendor,
-                exactly as written. A single wrong character fails there, with a
-                message that does not mention OpenBot.
+                请将此内容原样添加到服务提供商处客户端的授权 redirect URI
+                中。即使一个字符错误也会导致失败， 且错误信息不会提及 EMKE Bot。
               </p>
               {plugins.data?.redirectUri ? (
                 /* Selectable and monospaced: it is copied by hand into somebody else's console. */
@@ -428,8 +425,8 @@ function RouteComponent() {
                 </code>
               ) : (
                 <p className="mt-3 text-destructive text-sm" role="alert">
-                  This deployment has no public URL, so nobody can complete a
-                  consent flow. Set OPENBOT_PUBLIC_URL.
+                  此部署没有公开 URL，因此无法完成授权流程。请设置
+                  OPENBOT_PUBLIC_URL。
                 </p>
               )}
             </div>
@@ -452,16 +449,15 @@ function RouteComponent() {
               type="button"
               variant="ghost"
             >
-              Refresh tools
+              刷新工具
             </Button>
           }
-          description="A Bot is told about a tool only when it holds it. Every call is decided again when it happens, so removing a grant takes effect on the next one."
-          title="Tools"
+          description="智能体只有在拥有工具时才会获知它。每次调用发生时都会重新决定，因此移除授权会在下一次调用时生效。"
+          title="工具"
         >
           {server.tools.length === 0 ? (
             <PageEmpty>
-              {server.lastError ??
-                "No tools listed. Refresh to ask the vendor again."}
+              {server.lastError ?? "暂无工具列表。刷新以再次向服务提供商请求。"}
             </PageEmpty>
           ) : (
             <PageRows>
@@ -506,7 +502,7 @@ function RouteComponent() {
                             : "text-muted-foreground text-xs"
                         }
                       >
-                        {tool.effect === "write" ? "changes things" : "reads"}
+                        {tool.effect === "write" ? "修改内容" : "读取内容"}
                       </span>
                       <IconChevronRight className="size-4 shrink-0 text-muted-foreground" />
                     </ItemActions>
@@ -529,8 +525,8 @@ function RouteComponent() {
        */}
       {server && server.withdrawn.length > 0 ? (
         <PageSection
-          description="This vendor no longer lists these, so no Bot is told about them and no model can call one. The grant is still recorded, and the tool would be offered again if the vendor started listing it. Revoke from the Bot's own page if that is not what you want."
-          title="Held but not offered"
+          description="此服务提供商不再列出这些工具，因此智能体不会获知它们，模型也无法调用。授权仍会记录；如果服务提供商重新列出工具，系统会再次提供。若不希望如此，请在智能体自己的页面撤销授权。"
+          title="已持有但未提供"
         >
           <PageRows>
             {server.withdrawn.map((held, index) => (
@@ -541,9 +537,8 @@ function RouteComponent() {
                       {held.name}
                     </ItemTitle>
                     <ItemDescription>
-                      Not listed by {title}
-                      {server.toolsRefreshedAt ? ` as of the last refresh` : ""}
-                      .
+                      {title} 未列出
+                      {server.toolsRefreshedAt ? "（截至上次刷新）" : ""}。
                     </ItemDescription>
                   </ItemContent>
                   <ItemActions>
@@ -567,17 +562,17 @@ function RouteComponent() {
           <DialogHeader>
             <DialogTitle>
               {dialog === "client"
-                ? `OAuth client for ${title}`
+                ? `OAuth 客户端：${title}`
                 : dialog === "instance"
-                  ? `Instance host for ${title}`
-                  : `Access token for ${title}`}
+                  ? `实例主机：${title}`
+                  : `访问令牌：${title}`}
             </DialogTitle>
             <DialogDescription>
               {dialog === "client"
-                ? "From the vendor's console. The secret is stored in this deployment's vault and never read back."
+                ? "来自服务提供商的控制台。秘密会存储在此部署的保险库中，且永远不会回读。"
                 : dialog === "instance"
-                  ? "Your own hostname with this vendor. It is checked against their pattern before anything is stored."
-                  : "Stored in this deployment's vault and never read back."}
+                  ? "你在此服务提供商处的主机名。保存前会根据其格式进行检查。"
+                  : "存储在此部署的保险库中，且永远不会回读。"}
             </DialogDescription>
           </DialogHeader>
           <DialogBody className="mt-4">
@@ -585,7 +580,7 @@ function RouteComponent() {
               {dialog === "client" ? (
                 <>
                   <Field>
-                    <FieldLabel htmlFor="client-id">Client ID</FieldLabel>
+                    <FieldLabel htmlFor="client-id">客户端 ID</FieldLabel>
                     <Input
                       id="client-id"
                       onChange={(event) =>
@@ -598,9 +593,7 @@ function RouteComponent() {
                     />
                   </Field>
                   <Field>
-                    <FieldLabel htmlFor="client-secret">
-                      Client secret
-                    </FieldLabel>
+                    <FieldLabel htmlFor="client-secret">客户端密钥</FieldLabel>
                     <Input
                       id="client-secret"
                       onChange={(event) =>
@@ -616,7 +609,7 @@ function RouteComponent() {
                 </>
               ) : dialog === "instance" ? (
                 <Field>
-                  <FieldLabel htmlFor="instance-host">Instance host</FieldLabel>
+                  <FieldLabel htmlFor="instance-host">实例主机</FieldLabel>
                   <Input
                     id="instance-host"
                     onChange={(event) => setInstanceHost(event.target.value)}
@@ -626,7 +619,7 @@ function RouteComponent() {
                 </Field>
               ) : (
                 <Field>
-                  <FieldLabel htmlFor="access-token">Access token</FieldLabel>
+                  <FieldLabel htmlFor="access-token">访问令牌</FieldLabel>
                   <Input
                     id="access-token"
                     onChange={(event) => setToken(event.target.value)}
@@ -639,7 +632,7 @@ function RouteComponent() {
           </DialogBody>
           <DialogFooter className="mt-4">
             <Button onClick={() => setDialog(null)} size="sm" variant="ghost">
-              Cancel
+              取消
             </Button>
             <Button
               onClick={() => {
@@ -654,7 +647,7 @@ function RouteComponent() {
               }}
               size="sm"
             >
-              Save
+              保存
             </Button>
           </DialogFooter>
         </DialogContent>

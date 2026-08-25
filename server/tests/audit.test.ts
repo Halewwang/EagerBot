@@ -197,7 +197,7 @@ describe("admin audit API", () => {
 
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({
-      error: "Administrator access required.",
+      error: "需要管理员权限。",
     });
   });
 });

@@ -108,7 +108,7 @@ describe("computer client", () => {
       throw new Error("connect ECONNREFUSED");
     });
     await expect(missing.navigate("https://example.com")).rejects.toThrow(
-      "The assistant's computer is not running.",
+      "智能体的计算机未运行。",
     );
 
     const timedOut = clientWith(() => {
@@ -117,7 +117,7 @@ describe("computer client", () => {
       throw error;
     });
     await expect(timedOut.navigate("https://example.com")).rejects.toThrow(
-      "The assistant's computer did not respond in time.",
+      "智能体的计算机未及时响应。",
     );
 
     const badPage = clientWith(
@@ -184,7 +184,7 @@ describe("acting on an element that is not there", () => {
       const message = (error as Error).message;
       // The instruction, naming the ref that failed.
       expect(message).toContain("e5");
-      expect(message).toContain("fresh snapshot");
+      expect(message).toContain("新快照");
       // Not several lines of Playwright internals, which are noise to a model and to a person.
       expect(message).not.toContain("Call log");
       expect(message).not.toContain("Timeout");

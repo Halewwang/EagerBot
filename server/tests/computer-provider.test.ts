@@ -71,7 +71,7 @@ describe("computer isolation description", () => {
   test("describes the computer feature as off when no provider is configured", () => {
     const description = describeComputerIsolation(undefined);
     expect(description.isolation).toBe("off");
-    expect(description.note.toLowerCase()).toContain("off");
+    expect(description.note).toContain("已关闭");
     expect(description.note.toLowerCase()).not.toContain("shared");
     expect(description.note.toLowerCase()).not.toContain("browser");
   });
@@ -123,7 +123,7 @@ describe("shared computer provider", () => {
     expect(await provider.status("sales")).toEqual({
       botId: "sales",
       state: "unreachable",
-      reason: "The shared computer answered 503.",
+      reason: "共享计算机返回了 503。",
     });
   });
 

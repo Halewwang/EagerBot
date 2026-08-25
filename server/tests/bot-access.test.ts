@@ -235,8 +235,7 @@ describe("the computer surface, unauthenticated", () => {
         },
       } as never,
       { get: () => ({ mode: "enforce", deny: [], allow: [] }) } as never,
-      async (context) =>
-        context.json({ error: "Authentication required." }, 401),
+      async (context) => context.json({ error: "需要先登录。" }, 401),
       async (_actor, botId) => {
         asked.push(botId);
         return true;

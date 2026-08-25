@@ -64,7 +64,7 @@ export function createSandboxedRoutes(
     } | null;
 
     if (!body?.slug || !body.title) {
-      return context.json({ error: "A name and a title are required." }, 400);
+      return context.json({ error: "必须提供名称和标题。" }, 400);
     }
 
     try {

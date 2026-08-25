@@ -61,7 +61,7 @@ export type PublishedSandboxed = {
 
 export class SandboxedNotFoundError extends Error {
   constructor(name: string) {
-    super(`No component is called ${name}.`);
+    super(`找不到名为 ${name} 的组件。`);
     this.name = "SandboxedNotFoundError";
   }
 }
@@ -163,7 +163,7 @@ export function createSandboxedStore(
     }): Promise<SandboxedRecord> {
       if (!/^[a-z0-9][a-z0-9_]{0,38}[a-z0-9]$/.test(input.slug)) {
         throw new SandboxedNameRefusedError(
-          "A name is lower-case letters, numbers and underscores.",
+          "名称只能包含小写字母、数字和下划线。",
         );
       }
       const name = sandboxedNameFor(input.slug);

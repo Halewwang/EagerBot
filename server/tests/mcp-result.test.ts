@@ -16,9 +16,9 @@ describe("a result with nothing in it", () => {
   test("says so, rather than being an empty string", () => {
     const { text } = resultText([]);
     expect(text).not.toBe("");
-    expect(text.toLowerCase()).toContain("no content");
+    expect(text).toContain("没有找到任何内容");
     // The clause that matters: it tells the model there is nothing here to answer from.
-    expect(text.toLowerCase()).toContain("nothing");
+    expect(text).toContain("没有可据此回答的信息");
   });
 
   test("treats whitespace and a missing content field the same as empty", () => {

@@ -125,7 +125,7 @@ export function createComputerTransport(
     timeoutMsOverride?: number,
   ): Promise<T> {
     if (caller?.aborted) {
-      throw new ComputerUnavailableError("The action was stopped.");
+      throw new ComputerUnavailableError("操作已停止。");
     }
 
     /*
@@ -157,8 +157,8 @@ export function createComputerTransport(
     } catch (error) {
       throw new ComputerUnavailableError(
         error instanceof Error && error.name === "TimeoutError"
-          ? "The assistant's computer did not respond in time."
-          : "The assistant's computer is not running.",
+          ? "智能体的计算机未及时响应。"
+          : "智能体的计算机未运行。",
       );
     }
 
@@ -236,7 +236,7 @@ function throwMappedError(
   if (/waiting for locator|Timeout .* exceeded/i.test(detail)) {
     const ref = detail.match(/aria-ref=([A-Za-z0-9_-]+)/)?.[1];
     throw new ElementNotFoundError(
-      `${ref ? `Element ${ref} is` : "That element is"} not on the page any more. Take a fresh snapshot and use the refs from it.`,
+      `${ref ? `元素 ${ref}` : "该元素"} 已不在页面上。请获取新快照并使用其中返回的 ref。`,
     );
   }
   throw new ComputerUnavailableError(detail);

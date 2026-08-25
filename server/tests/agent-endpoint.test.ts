@@ -47,7 +47,7 @@ describe("what may be registered as an agent", () => {
   test("a private address is refused when private hosts are not allowed", () => {
     const verdict = checkAgentEndpoint("http://10.0.0.5:4200/ag-ui");
     expect(verdict.allowed).toBe(false);
-    if (!verdict.allowed) expect(verdict.reason).toContain("network");
+    if (!verdict.allowed) expect(verdict.reason).toContain("网络");
   });
 
   test("localhost is allowed only where the deployment opted in", () => {
@@ -156,7 +156,7 @@ describe("the connection test", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.status).toBe(401);
-      expect(result.reason).toContain("key");
+      expect(result.reason).toContain("密钥");
     }
   });
 
@@ -168,7 +168,7 @@ describe("the connection test", () => {
       },
     });
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.reason).toContain("reachable from");
+    if (!result.ok) expect(result.reason).toContain("从此处访问");
   });
 
   test("the test refuses the addresses registration would refuse", async () => {
@@ -366,7 +366,7 @@ describe("dialling a stored agent endpoint", () => {
 
     await expect(
       dial("http://169.254.169.254/latest/meta-data/", runRequest),
-    ).rejects.toThrow(/may not live there|refus/i);
+    ).rejects.toThrow(/不能部署在该地址|拒绝/);
     expect(calls.length).toBe(0);
   });
 
@@ -399,7 +399,7 @@ describe("dialling a stored agent endpoint", () => {
     expect(refusals[0]?.address).toBe(
       "http://169.254.169.254/latest/meta-data/",
     );
-    expect(refusals[0]?.reason).toMatch(/may not live there|refus/i);
+    expect(refusals[0]?.reason).toMatch(/不能部署在该地址|拒绝/);
     // Reported, and still not dialled. A row about a request that went out anyway would be worse
     // than no row at all.
     expect(calls).toHaveLength(1);
@@ -553,7 +553,7 @@ describe("dialling a stored agent endpoint", () => {
         method: "POST",
         body: new ReadableStream(),
       }),
-    ).rejects.toThrow(/will not forward/i);
+    ).rejects.toThrow(/不会将运行请求转发/);
     expect(calls.length).toBe(1);
   });
 
@@ -569,7 +569,7 @@ describe("dialling a stored agent endpoint", () => {
         method: "POST",
         body: "not json at all",
       }),
-    ).rejects.toThrow(/will not forward/i);
+    ).rejects.toThrow(/不会将运行请求转发/);
     expect(calls.length).toBe(1);
   });
 

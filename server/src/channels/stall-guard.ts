@@ -369,8 +369,8 @@ function stalledEvent(botName: string, stallMs: number): Uint8Array {
   const event = {
     type: "RUN_ERROR",
     message:
-      `${botName} stopped responding. Nothing arrived from it for ${inWords(stallMs)}, ` +
-      "so this turn was ended. Ask again, or check that the Bot is running.",
+      `${botName} 已停止响应。连续 ${inWords(stallMs)} 没有收到任何内容，` +
+      "因此本轮已结束。请重试，或检查智能体是否正在运行。",
     code: "AGENT_STREAM_STALLED",
   };
   return ENCODER.encode(`data: ${JSON.stringify(event)}\n\n`);
@@ -385,8 +385,8 @@ function stalledEvent(botName: string, stallMs: number): Uint8Array {
 function inWords(ms: number): string {
   if (ms >= 60_000 && ms % 60_000 === 0) {
     const minutes = ms / 60_000;
-    return minutes === 1 ? "a minute" : `${minutes} minutes`;
+    return minutes === 1 ? "1 分钟" : `${minutes} 分钟`;
   }
   const seconds = Math.max(1, Math.round(ms / 1_000));
-  return seconds === 1 ? "a second" : `${seconds} seconds`;
+  return seconds === 1 ? "1 秒" : `${seconds} 秒`;
 }

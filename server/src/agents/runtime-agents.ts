@@ -65,7 +65,7 @@ export function createRuntimeAgentLoader(
         id: row.id,
         name: row.name,
         type: "unavailable",
-        reason: `${row.name} has been deleted and can no longer run. Its conversations remain readable.`,
+        reason: `${row.name} 已被删除，无法继续运行。其对话仍可读取。`,
       });
     }
 

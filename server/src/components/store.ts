@@ -44,7 +44,7 @@ export type ComponentDecision =
 
 export class ComponentNotFoundError extends Error {
   constructor(name: string) {
-    super(`No component is called ${name}.`);
+    super(`找不到名为 ${name} 的组件。`);
     this.name = "ComponentNotFoundError";
   }
 }
@@ -266,19 +266,19 @@ export function createComponentStore(database: Database): ComponentStore {
       if (!row) {
         return {
           allowed: false,
-          reason: `There is no component called ${name} in this deployment. Answer in prose instead.`,
+          reason: `此部署中没有名为 ${name} 的组件。请改用文字回答。`,
         };
       }
       if (!row.published || !row.description) {
         return {
           allowed: false,
-          reason: `${row.title} is not published in this deployment, so no Bot may use it. Answer in prose instead.`,
+          reason: `${row.title} 尚未在此部署中发布，因此任何智能体都不能使用它。请改用文字回答。`,
         };
       }
       if (row.withheldFrom) {
         return {
           allowed: false,
-          reason: `${row.title} has been withheld from this Bot in this deployment, though other Bots may use it. Answer in prose instead.`,
+          reason: `${row.title} 在此部署中已被禁止此智能体使用，但其他智能体可能可以使用。请改用文字回答。`,
         };
       }
       return { allowed: true, description: row.description };

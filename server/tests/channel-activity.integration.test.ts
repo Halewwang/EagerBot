@@ -336,7 +336,8 @@ describe("channel activity", () => {
 
     await store.recordActivity(owner, busy.id, {
       agentId,
-      at: new Date(),
+      // Keep this newer than PostgreSQL's creation clock; the test compares ordering, not clocks.
+      at: new Date(Date.now() + 60_000),
       text: "Said something.",
     });
 

@@ -38,7 +38,7 @@ describe("server authorization", () => {
 
     expect(response.status).toBe(401);
     await expect(response.json()).resolves.toEqual({
-      error: "Authentication required.",
+      error: "需要先登录。",
     });
   });
 
@@ -51,7 +51,7 @@ describe("server authorization", () => {
 
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({
-      error: "Administrator access required.",
+      error: "需要管理员权限。",
     });
   });
 

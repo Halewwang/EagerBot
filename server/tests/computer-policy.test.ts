@@ -422,7 +422,7 @@ describe("describing a refusal", () => {
 
     expect(decision.allowed).toBe(false);
     expect(decision.reason).toBe(
-      'This deployment\'s policy does not allow that: search_notes on notes is blocked by the rule `mcp.server == "notes"`.',
+      '此部署的策略不允许该操作：notes 上的 search_notes 被规则 `mcp.server == "notes"` 阻止。',
     );
     // The neutral file field is present and empty on every tool call. Described from it, the
     // sentence read "the file  is blocked", naming a workspace the call never went near.
@@ -447,7 +447,7 @@ describe("describing a refusal", () => {
     );
 
     expect(decision.allowed).toBe(false);
-    expect(decision.reason).toContain("the file /workspace/secrets.env");
+    expect(decision.reason).toContain("文件 /workspace/secrets.env");
   });
 });
 

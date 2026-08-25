@@ -97,7 +97,7 @@ function GrantedTool({
       if (!isHeld) {
         return (
           <RefusedCard
-            reason={`${spec.title} is not available to this Bot at the moment. An administrator grants components per Bot, and can unpublish one for every Bot at once.`}
+            reason={`此智能体当前无法使用${spec.title}。管理员可以按智能体授予组件，也可以一次性对所有智能体下线组件。`}
             title={spec.title}
           />
         );
@@ -124,15 +124,15 @@ function GrantedTool({
         spec.reads?.(args ?? {}) ?? [],
       );
       if (!decision.allowed) {
-        const reason = decision.reason ?? "That component is not allowed here.";
+        const reason = decision.reason ?? "此组件当前不允许使用。";
         const id = context?.toolCall?.id;
         if (id) {
           setRefusals((current) => new Map(current).set(id, reason));
         }
         // Led with the same words the card shows, so the transcript and the card agree.
-        return `Not shown: ${spec.title}. ${reason} Nothing was displayed, so tell the person that.`;
+        return `未显示${spec.title}。${reason} 页面没有显示任何内容，请告知用户。`;
       }
-      return spec.confirmation ?? "It is now on screen for the person.";
+      return spec.confirmation ?? "内容已显示在用户屏幕上。";
     },
     render,
   });
@@ -191,7 +191,7 @@ function RefusedDecision({
   title: string;
   respond?: (result: unknown) => Promise<void>;
 }) {
-  const reason = `${title} is not available to this Bot at the moment, so the person was not asked. An administrator grants components per Bot, and can unpublish one for every Bot at once.`;
+  const reason = `此智能体当前无法使用${title}，因此没有向用户发起请求。管理员可以按智能体授予组件，也可以一次性对所有智能体下线组件。`;
 
   useEffect(() => {
     if (!respond) return;

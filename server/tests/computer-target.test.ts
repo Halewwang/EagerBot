@@ -25,7 +25,7 @@ describe("navigation targets", () => {
 
     expect(verdict.allowed).toBe(false);
     expect(verdict.allowed === false && verdict.reason).toContain(
-      "inside this deployment's own network",
+      "部署自身的网络",
     );
   });
 
@@ -39,9 +39,7 @@ describe("navigation targets", () => {
       const verdict = checkNavigationTarget(url, { allowPrivateHosts });
 
       expect(verdict.allowed).toBe(false);
-      expect(verdict.allowed === false && verdict.reason).toContain(
-        "cloud credentials",
-      );
+      expect(verdict.allowed === false && verdict.reason).toContain("云凭据");
     }
   });
 
@@ -68,9 +66,7 @@ describe("navigation targets", () => {
       const verdict = checkNavigationTarget(url, { allowPrivateHosts });
 
       expect(verdict.allowed).toBe(false);
-      expect(verdict.allowed === false && verdict.reason).toContain(
-        "cloud credentials",
-      );
+      expect(verdict.allowed === false && verdict.reason).toContain("云凭据");
     }
   });
 
@@ -85,7 +81,7 @@ describe("navigation targets", () => {
 
     expect(verdict.allowed).toBe(false);
     expect(verdict.allowed === false && verdict.reason).toContain(
-      "inside this deployment's own network",
+      "部署自身的网络",
     );
   });
 
@@ -112,14 +108,14 @@ describe("navigation targets", () => {
 
     expect(verdict.allowed).toBe(false);
     expect(verdict.allowed === false && verdict.reason).toBe(
-      "Only web addresses are allowed, and that one is file.",
+      "只允许使用网址，而该地址使用的是 file。",
     );
   });
 
   test("refuses something that is not an address at all", () => {
     expect(checkNavigationTarget("open the pricing page")).toEqual({
       allowed: false,
-      reason: "That is not a web address.",
+      reason: "这不是网址。",
     });
   });
 
@@ -170,7 +166,7 @@ describe("checkComputerAddress", () => {
       const verdict = checkComputerAddress(`http://${host}/latest/meta-data/`);
       expect(verdict.allowed).toBe(false);
       if (!verdict.allowed) {
-        expect(verdict.reason).toContain("cloud credentials");
+        expect(verdict.reason).toContain("云凭据");
       }
     },
   );
@@ -193,7 +189,7 @@ describe("checkComputerAddress", () => {
     const verdict = checkComputerAddress(raw);
     expect(verdict.allowed).toBe(false);
     if (!verdict.allowed) {
-      expect(verdict.reason).toContain("cloud credentials");
+      expect(verdict.reason).toContain("云凭据");
     }
   });
 
@@ -208,7 +204,7 @@ describe("checkComputerAddress", () => {
     const verdict = checkComputerAddress("not-an-address");
     expect(verdict.allowed).toBe(false);
     if (!verdict.allowed) {
-      expect(verdict.reason).toContain("not a URL");
+      expect(verdict.reason).toContain("不是 URL");
     }
   });
   test("refuses 0.0.0.0 written as a mapped IPv6 address", () => {

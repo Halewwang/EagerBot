@@ -118,7 +118,7 @@ export function ComputerView({
         if (generation.current !== mine) return;
 
         if (!frame) {
-          setProblem(error ?? "The screen is not available right now.");
+          setProblem(error ?? "屏幕暂时不可用。");
         } else {
           // Exact byte comparison is the settling signal.
           unchanged = frame.base64 === lastFrame ? unchanged + 1 : 0;
@@ -193,7 +193,7 @@ export function ComputerView({
   const polledScreen = showScreen ? (
     <img
       src={`data:image/png;base64,${shot.base64}`}
-      alt="What the assistant is looking at"
+      alt="助手正在查看的页面"
       // Keep unexpected screenshot dimensions inside the reserved frame.
       className="absolute inset-0 h-full w-full object-contain opacity-100 transition-opacity duration-300 starting:opacity-0"
     />
@@ -210,7 +210,7 @@ export function ComputerView({
           disabled={!showScreen}
           className="relative block w-full bg-muted enabled:cursor-zoom-in"
           style={frameStyle}
-          aria-label="Open the assistant's screen full size"
+          aria-label="全屏打开助手的屏幕"
         >
           {polledScreen}
 
@@ -230,19 +230,16 @@ export function ComputerView({
             >
               {problem ? (
                 <>
-                  <span className="font-medium">
-                    You cannot see the screen right now
-                  </span>
+                  <span className="font-medium">当前无法查看屏幕</span>
                   <span>{problem}</span>
                   <span className={blankBrowser ? "text-white/80" : undefined}>
-                    The assistant may still be working. An administrator can
-                    check whether its computer is running.
+                    助手可能仍在工作。管理员可以检查它的电脑是否正在运行。
                   </span>
                 </>
               ) : blankBrowser ? (
-                <span>The assistant has not opened a page yet.</span>
+                <span>助手尚未打开网页。</span>
               ) : (
-                <span>Waiting for the assistant's screen…</span>
+                <span>正在等待助手的屏幕…</span>
               )}
             </span>
           )}
@@ -270,7 +267,7 @@ export function ComputerView({
             }}
           >
             <label className="block" htmlFor="openbot-secret">
-              <span className="font-medium">The assistant needs </span>
+              <span className="font-medium">助手需要 </span>
               <span>{control.secretWanted}</span>
             </label>
             <div className="mt-1.5 flex gap-2">
@@ -282,7 +279,7 @@ export function ComputerView({
                 autoComplete="off"
                 autoCorrect="off"
                 spellCheck={false}
-                placeholder="Typed here, never shown to the assistant"
+                placeholder="在此输入，不会显示给助手"
                 className="min-w-0 flex-1 rounded-md border bg-background px-2 py-1 text-sm"
               />
               <button
@@ -290,12 +287,11 @@ export function ComputerView({
                 disabled={!secret || sendingSecret}
                 className="shrink-0 rounded-md bg-primary px-3 py-1 text-xs font-medium text-primary-foreground disabled:opacity-50"
               >
-                {sendingSecret ? "Sending…" : "Send to the page"}
+                {sendingSecret ? "发送中…" : "发送到网页"}
               </button>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              This goes straight to the page. It is not shown in the
-              conversation and the assistant never receives it.
+              内容会直接发送到网页，不会显示在对话中，助手也不会收到。
             </p>
             {secretProblem ? (
               <p className="mt-1 text-xs text-destructive">{secretProblem}</p>
@@ -305,21 +301,21 @@ export function ComputerView({
 
         {driving ? (
           <div className="flex items-center justify-between gap-3 border-t bg-muted/40 px-3 py-2 text-sm">
-            <span>You have control of this browser.</span>
+            <span>你已获得此浏览器的控制权。</span>
             <span className="flex shrink-0 gap-2">
               <button
                 type="button"
                 onClick={() => setExpanded(true)}
                 className="rounded-md border px-3 py-1 text-xs font-medium"
               >
-                Open full size
+                全屏打开
               </button>
               <button
                 type="button"
                 onClick={() => void handBack()}
                 className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-primary-foreground"
               >
-                Hand back
+                交还控制权
               </button>
             </span>
           </div>
@@ -348,13 +344,11 @@ export function ComputerView({
             <span>
               {control?.requested ? (
                 <>
-                  <strong className="font-medium">
-                    The assistant needs you.
-                  </strong>{" "}
+                  <strong className="font-medium">助手需要你的帮助。</strong>{" "}
                   {control.reason}
                 </>
               ) : (
-                "The assistant is driving. You can take over whenever you want."
+                "助手正在操作。你可以随时接管。"
               )}
             </span>
             <button
@@ -370,7 +364,7 @@ export function ComputerView({
                   : "border"
               }`}
             >
-              Take control
+              接管控制权
             </button>
           </div>
         ) : null}
@@ -384,14 +378,14 @@ export function ComputerView({
             <div
               role="dialog"
               aria-modal="true"
-              aria-label="The assistant's screen"
+              aria-label="助手的屏幕"
               className="fixed inset-0 z-50 flex flex-col p-4 sm:p-8"
             >
               {/* Backdrop closes only while read-only; during driving, Escape remains the exit. */}
               <button
                 type="button"
                 onClick={() => !driving && setExpanded(false)}
-                aria-label="Close the assistant's screen"
+                aria-label="关闭助手的屏幕"
                 aria-hidden={driving}
                 tabIndex={driving ? -1 : 0}
                 className={`absolute inset-0 bg-black/80 ${driving ? "cursor-default" : "cursor-zoom-out"}`}
@@ -400,12 +394,12 @@ export function ComputerView({
                 <span className="pointer-events-none">
                   {driving ? (
                     <>
-                      <strong className="font-medium">You have control.</strong>{" "}
-                      Click and type on the page as you normally would.
+                      <strong className="font-medium">你已获得控制权。</strong>{" "}
+                      可以像平时一样在网页上点击和输入。
                       {control?.reason ? ` ${control.reason}` : null}
                     </>
                   ) : (
-                    <>The assistant's screen{active ? ", updating live" : ""}</>
+                    <>助手的屏幕{active ? "，实时更新中" : ""}</>
                   )}
                 </span>
                 <span className="flex shrink-0 items-center gap-3">
@@ -418,7 +412,7 @@ export function ComputerView({
                       }}
                       className="rounded-md bg-white px-3 py-1 text-xs font-medium text-black"
                     >
-                      Hand back to the assistant
+                      将控制权交还给助手
                     </button>
                   ) : (
                     /* Offered here too, and for the same reason: see the inline card above. */
@@ -430,13 +424,13 @@ export function ComputerView({
                       }}
                       className="rounded-md bg-white px-3 py-1 text-xs font-medium text-black"
                     >
-                      Take control
+                      接管控制权
                     </button>
                   )}
                   <span className="pointer-events-none text-white/70">
                     {driving
-                      ? "Press Escape to close"
-                      : "Click anywhere or press Escape to close"}
+                      ? "按 Escape 关闭"
+                      : "点击任意位置或按 Escape 关闭"}
                   </span>
                 </span>
               </div>

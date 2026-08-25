@@ -416,7 +416,7 @@ describe("a person who has connected", () => {
 
     await expect(
       store.callTool({ ref, args: {}, botId, actorId: askerId }),
-    ).rejects.toThrow(/OAuth client/);
+    ).rejects.toThrow(/OAuth 客户端/);
   });
 
   test("goes out with their own token and nobody else's", async () => {

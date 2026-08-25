@@ -28,7 +28,7 @@ export function CommandOutput({
     <div className="space-y-1.5">
       {truncated ? (
         <p className="text-muted-foreground text-xs">
-          Output was cut short at the start. What follows is the end of it.
+          输出开头已被截断，以下内容是输出的末尾。
         </p>
       ) : null}
       {output ? (
@@ -36,18 +36,14 @@ export function CommandOutput({
           {output}
         </pre>
       ) : (
-        <p className="text-muted-foreground text-xs italic">
-          It printed nothing.
-        </p>
+        <p className="text-muted-foreground text-xs italic">没有输出内容。</p>
       )}
       {timedOut ? (
-        <p className="text-destructive text-xs">
-          It ran too long and was stopped.
-        </p>
+        <p className="text-destructive text-xs">运行时间过长，已停止。</p>
       ) : null}
       {failed ? (
         <p className="text-amber-600 text-xs dark:text-amber-500">
-          Exit code {exitCode}.
+          退出码：{exitCode}。
         </p>
       ) : null}
     </div>

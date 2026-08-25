@@ -44,70 +44,70 @@ const GROUPS: {
   }[];
 }[] = [
   {
-    label: "What Bots can reach",
+    label: "智能体可访问的内容",
     items: [
       {
-        title: "Credentials",
+        title: "凭据",
         icon: IconKey,
         linkOptions: { to: "/admin/credentials" },
       },
       {
-        title: "Boundaries",
+        title: "边界",
         icon: IconShieldCheck,
         linkOptions: { to: "/admin/boundaries" },
       },
       {
-        title: "Computers",
+        title: "计算机",
         icon: IconDeviceDesktop,
         linkOptions: { to: "/admin/computers" },
       },
     ],
   },
   {
-    label: "What Bots can do",
+    label: "智能体可执行的操作",
     items: [
       {
-        title: "Plugins",
+        title: "插件",
         icon: IconPuzzle,
         linkOptions: { to: "/admin/plugins" },
       },
       {
-        title: "Skills",
+        title: "技能",
         icon: IconFileText,
         linkOptions: { to: "/admin/skills" },
       },
       {
-        title: "UI Components",
+        title: "UI 组件",
         icon: IconLayoutGrid,
         linkOptions: { to: "/admin/components" },
       },
       {
-        title: "Playground",
+        title: "组件试验场",
         icon: IconCode,
         linkOptions: { to: "/admin/playground" },
       },
     ],
   },
   {
-    label: "Who can get in",
+    label: "谁可以登录",
     items: [
       {
-        title: "People",
+        title: "用户",
         icon: IconUsers,
         linkOptions: { to: "/admin/people" },
       },
       {
-        title: "Identity providers",
+        title: "身份提供商",
         icon: IconBuildingBank,
         linkOptions: { to: "/admin/identity-providers" },
       },
     ],
   },
   {
-    label: "What happened",
+    label: "操作记录",
     items: [
       {
-        title: "Audit",
+        title: "审计",
         icon: IconListDetails,
         linkOptions: { to: "/admin/audit" },
       },
@@ -136,7 +136,7 @@ export function AdminSidebar({
               render={(props) => (
                 <Link {...appLinkOptions} {...props}>
                   <IconArrowLeft className="mr-2 h-4 w-4" />
-                  Back to app
+                  返回应用
                 </Link>
               )}
             />
@@ -159,7 +159,7 @@ export function AdminSidebar({
                     activeProps={{ className: "bg-foreground/5" }}
                     {...props}
                   >
-                    Overview
+                    概览
                   </Link>
                 )}
               />

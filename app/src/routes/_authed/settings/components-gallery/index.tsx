@@ -29,19 +29,19 @@ function RouteComponent() {
 
   return (
     <PageShell
-      description="The pieces a Bot can draw in a conversation instead of describing something in prose. Which of them any one Bot may use is an administrator's decision."
-      title="Components gallery"
+      description="智能体可以在对话中绘制的组件，而不是用文字描述的内容。每个智能体能使用哪些组件由管理员决定。"
+      title="组件画廊"
     >
       {components.isPending ? null : components.error ? (
         <p className="mt-12 text-destructive text-sm" role="alert">
-          Could not load components.
+          无法加载组件。
         </p>
       ) : published?.length === 0 ? (
         <Empty className="mt-12 min-h-[30dvh] border border-dashed">
           <EmptyHeader>
-            <EmptyTitle>Nothing published yet</EmptyTitle>
+            <EmptyTitle>尚未发布任何组件</EmptyTitle>
             <EmptyDescription className="text-pretty">
-              When an administrator publishes a component, it will show up here.
+              管理员发布组件后，它会显示在这里。
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

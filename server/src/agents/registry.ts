@@ -25,7 +25,7 @@ export function createAgentRegistry(
             name: agent.name,
             type: agent.type,
             available: false,
-            reason: "Model credential is not configured.",
+            reason: "未配置模型凭据。",
           };
     }
     const available = isHttpUrl(agent.endpoint);
@@ -36,7 +36,7 @@ export function createAgentRegistry(
           name: agent.name,
           type: agent.type,
           available: false,
-          reason: "AG-UI endpoint is invalid.",
+          reason: "AG-UI 端点无效。",
         };
   });
 }

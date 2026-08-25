@@ -66,7 +66,7 @@ function SignScreen() {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : "No identity provider is registered for that address.",
+          : "该地址未配置身份提供商。",
       );
       setOpening(null);
     }
@@ -82,7 +82,7 @@ function SignScreen() {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : `Could not start ${providerName(provider)} sign-in.`,
+          : `无法开始使用 ${providerName(provider)} 登录。`,
       );
       setOpening(null);
     }
@@ -121,7 +121,7 @@ function SignScreen() {
           transition={{ duration: ENTRANCE_SECONDS, ease: EASE_OUT }}
           variants={{ hidden, shown }}
         >
-          Sign in to {appConfig.brand.productName}
+          登录 {appConfig.brand.productName}
         </motion.h1>
         <motion.div
           className="mt-8 w-full"
@@ -151,8 +151,8 @@ function SignScreen() {
                   {/* Centred against the button, not against the space left of the mark. */}
                   <span className="flex-1 text-center">
                     {opening === provider
-                      ? `Opening ${providerName(provider)}…`
-                      : `Continue with ${providerName(provider)}`}
+                      ? `正在打开 ${providerName(provider)}…`
+                      : `使用 ${providerName(provider)} 继续`}
                   </span>
                   {/* Balances the mark so the label sits in the middle of the button. */}
                   <span aria-hidden="true" className="size-[18px]" />
@@ -161,7 +161,7 @@ function SignScreen() {
             </div>
           ) : options?.sso ? null : (
             <p className="text-center text-sm text-muted-foreground">
-              No sign-in provider is configured for this deployment.
+              此部署尚未配置登录方式。
             </p>
           )}
           {/*
@@ -175,14 +175,14 @@ function SignScreen() {
               {providers.length > 0 ? (
                 <div className="mb-3 flex items-center gap-3">
                   <Separator className="flex-1" />
-                  <span className="text-muted-foreground text-xs">or</span>
+                  <span className="text-muted-foreground text-xs">或</span>
                   <Separator className="flex-1" />
                 </div>
               ) : null}
               <Input
                 autoComplete="email"
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@company.com"
+                placeholder="请输入企业邮箱"
                 required
                 type="email"
                 value={email}
@@ -194,9 +194,7 @@ function SignScreen() {
                 type="submit"
                 variant="outline"
               >
-                {opening === "sso"
-                  ? "Opening…"
-                  : "Continue with your company account"}
+                {opening === "sso" ? "正在打开…" : "使用企业账号继续"}
               </Button>
             </form>
           ) : null}

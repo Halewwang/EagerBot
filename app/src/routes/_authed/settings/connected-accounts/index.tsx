@@ -79,8 +79,8 @@ function RouteComponent() {
 
   return (
     <PageShell
-      description="Services a Bot reads as you, so it only ever sees what you can see. Connecting is yours to grant, and nobody can grant it for you."
-      title="Connected accounts"
+      description="智能体以你的身份读取的服务，因此它只能看到你能看到的内容。连接权限由你授予，任何人都不能代你授予。"
+      title="已连接账户"
     >
       {/*
        * Only the failure is worth saying. A success needs no sentence: the row it came back to now
@@ -88,12 +88,12 @@ function RouteComponent() {
        */}
       {outcome === "failed" ? (
         <p className="text-destructive text-sm" role="alert">
-          That account could not be connected. Nothing was saved — try again.
+          无法连接该账户。未保存任何内容，请重试。
         </p>
       ) : null}
       {plugins.isPending || connections.isPending ? null : plugins.error ? (
         <p className="mt-12 text-destructive text-sm" role="alert">
-          Your connected accounts could not be loaded.
+          无法加载你的已连接账户。
         </p>
       ) : (
         <PageSection>
@@ -103,8 +103,7 @@ function RouteComponent() {
              * something, when what is missing is an administrator enabling a connector.
              */
             <PageEmpty>
-              Nothing to connect yet. These appear once an administrator enables
-              a connector that reads as the person asking.
+              暂无可连接的服务。管理员启用以当前用户身份读取的连接器后，它们会显示在这里。
             </PageEmpty>
           ) : (
             <PageRows>
@@ -151,9 +150,7 @@ function RouteComponent() {
                           )}
                         />
                         <span className="text-muted-foreground text-xs">
-                          {connected.has(entry.key)
-                            ? "Connected"
-                            : "Not connected"}
+                          {connected.has(entry.key) ? "已连接" : "未连接"}
                         </span>
                         <IconChevronRight className="size-4 shrink-0 text-muted-foreground" />
                       </ItemActions>

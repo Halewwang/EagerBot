@@ -40,7 +40,7 @@ function RouteComponent() {
     <div className="flex h-screen flex-col">
       <header className="border-b px-6 py-3">
         <div className="flex items-baseline justify-between">
-          <h1 className="text-lg font-semibold">Browser Bot</h1>
+          <h1 className="text-lg font-semibold">浏览器智能体</h1>
           {/*
            * Labelled rather than the bare icon button the sidebar uses for its own "start
            * something new" control: that one opens an empty screen, but this one throws away
@@ -49,11 +49,11 @@ function RouteComponent() {
            */}
           <Button onClick={startNew} size="sm" variant="ghost">
             <IconPlus />
-            New chat
+            新建对话
           </Button>
         </div>
         <p className="text-sm text-muted-foreground">
-          Ask it to open a page and watch it work.
+          让它打开网页，观察它的操作。
         </p>
       </header>
       {/*
@@ -67,8 +67,7 @@ function RouteComponent() {
           data-testid="bot-chat-history-unavailable"
           role="alert"
         >
-          Earlier messages in this conversation could not be loaded, and the Bot
-          is answering without them.
+          无法加载此对话中的较早消息，Bot 将在缺少这些消息的情况下回答。
         </p>
       ) : null}
       {/*
@@ -102,6 +101,30 @@ function RouteComponent() {
           <CopilotChat
             agentId={agentId}
             key={`${agentId}:${threadId}`}
+            labels={{
+              chatInputPlaceholder: "输入消息…",
+              chatInputToolbarStartTranscribeButtonLabel: "开始转录",
+              chatInputToolbarCancelTranscribeButtonLabel: "取消",
+              chatInputToolbarFinishTranscribeButtonLabel: "完成",
+              chatInputToolbarAddButtonLabel: "添加附件",
+              chatInputToolbarToolsButtonLabel: "工具",
+              assistantMessageToolbarCopyCodeLabel: "复制代码",
+              assistantMessageToolbarCopyCodeCopiedLabel: "已复制代码",
+              assistantMessageToolbarCopyMessageLabel: "复制消息",
+              assistantMessageToolbarInspectorLabel: "在检查器中查看",
+              assistantMessageToolbarInspectorLocalOnlyLabel: "仅本地",
+              assistantMessageToolbarThumbsUpLabel: "有帮助",
+              assistantMessageToolbarThumbsDownLabel: "没帮助",
+              assistantMessageToolbarReadAloudLabel: "朗读",
+              assistantMessageToolbarRegenerateLabel: "重新生成",
+              userMessageToolbarCopyMessageLabel: "复制消息",
+              userMessageToolbarEditMessageLabel: "编辑消息",
+              chatDisclaimerText: "AI 可能出错，请核实重要信息。",
+              chatToggleOpenLabel: "打开聊天",
+              chatToggleCloseLabel: "关闭聊天",
+              modalHeaderTitle: "EMKE Bot 对话",
+              welcomeMessageText: "今天我能帮你做什么？",
+            }}
             threadId={threadId}
           />
         ) : null}

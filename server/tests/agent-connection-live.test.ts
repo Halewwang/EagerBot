@@ -82,7 +82,7 @@ describe("registering an agent that really answers", () => {
       );
 
       expect(result.ok).toBe(false);
-      if (!result.ok) expect(result.reason).toMatch(/redirect/i);
+      if (!result.ok) expect(result.reason).toContain("重定向");
       // The first hop is the registered address and is expected. Nothing beyond it should have been
       // dialled, which is what the refusal is for.
       expect(bounced.length).toBe(1);
@@ -140,7 +140,7 @@ describe("registering an agent that really answers", () => {
     });
     expect(dead.ok).toBe(false);
     if (!dead.ok) {
-      expect(dead.reason).toMatch(/reachable from|did not answer/);
+      expect(dead.reason).toMatch(/从此处访问|未能及时响应/);
     }
   });
 });

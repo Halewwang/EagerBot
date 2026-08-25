@@ -284,7 +284,7 @@ export function evaluateActionPolicy(
         matched: expression,
         source: "allow",
         forward: true,
-        reason: "Permitted by policy.",
+        reason: "策略允许。",
       };
     }
   }
@@ -296,8 +296,7 @@ export function evaluateActionPolicy(
     source: "default",
     forward: mode === "dry-run",
     reason:
-      "No rule in this deployment's policy permits that action, so it was refused. " +
-      "An administrator can add one.",
+      "此部署的策略没有规则允许该操作，因此操作被拒绝。管理员可以添加相应规则。",
   };
 }
 
@@ -312,31 +311,19 @@ function describeRefusal(context: PolicyContext, expression: string): string {
   // A command is described by the command. Falling through to the page branch below would produce
   // "a run_command action on " with an empty host, because a shell call has no page.
   if (context.command) {
-    return (
-      `This deployment's policy does not allow that: the command \`${context.command}\` ` +
-      `is blocked by the rule \`${expression}\`.`
-    );
+    return `此部署的策略不允许该操作：命令 \`${context.command}\` 被规则 \`${expression}\` 阻止。`;
   }
 
   if (context.mcp) {
-    return (
-      `This deployment's policy does not allow that: ${context.mcp.tool} on ` +
-      `${context.mcp.server} is blocked by the rule \`${expression}\`.`
-    );
+    return `此部署的策略不允许该操作：${context.mcp.server} 上的 ${context.mcp.tool} 被规则 \`${expression}\` 阻止。`;
   }
   // A file refusal must not be phrased as happening "on <host>": the workspace has nothing to do with
   // whatever page the browser happens to be showing, and saying so sends somebody to the wrong place.
   if (context.file?.path) {
-    return (
-      `This deployment's policy does not allow that: the file ${context.file.path} ` +
-      `is blocked by the rule \`${expression}\`.`
-    );
+    return `此部署的策略不允许该操作：文件 ${context.file.path} 被规则 \`${expression}\` 阻止。`;
   }
   const what = context.element?.name
     ? `“${context.element.name}”`
     : `a ${context.tool.name.replace("computer_", "")} action`;
-  return (
-    `This deployment's policy does not allow that: ${what} on ${context.page.host} ` +
-    `is blocked by the rule \`${expression}\`.`
-  );
+  return `此部署的策略不允许该操作：${context.page.host} 上的 ${what} 被规则 \`${expression}\` 阻止。`;
 }

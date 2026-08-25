@@ -19,10 +19,10 @@ export function NewSkill() {
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6 p-8">
       <header>
-        <h1 className="text-2xl font-semibold">New skill</h1>
+        <h1 className="text-2xl font-semibold">新建技能</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          A named instruction you invoke with <code>/</code>. It goes on the
-          Bots you own, and nobody else sees it.
+          一条可通过 <code>/</code> 调用的命名指令。它会添加到你拥有的智能体
+          上，其他人无法看到。
         </p>
       </header>
 
@@ -35,7 +35,7 @@ export function NewSkill() {
           // skill than the form just said, and the new row is already behind it in the list.
           await navigate({ search: {}, to: "/skills" });
         }}
-        submitLabel="Save skill"
+        submitLabel="保存技能"
       />
     </div>
   );

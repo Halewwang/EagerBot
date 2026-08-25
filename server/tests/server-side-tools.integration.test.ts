@@ -192,7 +192,7 @@ describe("the tools a Bot is handed on the server", () => {
       const text = await tools[0]?.execute({ query: "invoices" });
 
       // Returned, not thrown: the run continues and the person is told what was blocked.
-      expect(text).toContain("policy");
+      expect(text).toContain("策略");
       // And marked, so the transcript can draw it as a refusal rather than as a result. The wording
       // is an administrator's to change; the marker is not, which is the whole reason it exists.
       expect(text?.startsWith(REFUSAL_MARKER)).toBe(true);

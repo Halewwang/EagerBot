@@ -80,8 +80,7 @@ export function ActivityReportCard({
           ? { status: "read", data: result.data }
           : {
               status: "refused",
-              reason:
-                result.reason ?? result.error ?? "That data could not be read.",
+              reason: result.reason ?? result.error ?? "无法读取该数据。",
             },
       );
     });
@@ -93,27 +92,24 @@ export function ActivityReportCard({
 
   if (!report) {
     return (
-      <GalleryFrame title="Report">
-        <p className="text-sm text-muted-foreground">Choosing a report…</p>
+      <GalleryFrame title="报告">
+        <p className="text-sm text-muted-foreground">正在选择报告…</p>
       </GalleryFrame>
     );
   }
 
   if (state.status === "reading") {
     return (
-      <GalleryFrame
-        caption="Reading from this deployment"
-        title={title ?? "Report"}
-      >
-        <p className="text-sm text-muted-foreground">Reading…</p>
+      <GalleryFrame caption="正在读取此部署的数据" title={title ?? "报告"}>
+        <p className="text-sm text-muted-foreground">读取中…</p>
       </GalleryFrame>
     );
   }
 
   if (state.status === "refused") {
     return (
-      <GalleryFrame title={title ?? "Report"}>
-        <p className="text-sm text-destructive">Not shown</p>
+      <GalleryFrame title={title ?? "报告"}>
+        <p className="text-sm text-destructive">未显示</p>
         <p className="mt-1 text-sm text-foreground/80">{state.reason}</p>
       </GalleryFrame>
     );
@@ -146,9 +142,9 @@ function ActivityChart({
   const rows = data?.rows ?? [];
   if (rows.length === 0) {
     return (
-      <GalleryFrame title={title ?? "Bot activity"}>
+      <GalleryFrame title={title ?? "智能体活动"}>
         <p className="text-sm text-muted-foreground">
-          No Bot has done anything in the last {data?.days ?? 7} days.
+          过去 {data?.days ?? 7} 天内没有智能体执行过任何操作。
         </p>
       </GalleryFrame>
     );
@@ -163,19 +159,17 @@ function ActivityChart({
         ask && busiest ? (
           <Button
             onClick={() =>
-              ask(
-                `What has ${busiest.bot} actually been doing? Look at the audit trail and summarise it.`,
-              )
+              ask(`请查看审计记录，总结 ${busiest.bot} 实际执行过的操作。`)
             }
             size="sm"
             variant="outline"
           >
-            Ask about the busiest
+            询问最忙碌的智能体
           </Button>
         ) : undefined
       }
-      caption={`Counted from this deployment's audit trail, last ${data.days} days`}
-      title={title ?? "Bot activity"}
+      caption={`根据此部署的审计记录统计，最近 ${data.days} 天`}
+      title={title ?? "智能体活动"}
     >
       <ul className="flex flex-col gap-2">
         {rows.map((row, index) => (
@@ -215,9 +209,9 @@ function RefusalList({
   const rows = data?.rows ?? [];
   if (rows.length === 0) {
     return (
-      <GalleryFrame title={title ?? "Recent refusals"}>
+      <GalleryFrame title={title ?? "最近的拒绝"}>
         <p className="text-sm text-muted-foreground">
-          This deployment has refused nothing.
+          此部署最近没有拒绝任何操作。
         </p>
       </GalleryFrame>
     );
@@ -230,18 +224,18 @@ function RefusalList({
           <Button
             onClick={() =>
               ask(
-                "Explain the most recent refusal in that list, and what would have to change for it to be allowed.",
+                "请解释列表中最近一次拒绝的原因，以及需要如何改变才能允许该操作。",
               )
             }
             size="sm"
             variant="outline"
           >
-            Explain the latest
+            解释最近一次拒绝
           </Button>
         ) : undefined
       }
-      caption="Read from this deployment's audit trail"
-      title={title ?? "Recent refusals"}
+      caption="读取自此部署的审计记录"
+      title={title ?? "最近的拒绝"}
     >
       <ul className="flex flex-col gap-2">
         {rows.map((row) => (
@@ -252,7 +246,7 @@ function RefusalList({
                 <span className="text-xs text-muted-foreground">{row.bot}</span>
               ) : null}
               <span className="ml-auto text-xs text-muted-foreground">
-                {new Date(row.at).toLocaleString()}
+                {new Date(row.at).toLocaleString("zh-CN")}
               </span>
             </div>
             {row.reason ? (
@@ -274,14 +268,14 @@ export const GALLERY: GalleryComponent[] = [
      * only means to show what the component looks like. Admin draws it as unpreviewable instead.
      */
     name: "showActivityReport",
-    title: "Activity report",
+    title: "活动报告",
     kind: "card",
     description:
-      "Show what this deployment has actually been doing, read from its own records rather than from anything you know. Use for 'what have the Bots been up to' and 'what has been refused'. You choose the report and the period; the figures are read for you and you will not see them.",
+      "显示此部署实际执行过的操作，数据读取自部署自身的记录。可用于回答“智能体最近在做什么”或“哪些操作被拒绝”。你选择报告类型和时间范围，数据会在页面中读取并展示。",
     parameters: ActivityReportProps,
     Component: ActivityReportCard as GalleryComponent["Component"],
     confirmation:
-      "The report is on screen for the person, filled with figures read from this deployment. You were not given the figures.",
+      "报告已显示在用户屏幕上，内容来自此部署读取的统计数据。具体数据不会提供给智能体。",
     reads: (args) => {
       const report = typeof args.report === "string" ? args.report : undefined;
       const functionName = report ? FUNCTION_FOR[report] : undefined;

@@ -61,7 +61,7 @@ export function createRequireUser(
     });
 
     if (!session) {
-      return context.json({ error: "Authentication required." }, 401);
+      return context.json({ error: "需要先登录。" }, 401);
     }
 
     const roles = await roleRepository.rolesForUser(session.user.id);
@@ -72,7 +72,7 @@ export function createRequireUser(
         : undefined;
 
     if (!role) {
-      return context.json({ error: "Authorization required." }, 403);
+      return context.json({ error: "需要授权。" }, 403);
     }
 
     context.set("actor", {
@@ -88,7 +88,7 @@ export function createRequireUser(
 
 export function requireAdmin(context: Context<{ Variables: AppVariables }>) {
   if (context.var.actor.role !== "admin") {
-    return context.json({ error: "Administrator access required." }, 403);
+    return context.json({ error: "需要管理员权限。" }, 403);
   }
 
   return undefined;

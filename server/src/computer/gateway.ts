@@ -520,7 +520,7 @@ export function createComputerGateway(
        */
       if (ref && stored && !element) {
         throw new StaleSnapshotError(
-          `${ref} is not on the page this computer is showing, so nothing can be checked against it before acting. Take a fresh snapshot and use the refs it returns.`,
+          `${ref} 不在此计算机当前显示的页面上，因此操作前无法对其进行检查。请获取新快照并使用其中返回的 ref。`,
         );
       }
       result = await run();
@@ -553,7 +553,7 @@ export function createComputerGateway(
         filePath,
         pageUrl,
         decision,
-        failure: error instanceof Error ? error.message : "The action failed.",
+        failure: error instanceof Error ? error.message : "操作失败。",
       });
       throw error;
     }
@@ -649,9 +649,7 @@ export function createComputerGateway(
       await writeControlEvent(auditStore, "computer.stopped", {
         botId,
         actor,
-        reason: result.wasRunning
-          ? "the computer was stopped"
-          : "the computer was already stopped",
+        reason: result.wasRunning ? "计算机已停止" : "计算机已经停止",
       });
       return result;
     },
@@ -671,8 +669,8 @@ export function createComputerGateway(
         botId,
         actor,
         reason: result.cleared
-          ? "the computer and its saved state were deleted"
-          : "no saved state was present to delete",
+          ? "计算机及其保存的状态已删除"
+          : "没有可删除的已保存状态",
       });
       return result;
     },
@@ -705,7 +703,7 @@ export function createComputerGateway(
         botId,
         actor,
         // Length, never content. Enough to show something real was entered.
-        reason: `${result.characters} characters`,
+        reason: `${result.characters} 个字符`,
       });
       return result;
     },
@@ -727,7 +725,7 @@ export function createComputerGateway(
        */
       if (!HUMAN_GESTURES.has(kind)) {
         throw new Error(
-          `A person's input is one of ${[...HUMAN_GESTURES].join(", ")}, not ${JSON.stringify(kind)}.`,
+          `人员输入必须是 ${[...HUMAN_GESTURES].join(", ")} 之一，而不是 ${JSON.stringify(kind)}。`,
         );
       }
       return post<HumanInputResult>(botId, `/human/${kind}`, payload);

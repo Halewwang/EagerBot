@@ -228,11 +228,11 @@ export function createAuth(
                 targetType: "person",
                 payload: {
                   email: user.email,
-                  reason: "access removed by an administrator",
+                  reason: "管理员移除了访问权限",
                 },
               });
               throw new APIError("FORBIDDEN", {
-                message: "Your access to this deployment has been removed.",
+                message: "你对该部署的访问权限已被移除。",
               });
             }
             return { data: user };
@@ -272,11 +272,11 @@ export function createAuth(
                 actorUserId: session.userId,
                 payload: {
                   email: user.email,
-                  reason: "access removed by an administrator",
+                  reason: "管理员移除了访问权限",
                 },
               });
               throw new APIError("FORBIDDEN", {
-                message: "Your access to this deployment has been removed.",
+                message: "你对该部署的访问权限已被移除。",
               });
             }
             return { data: session };
@@ -317,7 +317,7 @@ export function createAuth(
                 payload: {
                   email: user?.email,
                   reason:
-                    "this address is named in INITIAL_ADMIN_EMAILS, so the configuration granted it",
+                    "该地址列在 INITIAL_ADMIN_EMAILS 中，因此配置授予了它管理员权限",
                 },
               });
             }

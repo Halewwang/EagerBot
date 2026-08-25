@@ -283,14 +283,14 @@ void recordAuditEvent(bootAuditStore, {
     ...policyStore.get(),
     source:
       policySource === "the database"
-        ? "an administrator, saved in this deployment"
+        ? "管理员，已保存到此部署"
         : config.computer?.policy
           ? "configuration"
-          : "the built-in default",
+          : "内置默认值",
     note:
       policySource === "the database"
-        ? "Set while running and kept. A restart returns to this."
-        : "The deployment default. Anything an administrator sets from here is kept.",
+        ? "运行期间设置并已保留。重启后仍会使用此值。"
+        : "部署默认值。管理员在此设置的任何内容都会保留。",
   },
 }).catch(() => undefined);
 
@@ -599,13 +599,13 @@ serve<SocketData>({
       request.headers.get("upgrade")?.toLowerCase() === "websocket"
     ) {
       if (!config.computer) {
-        return new Response("No computer is configured.", { status: 503 });
+        return new Response("未配置计算机。", { status: 503 });
       }
       // The session guard, applied by hand because middleware does not run on an upgrade. An
       // unauthenticated socket here would be the whole point of the proxy defeated.
       const actor = await resolveRequestActor(request).catch(() => null);
       if (!actor) {
-        return new Response("Sign in first.", { status: 401 });
+        return new Response("请先登录。", { status: 401 });
       }
       // And which Bot, which the guard above does not answer. This socket carries that Bot's screen,
       // so signing in is not enough: without this, anybody signed in watches anybody's Bot work.
@@ -614,7 +614,7 @@ serve<SocketData>({
           .get({ id: actor.id, role: actor.role }, streamBotId)
           .catch(() => null))
       ) {
-        return new Response("There is no such Bot.", { status: 404 });
+        return new Response("找不到该智能体。", { status: 404 });
       }
       /*
        * Through the gateway, not the provider.
@@ -630,7 +630,7 @@ serve<SocketData>({
           ? await computerGateway.locate(streamBotId)
           : undefined;
         if (!streamBase) {
-          return new Response("No computer address is configured.", {
+          return new Response("未配置计算机地址。", {
             status: 503,
           });
         }
@@ -639,16 +639,14 @@ serve<SocketData>({
         // Said out loud rather than falling back to another Bot's computer, which is the failure this
         // whole path exists to prevent.
         return new Response(
-          error instanceof Error
-            ? error.message
-            : "That Bot's computer could not be reached.",
+          error instanceof Error ? error.message : "无法访问该智能体的计算机。",
           { status: 502 },
         );
       }
       if (server.upgrade(request, { data: { upstream } })) {
         return undefined as unknown as Response;
       }
-      return new Response("Expected a WebSocket upgrade.", { status: 400 });
+      return new Response("需要 WebSocket 升级请求。", { status: 400 });
     }
     return app.fetch(request, { server });
   },

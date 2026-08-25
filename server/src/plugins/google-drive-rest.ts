@@ -141,7 +141,7 @@ async function request(
   query: Record<string, string>,
 ): Promise<{ ok: true; response: Response } | { ok: false; message: string }> {
   if (!connection.token) {
-    return { ok: false, message: "No credential was available for this call." };
+    return { ok: false, message: "没有可用于此次调用的凭据。" };
   }
 
   const url = new URL(`${connection.url.replace(/\/+$/, "")}${path}`);
@@ -160,8 +160,8 @@ async function request(
       ok: false,
       message:
         error instanceof Error && error.name === "TimeoutError"
-          ? "Google Drive did not answer in time."
-          : `Google Drive could not be reached: ${error instanceof Error ? error.message : String(error)}`,
+          ? "Google Drive 未及时响应。"
+          : `无法访问 Google Drive：${error instanceof Error ? error.message : String(error)}`,
     };
   }
 
@@ -183,8 +183,8 @@ async function request(
     return {
       ok: false,
       message: detail
-        ? `Google Drive refused this request (${response.status}): ${detail}`
-        : `Google Drive refused this request (${response.status}).`,
+        ? `Google Drive 拒绝了此请求（${response.status}）：${detail}`
+        : `Google Drive 拒绝了此请求（${response.status}）。`,
     };
   }
 
@@ -283,7 +283,7 @@ function asResult(text: string): McpCallResult {
   const joined = text.trim();
   if (joined === "") {
     return {
-      text: "The tool returned no content. Nothing was found, so there is nothing here to answer from.",
+      text: "工具未返回内容。没有找到任何内容，因此没有可据此回答的信息。",
       isError: false,
       truncated: false,
     };
@@ -325,7 +325,7 @@ export async function callTool(
   if (toolName === "search_files" || toolName === "list_recent_files") {
     const query = stringArg("query");
     if (toolName === "search_files" && !query) {
-      return failure("A search needs something to search for.");
+      return failure("搜索必须提供搜索内容。");
     }
 
     const result = await request(connection, "/files", {
@@ -343,7 +343,7 @@ export async function callTool(
 
   if (toolName === "get_file_metadata") {
     const fileId = stringArg("fileId");
-    if (!fileId) return failure("A file id is needed to look a file up.");
+    if (!fileId) return failure("查询文件时必须提供文件 ID。");
 
     const result = await request(
       connection,
@@ -367,7 +367,7 @@ export async function callTool(
 
   if (toolName === "read_file_content") {
     const fileId = stringArg("fileId");
-    if (!fileId) return failure("A file id is needed to read a file.");
+    if (!fileId) return failure("读取文件时必须提供文件 ID。");
 
     /*
      * The type is looked up first, because how a file is read depends on what it is. A Doc has no
@@ -399,7 +399,7 @@ export async function callTool(
      */
     if (!exportAs && !isTextual(file.mimeType)) {
       return failure(
-        `${file.name ?? fileId} is a ${file.mimeType ?? "binary"} file, which this connector cannot read as text. Its metadata and link are available, and somebody can open it themselves.`,
+        `${file.name ?? fileId} 是 ${file.mimeType ?? "binary"} 文件，此连接器无法将其作为文本读取。其元数据和链接可用，用户可以自行打开。`,
       );
     }
 
@@ -420,6 +420,6 @@ export async function callTool(
   }
 
   return failure(
-    `${toolName} is not a tool this connector implements. The stored tool list is out of date; refresh it on the Plugins page.`,
+    `${toolName} 不是此连接器实现的工具。已保存的工具列表已过期，请在插件页面刷新。`,
   );
 }

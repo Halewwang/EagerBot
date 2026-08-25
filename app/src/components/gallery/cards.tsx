@@ -141,7 +141,7 @@ export function ChecklistCard({
             done === items.length && items.length > 0 ? "positive" : "neutral"
           }
         >
-          {done} of {items.length}
+          {done}/{items.length}
         </Badge>
       }
       caption={caption}
@@ -224,84 +224,83 @@ export function NoticeCard({
 export const GALLERY: GalleryComponent[] = [
   {
     name: "showRecord",
-    title: "Record",
+    title: "记录",
     kind: "card",
     description:
-      "Show one thing and its fields, an order, a person, a ticket. Use instead of describing a record in prose.",
+      "显示一条记录及其字段，例如订单、人员或工单。用它替代在文字中描述记录。",
     parameters: RecordCardProps,
     Component: RecordCard as GalleryComponent["Component"],
     preview: {
-      title: "Invoice 2043",
-      subtitle: "Northwind Traders",
-      status: "Approved",
+      title: "发票 2043",
+      subtitle: "北风贸易",
+      status: "已批准",
       fields: [
-        { label: "Amount", value: "$4,280.00" },
-        { label: "Raised", value: "12 March" },
-        { label: "Owner", value: "Priya Raman" },
+        { label: "金额", value: "$4,280.00" },
+        { label: "创建日期", value: "3 月 12 日" },
+        { label: "负责人", value: "普莉娅·拉曼" },
       ],
     },
-    confirmation: "The record is now on screen for the person.",
+    confirmation: "记录已显示在用户屏幕上。",
   },
   {
     name: "showMetrics",
-    title: "Headline figures",
+    title: "关键指标",
     kind: "card",
     description:
-      "Show up to six headline figures, each with an optional movement. Use for a summary somebody reads at a glance.",
+      "显示最多六个关键指标，每个指标可带有变化值。适合用于一眼即可读懂的摘要。",
     parameters: MetricsCardProps,
     Component: MetricsCard as GalleryComponent["Component"],
     preview: {
-      title: "This month",
+      title: "本月",
       metrics: [
         {
-          label: "Revenue",
+          label: "收入",
           value: "$412k",
-          change: "+12% on last month",
+          change: "较上月 +12%",
           changeTone: "positive",
         },
-        { label: "Open deals", value: "38" },
+        { label: "进行中的交易", value: "38" },
         {
-          label: "Churn",
+          label: "流失率",
           value: "1.4%",
-          change: "+0.3pt",
+          change: "+0.3 个百分点",
           changeTone: "caution",
         },
       ],
     },
-    confirmation: "The figures are now on screen for the person.",
+    confirmation: "指标已显示在用户屏幕上。",
   },
   {
     name: "showChecklist",
-    title: "Checklist",
+    title: "检查清单",
     kind: "card",
     description:
-      "Show a list of things and which are done. Reporting only, the person cannot tick these, so do not use it to ask for anything.",
+      "显示事项列表及其完成状态。该组件仅用于展示，用户无法勾选，因此不要用它来请求操作。",
     parameters: ChecklistCardProps,
     Component: ChecklistCard as GalleryComponent["Component"],
     preview: {
-      title: "Before the release",
+      title: "发布前",
       items: [
-        { text: "Migrations applied", done: true },
-        { text: "Changelog written", done: true },
-        { text: "Load test", done: false, note: "Waiting on staging" },
+        { text: "已应用迁移", done: true },
+        { text: "已编写变更日志", done: true },
+        { text: "负载测试", done: false, note: "等待预发布环境" },
       ],
     },
-    confirmation: "The checklist is now on screen for the person.",
+    confirmation: "检查清单已显示在用户屏幕上。",
   },
   {
     name: "showNotice",
-    title: "Notice",
+    title: "通知",
     kind: "card",
-    description:
-      "Show a headline, a short explanation and optional supporting points. Use instead of writing several paragraphs of prose.",
+    description: "显示标题、简短说明及可选的补充要点。适合替代多段文字描述。",
     parameters: NoticeCardProps,
     Component: NoticeCard as GalleryComponent["Component"],
     preview: {
-      title: "Certificate expires in 30 days",
-      body: "The checkout certificate has an owner now, and this is the first of the new alerts.",
+      title: "证书将在 30 天后过期",
+      body: "结账证书现在已有负责人，这是新提醒中的第一条。",
       tone: "caution",
-      points: ["Owner: Platform", "Renews automatically once approved"],
+      points: ["负责人：平台团队", "批准后自动续期"],
     },
-    confirmation: "The notice is now on screen for the person.",
+    confirmation: "通知已显示在用户屏幕上。",
   },
 ];

@@ -56,8 +56,8 @@ export function ApprovalCard(props: Waiting<ApprovalArgs> & { name?: string }) {
 
   if (status === "inProgress") {
     return (
-      <GalleryFrame title={args.title ?? "Waiting for the assistant…"}>
-        <p className="text-sm text-muted-foreground">Preparing the request…</p>
+      <GalleryFrame title={args.title ?? "等待助手…"}>
+        <p className="text-sm text-muted-foreground">正在准备请求…</p>
       </GalleryFrame>
     );
   }
@@ -70,10 +70,10 @@ export function ApprovalCard(props: Waiting<ApprovalArgs> & { name?: string }) {
       action={
         decided ? (
           <Badge tone={decided === "approved" ? "positive" : "negative"}>
-            {decided === "approved" ? "Approved" : "Declined"}
+            {decided === "approved" ? "已批准" : "已拒绝"}
           </Badge>
         ) : (
-          <Badge tone="caution">Waiting on you</Badge>
+          <Badge tone="caution">等待你的操作</Badge>
         )
       }
       title={args.title}
@@ -94,11 +94,11 @@ export function ApprovalCard(props: Waiting<ApprovalArgs> & { name?: string }) {
       {decided ? null : (
         <div className="mt-4 space-y-2">
           <input
-            aria-label="A reason, if you want to give one"
+            aria-label="原因（可选）"
             className="w-full rounded-md border border-border bg-transparent px-3 py-1.5 text-sm"
             disabled={Boolean(sending)}
             onChange={(event) => setNote(event.target.value)}
-            placeholder="A reason, if you want to give one"
+            placeholder="原因（可选）"
             value={note}
           />
           <div className="flex gap-2">
@@ -108,8 +108,8 @@ export function ApprovalCard(props: Waiting<ApprovalArgs> & { name?: string }) {
               size="sm"
             >
               {sending === "approved"
-                ? "Sending…"
-                : (args.approveLabel ?? "Approve")}
+                ? "发送中…"
+                : (args.approveLabel ?? "批准")}
             </Button>
             <Button
               disabled={Boolean(sending)}
@@ -118,8 +118,8 @@ export function ApprovalCard(props: Waiting<ApprovalArgs> & { name?: string }) {
               variant="outline"
             >
               {sending === "declined"
-                ? "Sending…"
-                : (args.rejectLabel ?? "Decline")}
+                ? "发送中…"
+                : (args.rejectLabel ?? "拒绝")}
             </Button>
           </div>
         </div>
@@ -155,8 +155,8 @@ export function ChoiceCard(props: Waiting<ChoiceArgs>) {
 
   if (status === "inProgress") {
     return (
-      <GalleryFrame title={args.title ?? "Waiting for the assistant…"}>
-        <p className="text-sm text-muted-foreground">Preparing the question…</p>
+      <GalleryFrame title={args.title ?? "等待助手…"}>
+        <p className="text-sm text-muted-foreground">正在准备问题…</p>
       </GalleryFrame>
     );
   }
@@ -167,9 +167,9 @@ export function ChoiceCard(props: Waiting<ChoiceArgs>) {
     <GalleryFrame
       action={
         chosen ? (
-          <Badge tone="positive">Answered</Badge>
+          <Badge tone="positive">已回答</Badge>
         ) : (
-          <Badge tone="caution">Waiting on you</Badge>
+          <Badge tone="caution">等待你的选择</Badge>
         )
       }
       caption={args.summary}
@@ -248,10 +248,10 @@ function readChoice(result: string | undefined): string | undefined {
 export const GALLERY: GalleryComponent[] = [
   {
     name: "askApproval",
-    title: "Approval",
+    title: "审批",
     kind: "decision",
     description:
-      "Ask the person to approve or decline something, and WAIT for their answer. Use before doing anything you cannot undo, spending money, sending a message, changing a record. You are given their decision and any reason they typed.",
+      "请用户批准或拒绝某项操作，并等待用户回答。在执行不可撤销的操作、花费资金、发送消息或修改记录前使用。你会收到用户的决定及其填写的原因。",
     parameters: ApprovalCardProps,
     Component: ApprovalCard as GalleryComponent["Component"],
     preview: {
@@ -259,42 +259,41 @@ export const GALLERY: GalleryComponent[] = [
       // so its arguments arrive wrapped in the state of the decision it is waiting on.
       status: "executing",
       args: {
-        title: "Refund this order?",
-        summary:
-          "The customer was charged twice for the same order and the second charge has not settled.",
+        title: "是否为此订单退款？",
+        summary: "客户因同一订单被重复扣款，第二笔扣款尚未结算。",
         details: [
-          { label: "Amount", value: "$128.40" },
-          { label: "Customer", value: "Northwind Traders" },
-          { label: "Order", value: "2043" },
+          { label: "金额", value: "$128.40" },
+          { label: "客户", value: "北风贸易" },
+          { label: "订单", value: "2043" },
         ],
-        approveLabel: "Refund",
+        approveLabel: "退款",
       },
       respond: async () => {},
     },
   },
   {
     name: "askChoice",
-    title: "Choice",
+    title: "选择",
     kind: "decision",
     description:
-      "Ask the person to pick one of several options, and WAIT for their answer. Use when you cannot sensibly guess which one they meant. You are given the id of the option they chose.",
+      "请用户从多个选项中选择一个，并等待用户回答。当你无法合理推断用户意图时使用。你会收到用户所选选项的 id。",
     parameters: ChoiceCardProps,
     Component: ChoiceCard as GalleryComponent["Component"],
     preview: {
       status: "executing",
       args: {
-        title: "Which environment should this go to?",
-        summary: "The build is green and nothing else is queued.",
+        title: "应部署到哪个环境？",
+        summary: "构建已通过，当前没有其他排队任务。",
         options: [
           {
             id: "staging",
-            label: "Staging",
-            description: "Safe, and reversible",
+            label: "预发布环境",
+            description: "安全且可回滚",
           },
           {
             id: "production",
-            label: "Production",
-            description: "Live customers",
+            label: "生产环境",
+            description: "面向真实客户",
           },
         ],
       },

@@ -51,14 +51,14 @@ function describe(person: Person): string {
     .map((provider) => PROVIDER_NAMES[provider] ?? provider)
     .join(", ");
   const when = person.lastSignedInAt
-    ? `last signed in ${new Date(person.lastSignedInAt).toLocaleDateString()}`
-    : "never signed in";
+    ? `最近登录于 ${new Date(person.lastSignedInAt).toLocaleDateString("zh-CN")}`
+    : "从未登录";
 
-  if (person.revoked) return `Access removed · ${providers || "no provider"}`;
+  if (person.revoked) return `访问权限已移除 · ${providers || "无提供商"}`;
   if (person.configuredAdmin) {
-    return `Administrator by configuration · ${when}`;
+    return `由配置指定为管理员 · ${when}`;
   }
-  return `${providers || "no provider"} · ${when}`;
+  return `${providers || "无提供商"} · ${when}`;
 }
 
 function PeoplePage() {
@@ -85,12 +85,12 @@ function PeoplePage() {
 
   return (
     <PageShell
-      description="Everybody who has signed in. Administrators reach these screens; everybody else talks to Bots."
-      title="People"
+      description="所有登录过的用户。管理员可以访问这些页面，其他用户与智能体对话。"
+      title="用户"
     >
       <PageSection
-        description="An address named in INITIAL_ADMIN_EMAILS is an administrator whatever this screen says, so it cannot be changed here."
-        title="Who is here"
+        description="INITIAL_ADMIN_EMAILS 中列出的地址始终是管理员，无论此页面显示什么，因此无法在此更改。"
+        title="用户列表"
       >
         {failure ? (
           <p className="mt-4 text-destructive text-sm" role="alert">
@@ -102,22 +102,22 @@ function PeoplePage() {
           is the opposite of what somebody looking for a colleague needs.
         */}
         <Input
-          aria-label="Search people"
+          aria-label="搜索用户"
           className="mt-4"
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search by name or address"
+          placeholder="按姓名或地址搜索"
           value={search}
         />
 
         {people.isPending ? null : people.error ? (
           <p className="mt-4 text-destructive text-sm" role="alert">
-            Could not load people.
+            无法加载用户。
           </p>
         ) : rows.length === 0 ? (
           <PageEmpty>
             {query
-              ? `Nobody here matches "${query}".`
-              : "Nobody has signed in yet. People appear here once they do."}
+              ? `没有匹配“${query}”的用户。`
+              : "还没有用户登录。用户登录后会显示在这里。"}
           </PageEmpty>
         ) : (
           <PageRows>
@@ -161,10 +161,10 @@ function PeoplePage() {
                         size="sm"
                         variant={person.revoked ? "outline" : "destructive"}
                       >
-                        {person.revoked ? "Restore" : "Remove"}
+                        {person.revoked ? "恢复" : "移除"}
                       </Button>
                       <Switch
-                        aria-label={`Administrator: ${person.email}`}
+                        aria-label={`管理员：${person.email}`}
                         checked={person.role === "admin"}
                         disabled={busy || person.configuredAdmin || isSelf}
                         onCheckedChange={(checked) =>
@@ -195,7 +195,7 @@ function PeoplePage() {
             size="sm"
             variant="outline"
           >
-            {people.isFetchingNextPage ? "Loading…" : "Show more"}
+            {people.isFetchingNextPage ? "加载中…" : "显示更多"}
           </Button>
         ) : null}
       </PageSection>

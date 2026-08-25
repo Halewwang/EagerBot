@@ -72,11 +72,11 @@ export async function callComputer(
   } catch (error) {
     // An abort is a stopped run, not a computer failure.
     if (error instanceof DOMException && error.name === "AbortError") {
-      return { ok: false, reason: "Stopped.", stopped: true };
+      return { ok: false, reason: "已停止。", stopped: true };
     }
     return {
       ok: false,
-      reason: "The assistant's computer could not be reached.",
+      reason: "无法连接助手的电脑。",
     };
   }
 
@@ -88,7 +88,7 @@ export async function callComputer(
   if (!response.ok) {
     return {
       ok: false,
-      reason: (body?.error as string) ?? "That did not work.",
+      reason: (body?.error as string) ?? "操作未成功。",
       // Preserve refusal/stale-ref/control distinctions for the model's next step.
       ...(response.status === 403
         ? { refused: true, rule: body?.rule ?? null }
@@ -313,11 +313,9 @@ export function ComputerTools() {
       return (
         <ActionLine
           running={status !== "complete"}
-          label="Read the page"
+          label="读取页面"
           detail={
-            elements.length
-              ? `${elements.length} thing${elements.length === 1 ? "" : "s"} it can act on`
-              : undefined
+            elements.length ? `可操作的页面元素：${elements.length}` : undefined
           }
         />
       );
@@ -362,7 +360,7 @@ export function ComputerTools() {
     render: ({ args, result, status }) => (
       <ActionLine
         running={status !== "complete"}
-        label="Filled in"
+        label="已填写"
         detail={
           // Never show typed values; identify only the target field.
           labelOf(result) ??
@@ -405,7 +403,7 @@ export function ComputerTools() {
       return (
         <ActionLine
           running={status !== "complete"}
-          label="Clicked"
+          label="已点击"
           detail={
             // Show refusal reason instead of an internal element ref.
             outcome.refused === true
@@ -453,7 +451,7 @@ export function ComputerTools() {
     render: ({ args, result, status }) => (
       <ActionLine
         running={status !== "complete"}
-        label="Pressed"
+        label="已按下"
         detail={typeof args?.key === "string" ? args.key : undefined}
         refused={outcomeOf(result).refused === true}
         failed={didNotWork(outcomeOf(result))}
@@ -509,10 +507,10 @@ export function ComputerTools() {
         ok: true,
         result:
           outcome === "answered"
-            ? `The person has entered ${input.label} into the field. It was typed straight into the page and you were not told what it is.`
+            ? `用户已将${input.label}输入字段。内容直接输入网页，未告知你具体值。`
             : outcome === "cancelled"
-              ? "The request was cancelled."
-              : `Nobody entered ${input.label}. Do not ask for it another way.`,
+              ? "请求已取消。"
+              : `用户没有输入${input.label}。不要通过其他方式索要。`,
       };
     },
     // Rendered by ComputerView as a masked prompt.
@@ -547,11 +545,11 @@ export function ComputerTools() {
           { method: "POST", body: input, signal },
         );
         return response.ok
-          ? "Recorded. Now tell the person what you decided and why."
-          : "That could not be recorded. Tell the person what you decided anyway.";
+          ? "已记录。现在告诉用户你的决定及原因。"
+          : "无法记录。请直接告诉用户你的决定。";
       } catch {
         // Audit bookkeeping must not prevent the Bot from answering.
-        return "That could not be recorded. Tell the person what you decided anyway.";
+        return "无法记录。请直接告诉用户你的决定。";
       }
     },
     render: () => null,
@@ -600,10 +598,10 @@ export function ComputerTools() {
         ok: true,
         result:
           outcome === "answered"
-            ? "The person has finished and handed control back. Take a fresh snapshot: the page may have changed while they were driving."
+            ? "用户已完成操作并交还控制权。请重新获取页面快照：用户操作期间页面可能已发生变化。"
             : outcome === "cancelled"
-              ? "The request was cancelled."
-              : "Nobody took control. Say what you still need rather than trying to do it yourself.",
+              ? "请求已取消。"
+              : "用户没有接管控制权。请说明仍需要什么，不要继续自行尝试。",
       };
     },
     // Rendered by ComputerView as the take-the-wheel prompt.
@@ -642,13 +640,13 @@ export function ComputerTools() {
       return (
         <ActionLine
           running={status !== "complete"}
-          label="Listed files"
+          label="已列出文件"
           detail={
             outcome.refused === true || didNotWork(outcome)
               ? String(outcome.reason ?? "")
               : entries.length
-                ? `${entries.length} item${entries.length === 1 ? "" : "s"} in the workspace`
-                : "nothing saved yet"
+                ? `工作区中有 ${entries.length} 项`
+                : "尚未保存任何内容"
           }
           refused={outcome.refused === true}
           failed={didNotWork(outcome)}
@@ -687,7 +685,7 @@ export function ComputerTools() {
       return (
         <ActionLine
           running={status !== "complete"}
-          label="Read file"
+          label="读取文件"
           detail={
             outcome.refused === true
               ? String(outcome.reason ?? "")
@@ -763,7 +761,7 @@ export function ComputerTools() {
       return (
         <ToolLine
           running={status !== "complete"}
-          label="Ran a command"
+          label="已执行命令"
           detail={
             outcome.refused === true
               ? String(outcome.reason ?? "")
@@ -838,7 +836,7 @@ export function ComputerTools() {
       return (
         <ActionLine
           running={status !== "complete"}
-          label={args?.append === true ? "Added to file" : "Saved file"}
+          label={args?.append === true ? "已追加到文件" : "已保存文件"}
           // Show the path, never file contents.
           detail={
             outcome.refused === true
@@ -880,7 +878,7 @@ export function ComputerTools() {
     render: ({ result, status }) => (
       <ActionLine
         running={status !== "complete"}
-        label="Scrolled"
+        label="已滚动"
         refused={outcomeOf(result).refused === true}
         failed={didNotWork(outcomeOf(result))}
       />

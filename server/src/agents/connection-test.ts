@@ -134,8 +134,8 @@ export async function testAgentConnection(
     return {
       ok: false,
       reason: timedOut
-        ? "The agent did not answer in time. It may be starting up, or the address may be unreachable from this server."
-        : "This server could not reach that address. If your agent runs on your own machine, it needs to be reachable from here, a tunnel, or somewhere this server can dial.",
+        ? "智能体未能及时响应。它可能正在启动，或者此服务器无法访问该地址。"
+        : "此服务器无法访问该地址。如果智能体运行在你自己的设备上，它需要能从此处访问，或通过隧道，或部署在此服务器可以连接的位置。",
     };
   }
 
@@ -145,8 +145,8 @@ export async function testAgentConnection(
       status: response.status,
       reason:
         response.status === 401 || response.status === 403
-          ? "The agent refused this request. If it needs a key, add it as a header."
-          : `The agent answered ${response.status}. An AG-UI endpoint answers a POST with a stream of events.`,
+          ? "智能体拒绝了此请求。如果它需要密钥，请将密钥作为请求头添加。"
+          : `智能体返回了 ${response.status}。AG-UI 端点应通过 POST 返回事件流。`,
     };
   }
 
@@ -157,7 +157,7 @@ export async function testAgentConnection(
     return {
       ok: false,
       status: response.status,
-      reason: "The agent started answering and the connection broke.",
+      reason: "智能体已开始响应，但连接中断。",
     };
   }
 
@@ -168,7 +168,7 @@ export async function testAgentConnection(
     return {
       ok: false,
       status: response.status,
-      reason: `That address answered, but not with AG-UI events (it sent ${contentType}). Check it is the agent's AG-UI path and not its home page.`,
+      reason: `该地址已响应，但返回的不是 AG-UI 事件（返回了 ${contentType}）。请确认这是智能体的 AG-UI 路径，而不是主页。`,
     };
   }
 

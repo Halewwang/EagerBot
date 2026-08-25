@@ -98,9 +98,7 @@ export function ComponentPreview({
          * towards its background exactly when it needed to move away from it.
          */}
         <p className="text-center text-neutral-700 text-xs">
-          {entry
-            ? "This one is only drawn in a conversation."
-            : "This build cannot draw this."}
+          {entry ? "此组件只能在对话中显示。" : "此构建无法显示此组件。"}
         </p>
       </div>
     );

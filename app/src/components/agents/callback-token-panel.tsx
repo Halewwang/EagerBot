@@ -37,19 +37,19 @@ export function CallbackTokenPanel({
   return (
     <section className="mt-6 grid gap-2">
       <h2 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-        Calling tools back
+        工具回调凭据
       </h2>
 
       <p className="text-muted-foreground text-sm">
         {hasToken
-          ? "This coworker holds a credential, so it can use the tools it has been granted. Rotating replaces it, and the old one stops working straight away."
-          : "This coworker has no credential, so it can hold a conversation but cannot use any tool it has been granted. Generate one and put it in that agent's configuration."}
+          ? "该智能体已持有凭据，因此可以使用授予它的工具。轮换后会立即替换凭据，旧凭据也会马上失效。"
+          : "该智能体没有凭据，因此可以进行对话，但无法使用授予它的工具。请生成凭据，并将其填入该智能体的配置。"}
       </p>
 
       {token ? (
         <div className="grid gap-2 rounded-lg border border-border bg-card p-3">
           <p className="font-medium text-sm">
-            Copy this now. It will not be shown again.
+            请立即复制。此凭据不会再次显示。
           </p>
           {/*
            * Selectable and wrapped rather than a copy button alone: somebody pasting this into a
@@ -59,11 +59,10 @@ export function CallbackTokenPanel({
             {token}
           </code>
           <p className="text-muted-foreground text-xs">
-            The deployment keeps only a hash of it, so nothing here can show it
-            to you a second time.
+            部署端只保存凭据的哈希值，因此这里无法再次向你显示它。
           </p>
           <Button onClick={() => setToken(null)} size="sm" variant="outline">
-            Done
+            完成
           </Button>
         </div>
       ) : (
@@ -74,11 +73,7 @@ export function CallbackTokenPanel({
             size="sm"
             variant="outline"
           >
-            {issue.isPending
-              ? "Generating…"
-              : hasToken
-                ? "Rotate token"
-                : "Generate token"}
+            {issue.isPending ? "生成中…" : hasToken ? "轮换凭据" : "生成凭据"}
           </Button>
           {hasToken ? (
             <Button
@@ -87,7 +82,7 @@ export function CallbackTokenPanel({
               size="sm"
               variant="outline"
             >
-              {revoke.isPending ? "Revoking…" : "Revoke"}
+              {revoke.isPending ? "撤销中…" : "撤销"}
             </Button>
           ) : null}
         </div>

@@ -47,9 +47,7 @@ export function GalleryPreview({
   columns?: 1 | 2;
 }) {
   if (!available) {
-    return (
-      <p className="text-muted-foreground text-sm">Loading what it can draw…</p>
-    );
+    return <p className="text-muted-foreground text-sm">正在加载可渲染内容…</p>;
   }
 
   const granted = new Map(
@@ -62,7 +60,7 @@ export function GalleryPreview({
   if (shown.length === 0) {
     return (
       <p className="text-muted-foreground text-sm">
-        This Bot has not been granted any components, so it answers in prose.
+        此 Bot 尚未获授予任何组件，因此会以文字回答。
       </p>
     );
   }
@@ -117,8 +115,7 @@ function PreviewOf({ name }: { name: string }) {
      */
     return (
       <p className="text-muted-foreground text-sm">
-        Draws this deployment's own records, so it has nothing to show until a
-        Bot asks for it.
+        此组件读取此部署自身的记录，因此只有 Bot 请求后才会显示内容。
       </p>
     );
   }

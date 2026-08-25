@@ -46,36 +46,32 @@ export function parseAgentInput(
   allowedHosts: ReadonlySet<string> = new Set(),
 ): AgentInputParseResult {
   if (!isAgentInputObject(input)) {
-    return { ok: false, error: "Agent input must be a JSON object." };
+    return { ok: false, error: "智能体输入必须是 JSON 对象。" };
   }
 
-  const name = boundedText(
-    input.name,
-    80,
-    "Name must be text between 1 and 80 characters.",
-  );
+  const name = boundedText(input.name, 80, "名称必须是 1 到 80 个字符的文本。");
   if (typeof name !== "string") return name;
 
   const title = boundedText(
     input.title,
     120,
-    "Title must be text between 1 and 120 characters.",
+    "标题必须是 1 到 120 个字符的文本。",
   );
   if (typeof title !== "string") return title;
 
   const roleDescription = boundedText(
     input.roleDescription,
     1000,
-    "Role description must be text between 1 and 1000 characters.",
+    "角色描述必须是 1 到 1000 个字符的文本。",
   );
   if (typeof roleDescription !== "string") return roleDescription;
 
   if (typeof input.visibility !== "string") {
-    return { ok: false, error: "Visibility must be public or private." };
+    return { ok: false, error: "可见性必须是 public 或 private。" };
   }
   const visibility = input.visibility.trim();
   if (visibility !== "public" && visibility !== "private") {
-    return { ok: false, error: "Visibility must be public or private." };
+    return { ok: false, error: "可见性必须是 public 或 private。" };
   }
 
   // The endpoint is optional and checked. Absent means the Bot in the box, which is what most people
@@ -104,7 +100,7 @@ export function parseAgentInput(
           ? supplied.header.trim()
           : "Authorization";
       if (!/^[A-Za-z0-9-]+$/.test(header)) {
-        return { ok: false, error: "That is not a valid header name." };
+        return { ok: false, error: "这不是有效的请求头名称。" };
       }
       auth = { header, value };
     }
@@ -164,7 +160,7 @@ export function createAgentRoutes(
 
     const reason = typeof body?.reason === "string" ? body.reason.trim() : "";
     if (!reason) {
-      return context.json({ error: "A reason is required." }, 400);
+      return context.json({ error: "必须提供原因。" }, 400);
     }
 
     if (auditStore) {
@@ -185,7 +181,7 @@ export function createAgentRoutes(
           ...(typeof body?.request === "string" && body.request.trim()
             ? { request: body.request.trim().slice(0, 500) }
             : {}),
-          reportedBy: "the Bot itself",
+          reportedBy: "智能体自身",
         },
       });
     }
@@ -212,7 +208,7 @@ export function createAgentRoutes(
         context.req.param("agentId"),
       );
       if (!agent) {
-        return context.json({ error: "Agent not found." }, 404);
+        return context.json({ error: "找不到智能体。" }, 404);
       }
       return context.json({ agent: agentDto(context.var.actor, agent) });
     } catch (error) {
@@ -481,16 +477,13 @@ function agentDto(actor: AgentActor, agent: AgentProfile) {
 
 function mapStoreError(context: Context, error: unknown): Response {
   if (error instanceof AgentNotFoundError) {
-    return context.json({ error: "Agent not found." }, 404);
+    return context.json({ error: "找不到智能体。" }, 404);
   }
   if (error instanceof AgentNotManageableError) {
-    return context.json(
-      { error: "You do not have permission to manage this agent." },
-      403,
-    );
+    return context.json({ error: "你没有管理此智能体的权限。" }, 403);
   }
   if (error instanceof ProtectedAgentError) {
-    return context.json({ error: "System-owned agents are protected." }, 403);
+    return context.json({ error: "系统所有的智能体受到保护。" }, 403);
   }
   if (error instanceof ManagedAgentUnavailableError) {
     return context.json({ error: error.message }, 400);
