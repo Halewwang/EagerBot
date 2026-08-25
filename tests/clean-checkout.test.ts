@@ -93,4 +93,12 @@ describe("a clone that has only run bun install", () => {
       );
     }
   });
+
+  test("allows only the selected managed Bot host by default", () => {
+    const start = readFileSync(join(root, "scripts", "start.sh"), "utf8");
+    expect(start).toContain(
+      `AGENT_ENDPOINT_ALLOWED_HOSTS="$(setting AGENT_ENDPOINT_ALLOWED_HOSTS "localhost:\${LANGGRAPH_PORT}")"`,
+    );
+    expect(start).toContain("export AGENT_ENDPOINT_ALLOWED_HOSTS");
+  });
 });

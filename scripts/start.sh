@@ -51,6 +51,11 @@ COMPUTER_TOKEN="$(setting COMPUTER_TOKEN openbot-dev-computer-token)"
 MANAGED_AGENT_AG_UI_URL="$(setting MANAGED_AGENT_AG_UI_URL "http://localhost:${LANGGRAPH_PORT}/ag-ui")"
 export MANAGED_AGENT_AG_UI_URL
 
+# The server's endpoint check refuses private hosts by default. Keep the local managed Bot reachable
+# through the exact host and port this script selected, while preserving any explicit allow-list.
+AGENT_ENDPOINT_ALLOWED_HOSTS="$(setting AGENT_ENDPOINT_ALLOWED_HOSTS "localhost:${LANGGRAPH_PORT}")"
+export AGENT_ENDPOINT_ALLOWED_HOSTS
+
 # Whether this run minted a secret that something already running may not have.
 #
 # A process that is answering is not necessarily a process holding the current configuration, and
