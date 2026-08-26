@@ -125,7 +125,7 @@ describe("connecting a manually registered vendor (regression pin)", () => {
     expect(response.status).toBe(409);
     expect(ensureCalls).toEqual([]);
     const body = (await response.json()) as { error: string };
-    expect(body.error).toContain("no OAuth client registered");
+    expect(body.error).toContain("尚未注册 OAuth 客户端");
   });
 });
 

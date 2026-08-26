@@ -38,9 +38,7 @@ function RouteComponent() {
     return (
       <div className="flex h-screen items-center justify-center p-6">
         <p className="text-muted-foreground text-sm">
-          {agent
-            ? `This deployment has no Bot called "${agent}".`
-            : "This deployment has no Bots yet."}
+          {agent ? `此部署没有名为“${agent}”的智能体。` : "此部署暂无智能体。"}
         </p>
       </div>
     );
@@ -104,7 +102,7 @@ function BotChat({ agentId }: { agentId: string }) {
           data-testid="bot-chat-history-unavailable"
           role="alert"
         >
-          无法加载此对话中的较早消息，Bot 将在缺少这些消息的情况下回答。
+          无法加载此对话中的较早消息，智能体将在缺少这些消息的情况下回答。
         </p>
       ) : null}
       {/*

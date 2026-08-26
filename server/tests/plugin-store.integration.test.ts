@@ -1761,7 +1761,7 @@ describe("a dynamic client the vendor has evicted", () => {
      * usable one — only a new consent under the client that now exists.
      */
     await expect(call()).rejects.toThrow(
-      "Notion no longer recognises this deployment's OAuth client",
+      "Notion 不再识别此部署的 OAuth 客户端",
     );
 
     /*
@@ -1804,7 +1804,7 @@ describe("a dynamic client the vendor has evicted", () => {
     issue = () => ({ clientId: "dyn-3", clientSecret: "" });
 
     await expect(call()).rejects.toThrow(
-      "Notion no longer recognises this deployment's OAuth client",
+      "Notion 不再识别此部署的 OAuth 客户端",
     );
     expect(registrations.length).toBe(1);
     expect(exchanges).toEqual([
@@ -1870,7 +1870,7 @@ describe("a dynamic client the vendor has evicted", () => {
       );
 
     await expect(call()).rejects.toThrow(
-      "Notion no longer recognises this deployment's OAuth client",
+      "Notion 不再识别此部署的 OAuth 客户端",
     );
 
     expect(offered).toEqual([EVICTED.clientId]);
@@ -2577,9 +2577,7 @@ describe("a vendor reply that is not a token", () => {
           client: replyClient,
           refreshToken: "rt-1",
         }),
-      ).rejects.toThrow(
-        "The vendor answered this renewal with something other than a token.",
-      );
+      ).rejects.toThrow("供应商续订时返回的内容不是令牌。");
     } finally {
       globalThis.fetch = realFetch;
     }
@@ -2599,7 +2597,7 @@ describe("a vendor reply that is not a token", () => {
           client: replyClient,
           refreshToken: "rt-1",
         }),
-      ).rejects.toThrow("The vendor renewed this access with no token.");
+      ).rejects.toThrow("供应商续订了此访问权限，但未返回令牌。");
     } finally {
       globalThis.fetch = realFetch;
     }
@@ -2620,7 +2618,7 @@ describe("a vendor reply that is not a token", () => {
           client: replyClient,
           refreshToken: "rt-1",
         }),
-      ).rejects.toThrow("The vendor would not renew this access (502).");
+      ).rejects.toThrow("供应商不愿续订此访问权限（502）。");
     } finally {
       globalThis.fetch = realFetch;
     }
