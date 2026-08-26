@@ -12,6 +12,7 @@
  */
 import { IconFile, IconFolder, IconTerminal2 } from "@tabler/icons-react";
 import { useSyncExternalStore } from "react";
+import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import {
   activityFor,
   type ComputerActivity,
@@ -35,7 +36,7 @@ const LABELS = {
 } as const;
 
 function timeOf(at: number): string {
-  return new Date(at).toLocaleTimeString("zh-CN", {
+  return new Date(at).toLocaleTimeString(undefined, {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -102,9 +103,13 @@ export function ActivityLog({ computerId }: { computerId: string }) {
 
   if (entries.length === 0) {
     return (
-      <p className="py-6 text-center text-muted-foreground text-sm">
-        暂无记录。Bot 执行的命令和读取的文件会在这里实时显示。
-      </p>
+      <Empty className="h-[180px] border border-dashed">
+        <EmptyHeader>
+          <EmptyTitle className="text-muted-foreground">
+            暂无记录。智能体执行的命令和读取的文件会在这里实时显示。
+          </EmptyTitle>
+        </EmptyHeader>
+      </Empty>
     );
   }
 

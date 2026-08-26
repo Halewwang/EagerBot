@@ -53,8 +53,38 @@ export type PluginKind = "mcp" | "skill";
 
 const FALLBACK = "操作失败。";
 
-function invalidatePlugins(queryClient: QueryClient) {
+/**
+ * Refetch everything the plugin screens read.
+ *
+ * Exported because a bulk grant has to say when: N of these in a row, each awaiting its own
+ * refetch, is a dialog that spends most of a batch re-reading a list nobody has looked at yet.
+ */
+export function invalidatePlugins(queryClient: QueryClient) {
   return queryClient.invalidateQueries({ queryKey: pluginKeys.all });
+}
+
+/**
+ * Grant one plugin to one Bot, and refetch nothing.
+ *
+ * The write on its own, for the caller granting a batch of them: the server still records a row per
+ * grant, so the audit trail is unchanged, but the reader is refreshed once at the end rather than
+ * between every pair. Anything granting a single one should use the mutation below instead, which
+ * carries the refetch with it.
+ */
+export function grantPlugin(variables: {
+  kind: PluginKind;
+  ref: string;
+  agentId: string;
+}): Promise<unknown> {
+  return client("/api/plugins/grants", {
+    method: "POST",
+    body: {
+      kind: variables.kind,
+      ref: variables.ref,
+      agentId: variables.agentId,
+    },
+    fallback: "无法更改该智能体。",
+  });
 }
 
 /**
@@ -72,15 +102,7 @@ export function setPluginGrantMutationOptions(queryClient: QueryClient) {
       granted: boolean;
     }) => {
       if (variables.granted) {
-        await client("/api/plugins/grants", {
-          method: "POST",
-          body: {
-            kind: variables.kind,
-            ref: variables.ref,
-            agentId: variables.agentId,
-          },
-          fallback: "无法更改该智能体。",
-        });
+        await grantPlugin(variables);
         return;
       }
       await client(
@@ -160,7 +182,7 @@ export function saveSkillMutationOptions(queryClient: QueryClient) {
          * The server refuses for reasons a form cannot check — a slug somebody else already owns is
          * the common one — and paraphrasing that would throw away the only part worth reading.
          */
-        fallback: "无法保存技能。",
+        fallback: "无法保存该技能。",
       }),
     onSuccess: () => invalidatePlugins(queryClient),
   });
