@@ -12,7 +12,7 @@
 - 上游基线：从 `d293f2331bd5ff9ba4ad17af6ac94570a157d26d` 更新至 `88078a412c52d5e86ee009e4ed1690ecd6c30562`（`upstream/main`）。本次纳入上游的 Kubernetes 部署、频道置顶/软删除、Notion hosted MCP、持久化工作及 Computer 页面帧等改动。
 - 合并提交：`e38394346d7516ba30e8c1bd9ad03a6a1e6a5750`，采用普通 `--no-ff` merge；保留已有 EMKE Bot 品牌与中文化提交，并以中文文案解决 10 个冲突文件。
 - 冲突处理：上游新增功能优先；保留频道置顶与软删除、动态 OAuth、批量工具授权、Computer 页面帧等上游行为，并将冲突处用户可见提示恢复为简体中文。未修改 `.env`，未停止本地预览服务。
-- 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 均通过；频道路由筛选测试 45 项通过。完整 `server/tests/channel-routes.test.ts` 的数据库集成部分因当前本地测试数据库尚未应用上游新增迁移而失败，需在下次完整测试前运行仓库迁移；该限制不影响本次代码合并结果。
+- 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 均通过；应用上游 0016–0018 加法迁移并同步中文测试断言后，`bun run test` 通过 1612 项、跳过 10 项、失败 0 项（135 个文件），频道路由、插件存储和插件连接专项测试也全部通过。
 - 风险提示：本次上游更新较大（135 个文件，约 2.2 万行新增），包含数据库迁移、Kubernetes chart 和 Computer sandbox；本地预览继续使用现有运行进程，重启或部署前应先按新的迁移与配置说明复核。
 
 ## 2026-08-25 界面品牌与中文化
@@ -43,8 +43,10 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 - 本次品牌与中文化提交：
   - `112a249 Brand the default tenant as EMKE Bot`
   - `fd37310 Localize the EMKE Bot interface in Chinese`
-- 上游同步提交：
+- 上游同步与交接提交：
   - `e383943 Merge upstream OpenBot main into EMKE Bot fork`
+  - `69cd188 Document upstream sync handoff`
+  - `0fde78d Align Chinese expectations after upstream sync`
 - 上述提交已推送至 fork 的 `origin/main`；发布到线上环境仍需单独执行部署流程并验收正式地址。
 - `.env` 已由仓库规则忽略；`.copilotkit/` 已在本机 `.git/info/exclude` 中排除。
 
@@ -88,7 +90,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 | `bun run lint` | 通过；仅有 Biome schema 版本提示 |
 | `bun run typecheck` | 通过 |
 | `bun run build` | 通过；仅有现有 bundle size 等非阻塞 warning |
-| `bun run test` | 独立测试数据库通过：1447 passed、10 skipped、0 failed（122 files） |
+| `bun run test` | 1612 passed、10 skipped、0 failed（135 files）；已应用上游 0016–0018 迁移 |
 | Docker 镜像构建 | 5/5 通过 |
 | PostgreSQL health / migration | 通过；临时测试库已在测试后删除 |
 | `GET /health` | `status: ok` |
