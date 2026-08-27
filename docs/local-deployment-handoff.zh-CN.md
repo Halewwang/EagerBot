@@ -60,6 +60,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
   - `ef02836 Merge upstream OpenBot main into EMKE Bot`
   - `ab83050 Translate upstream attention UI and document sync`
   - `279e3d6 Update upstream sync verification`
+  - `c450b54 Document applied upstream migrations`
 - 上述提交已推送至 fork 的 `origin/main`；发布到线上环境仍需单独执行部署流程并验收正式地址。
 - `.env` 已由仓库规则忽略；`.copilotkit/` 已在本机 `.git/info/exclude` 中排除。
 
