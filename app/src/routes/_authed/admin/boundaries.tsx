@@ -233,7 +233,7 @@ function BoundariesPage() {
             size="sm"
             variant="outline"
           >
-            {testing ? "Testing…" : "Test first"}
+            {testing ? "正在测试…" : "先测试"}
           </Button>
           <Button
             disabled={saving || draft.trim().length === 0}
@@ -306,8 +306,7 @@ function DryRunResult({ report }: { report: DryRunReport }) {
   if (report.scanned === 0) {
     return (
       <p className="mt-2 text-xs text-muted-foreground" role="status">
-        No recorded computer actions to test against yet. The rule is valid;
-        what it matches will only be known once Bots have acted.
+        暂无可供测试的电脑操作记录。规则本身有效；只有智能体执行过操作后，才能知道它会匹配哪些内容。
       </p>
     );
   }
@@ -316,8 +315,8 @@ function DryRunResult({ report }: { report: DryRunReport }) {
     <div className="mt-2" role="status">
       <p className="text-xs text-muted-foreground">
         {report.wouldRefuse === 0
-          ? `Tested against the last ${report.scanned} recorded actions: this rule would have refused none of them. It may still match future actions.`
-          : `Tested against the last ${report.scanned} recorded actions: this rule would have refused ${report.wouldRefuse}.`}
+          ? `已根据最近 ${report.scanned} 条电脑操作记录测试：此规则不会拒绝其中任何一条。未来操作仍可能匹配。`
+          : `已根据最近 ${report.scanned} 条电脑操作记录测试：此规则会拒绝其中 ${report.wouldRefuse} 条。`}
       </p>
       {report.changes.length > 0 ? (
         <ul className="mt-2 divide-y divide-border rounded-md border border-border">
@@ -325,19 +324,19 @@ function DryRunResult({ report }: { report: DryRunReport }) {
             <li className="px-3 py-2" key={change.id}>
               <p className="text-xs">
                 <span className="font-medium">
-                  {change.would === "refused"
-                    ? "Would refuse"
-                    : "Would now allow"}
+                  {change.would === "refused" ? "将拒绝" : "现在将允许"}
                 </span>{" "}
                 <code className="font-mono">{change.action}</code>
-                {change.element?.name ? <> on “{change.element.name}”</> : null}
+                {change.element?.name ? (
+                  <> 在“{change.element.name}”上</>
+                ) : null}
                 {change.command ? (
                   <>
                     {" "}
-                    running <code className="font-mono">{change.command}</code>
+                    执行 <code className="font-mono">{change.command}</code>
                   </>
                 ) : null}
-                {change.file ? <> touching {change.file}</> : null}
+                {change.file ? <> 操作文件 {change.file}</> : null}
               </p>
               <p className="mt-0.5 text-muted-foreground text-xs">
                 {change.bot}
@@ -350,8 +349,7 @@ function DryRunResult({ report }: { report: DryRunReport }) {
       ) : null}
       {report.wouldRefuse > report.changes.length ? (
         <p className="mt-1 text-muted-foreground text-xs">
-          Showing the first {report.changes.length}; the count above covers
-          everything scanned.
+          仅显示前 {report.changes.length} 条；上方计数包含全部扫描结果。
         </p>
       ) : null}
     </div>

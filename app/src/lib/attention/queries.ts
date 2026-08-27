@@ -28,7 +28,7 @@ export function attentionListQueryOptions() {
     refetchOnWindowFocus: true,
     queryFn: (): Promise<AttentionItem[]> =>
       client("/api/attention", "items", {
-        fallback: "The attention list could not be loaded.",
+        fallback: "无法加载待处理列表。",
       }),
   });
 }

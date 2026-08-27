@@ -1,10 +1,20 @@
 # EMKE Bot 本地开发交接
 
-更新时间：2026-08-26（Asia/Shanghai）
+更新时间：2026-08-27（Asia/Shanghai）
 
 ## 目标与当前结论
 
 目标是在当前 Mac 上基于 `Halewwang/EagerBot` fork 开发 EMKE Bot，并用真实浏览器验收品牌、中文界面、主要导航和运行日志。
+
+## 2026-08-27 上游同步
+
+- 上游远端：`https://github.com/CopilotKit/OpenBot.git`（`upstream`）；已执行 `git fetch upstream --prune`。
+- 上游基线：从 `88078a412c52d5e86ee009e4ed1690ecd6c30562` 更新至 `1a7b60a3839c4cc833953c4036891c05587fdb69`，共纳入 17 个提交、85 个文件的变更。主要包括待处理事项收件箱、频道已读标记、边界策略预演、Computer 权限与 Kubernetes 网络策略、插件凭据绑定、路由未决原因、迁移和格式化配置等上游功能。
+- 合并提交：`ef028360f8698fa2afca3ec99daa9b4365a8a067`，使用 `--no-ff` 合并；保留 EMKE Bot 品牌与现有简体中文文案，并以上游实现为主解决冲突。
+- 冲突处理：共 4 个文件：`server/src/computer/policy.ts`、`server/src/plugins/store.ts`、`server/src/routing/classify.ts`、`server/src/routing/routes.ts`。保留上游的空 MCP 上下文识别、凭据归属与地址保护、路由未决原因记录等行为；将新增用户可见提示恢复为中文。
+- 中文化补齐：上游新增的待处理事项页面、边界规则预演、频道已读和请求失败提示已翻译为简体中文；协议字段、数据库值、路由和审计枚举保持上游兼容值不变。
+- 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；策略、路由和路由审计定向测试 78 pass、0 fail。构建仅输出已有的大包体积及浏览器兼容性 warning。
+- 数据库边界：本次未修改 `.env`、未停止本地预览、未替换运行中的数据库；完整集成测试仍需在本地测试库应用上游新增的 `0019_channel_read_marker.sql` 与 `0020_attention_resolutions.sql` 后再执行。
 
 ## 2026-08-26 上游同步
 
@@ -30,7 +40,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 
 - fork（`origin`）：`Halewwang/EagerBot`
 - 原始上游（`upstream`）：`CopilotKit/OpenBot`
-- 上游基线：`d293f23 Let a package say which skills each coworker gets (#227)`
+- 上游基线：`1a7b60a Pin the formatter, and stop format-gating generated migrations (#267)`
 - 本地分支：`main`
 - 本地部署提交：
   - `953a95a Fix tenant package paths with spaces`
@@ -47,6 +57,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
   - `e383943 Merge upstream OpenBot main into EMKE Bot fork`
   - `69cd188 Document upstream sync handoff`
   - `0fde78d Align Chinese expectations after upstream sync`
+  - `ef02836 Merge upstream OpenBot main into EMKE Bot`
 - 上述提交已推送至 fork 的 `origin/main`；发布到线上环境仍需单独执行部署流程并验收正式地址。
 - `.env` 已由仓库规则忽略；`.copilotkit/` 已在本机 `.git/info/exclude` 中排除。
 

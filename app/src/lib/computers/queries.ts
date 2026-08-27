@@ -109,6 +109,6 @@ export async function dryRunActionPolicy(
   return client("/api/computers/policy-dry-run", "report", {
     method: "POST",
     body: { policy: candidate },
-    fallback: "The rule could not be tested against history.",
+    fallback: "无法根据历史记录测试此规则。",
   });
 }

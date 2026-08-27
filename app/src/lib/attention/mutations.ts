@@ -18,7 +18,7 @@ export function resolveAttentionMutationOptions(queryClient: QueryClient) {
         "resolution",
         {
           method: "POST",
-          fallback: "The item could not be marked handled.",
+          fallback: "无法将此事项标记为已处理。",
         },
       ),
     onSuccess: () =>

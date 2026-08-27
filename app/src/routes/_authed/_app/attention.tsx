@@ -36,9 +36,9 @@ export const Route = createFileRoute("/_authed/_app/attention")({
 });
 
 const KIND_WORDS: Record<AttentionItem["kind"], string> = {
-  refused: "Action refused",
-  tool_rejected: "Tool call refused",
-  stalled: "Run stalled",
+  refused: "操作被拒绝",
+  tool_rejected: "工具调用被拒绝",
+  stalled: "运行已停滞",
 };
 
 function KindIcon({ kind }: { kind: AttentionItem["kind"] }) {
@@ -55,21 +55,19 @@ function AttentionPage() {
     <PageShell
       description={
         <>
-          Refusals and stalled runs that nobody has handled yet. Everything here
-          is already recorded in the trail; marking an item handled clears it
-          for everyone and says who did.
+          尚未处理的拒绝和停滞运行。这里的每一项都已记录在审计记录中；标记为已处理后，所有人都会看到它已清除，并知道由谁处理。
         </>
       }
-      title="Attention"
+      title="待处理"
     >
-      <PageSection title="Waiting on you">
+      <PageSection title="等待你处理">
         {items.isPending ? null : items.error ? (
           <p className="mt-2 text-destructive text-sm" role="alert">
-            The attention list could not be loaded.
+            无法加载待处理列表。
           </p>
         ) : items.data?.length === 0 ? (
           <p className="mt-2 text-muted-foreground text-sm">
-            Nothing is waiting. A refusal or a stalled run will appear here.
+            当前没有待处理事项。操作被拒绝或运行停滞时会显示在这里。
           </p>
         ) : (
           <PageRows>
@@ -103,7 +101,7 @@ function AttentionPage() {
                       size="sm"
                       variant="ghost"
                     >
-                      Open Bot
+                      打开智能体
                     </Button>
                     <Button
                       disabled={resolve.isPending}
@@ -111,7 +109,7 @@ function AttentionPage() {
                       size="sm"
                       variant="outline"
                     >
-                      {resolve.isPending ? "Resolving…" : "Resolve"}
+                      {resolve.isPending ? "正在处理…" : "标记已处理"}
                     </Button>
                   </ItemActions>
                 </Item>

@@ -83,7 +83,7 @@ export function markChannelReadMutationOptions(queryClient: QueryClient) {
     mutationFn: async (channelId: string) => {
       await client(`/api/channels/${channelId}/read`, {
         method: "PUT",
-        fallback: "Could not mark this channel read",
+        fallback: "无法将此频道标记为已读。",
       });
     },
     onMutate: (channelId) => {

@@ -340,7 +340,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <div className="size-[28px] flex items-center justify-center">
                 <IconBellRinging />
               </div>
-              <span className="text-sm trackint-tight">Attention</span>
+              <span className="text-sm trackint-tight">待处理</span>
               {attentionCount > 0 ? (
                 <span className="ml-auto rounded-full bg-destructive px-1.5 text-destructive-foreground text-xs tabular-nums">
                   {attentionCount}
