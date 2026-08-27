@@ -62,6 +62,8 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
   - `279e3d6 Update upstream sync verification`
   - `c450b54 Document applied upstream migrations`
   - `e966ddf Align localized route test expectations`
+  - `dc194a6 Record full upstream test verification`
+  - `6e72f65 Format localized route assertion`
 - 上述提交已推送至 fork 的 `origin/main`；发布到线上环境仍需单独执行部署流程并验收正式地址。
 - `.env` 已由仓库规则忽略；`.copilotkit/` 已在本机 `.git/info/exclude` 中排除。
 
