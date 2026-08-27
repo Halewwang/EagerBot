@@ -1,4 +1,5 @@
 import {
+  IconBellRinging,
   IconBolt,
   IconBox,
   IconLogout,
@@ -13,7 +14,12 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Link, type LinkOptions, useNavigate } from "@tanstack/react-router";
+import {
+  Link,
+  type LinkOptions,
+  useNavigate,
+  useParams,
+} from "@tanstack/react-router";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type * as React from "react";
 import { useState } from "react";
@@ -40,6 +46,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { signOutMutationOptions } from "@/lib/auth/mutations";
+import { attentionListQueryOptions } from "@/lib/attention/queries";
 import { currentUserQueryOptions } from "@/lib/auth/queries";
 import {
   type ChannelSummary,
@@ -124,6 +131,30 @@ export function pinnedFirst(channels: ChannelSummary[]): ChannelSummary[] {
 }
 
 /**
+ * Whether a Bot has said something this member has not had on screen yet.
+ *
+ * A Bot's message, and only a Bot's: your own message carries a null agent id and reading your own
+ * words needs no marker. ISO-8601 strings compare correctly as strings, which is the same bet the
+ * server's recency sort already makes.
+ */
+export function hasUnseenActivity(channel: ChannelSummary): boolean {
+  if (channel.lastMessageAgentId === null || channel.lastMessageAt === null) {
+    return false;
+  }
+  return (
+    channel.lastReadAt === null || channel.lastMessageAt > channel.lastReadAt
+  );
+}
+
+/** Unseen activity somewhere you are not looking. The open channel never shows the dot. */
+export function isUnread(
+  channel: ChannelSummary,
+  openChannelId: string | undefined,
+): boolean {
+  return channel.id !== openChannelId && hasUnseenActivity(channel);
+}
+
+/**
  * A roster row that can animate.
  *
  * Two movements only: a channel that did not exist fades in, and a channel that was just spoken in
@@ -138,6 +169,13 @@ function ChannelRow({
   animateOrder: boolean;
 }) {
   const shouldReduceMotion = useReducedMotion();
+  // Whether this row is unread, as a boolean, for the same reason `Channel` computes `isOpen`
+  // that way: navigating re-renders the rows whose answer changed, not the whole roster.
+  const unread = useParams({
+    strict: false,
+    select: (params) =>
+      isUnread(channel, (params as { channelId?: string }).channelId),
+  });
   return (
     <motion.div
       animate={{ opacity: 1, transform: "translateY(0px)" }}
@@ -160,6 +198,7 @@ function ChannelRow({
             : undefined
         }
         pinned={channel.pinned}
+        unread={unread}
       />
     </motion.div>
   );
@@ -167,6 +206,9 @@ function ChannelRow({
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: currentUser } = useQuery(currentUserQueryOptions());
+  // Unhandled attention items this person may see; drawn as a badge only when nonzero.
+  const attentionCount =
+    useQuery(attentionListQueryOptions()).data?.length ?? 0;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const signOut = useMutation(signOutMutationOptions(queryClient));
@@ -277,6 +319,35 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu className="gap-px">
+          <SidebarMenuItem>
+            {/*
+             * Above Skills because it is the row that can be urgent. The count is the number of
+             * unhandled items this person may see; zero draws no badge, because an empty inbox
+             * asking for attention is the boy who cried wolf.
+             */}
+            <SidebarMenuButton
+              className="hover:bg-foreground/5 h-10"
+              render={(props) => (
+                <Link
+                  {...props}
+                  to="/attention"
+                  activeProps={{
+                    className: "bg-foreground/5",
+                  }}
+                />
+              )}
+            >
+              <div className="size-[28px] flex items-center justify-center">
+                <IconBellRinging />
+              </div>
+              <span className="text-sm trackint-tight">Attention</span>
+              {attentionCount > 0 ? (
+                <span className="ml-auto rounded-full bg-destructive px-1.5 text-destructive-foreground text-xs tabular-nums">
+                  {attentionCount}
+                </span>
+              ) : null}
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             {/* Beside Agents rather than inside Admin: writing a skill is something anybody does. */}
             <SidebarMenuButton

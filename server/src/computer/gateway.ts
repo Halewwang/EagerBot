@@ -919,7 +919,7 @@ export function createComputerGateway(
  * Lower-cased, because a rule forbidding `.env` must also catch `.ENV`; the
  * operator should have anticipated. Same reasoning as the case-insensitive `contains` in policy.ts.
  */
-function describeFile(path: string): {
+export function describeFile(path: string): {
   path: string;
   name: string;
   extension: string;
@@ -965,7 +965,7 @@ const ACTIVATING_KEYS = new Set(["Enter", "NumpadEnter", "Space", " "]);
  */
 const HUMAN_GESTURES = new Set(["click", "type", "key", "scroll"]);
 
-function intentOf(
+export function intentOf(
   toolName: string,
   key: string | undefined,
 ): PolicyContext["intent"] {
@@ -1132,7 +1132,7 @@ async function writeControlEvent(
   });
 }
 
-function hostOf(url: string): string {
+export function hostOf(url: string): string {
   try {
     return new URL(url).host;
   } catch {

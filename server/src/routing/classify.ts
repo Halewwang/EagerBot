@@ -34,6 +34,35 @@ export type RoutingCandidate = {
   reaches?: readonly string[];
 };
 
+/**
+ * Why the router did not decide, when it did not.
+ *
+ * `fallback` says a message did not reach a coworker by an inferred match. It does not say whether
+ * that was the router declining or the router failing, and those are different facts about a
+ * deployment: "no specialist was a confident match" is the feature working, and "the router was
+ * unreachable" is an endpoint that is down. Both landed on the same boolean and the same sentence.
+ *
+ * That mattered once already. #178 found the intent router appending `/v1` to a `OPENAI_BASE_URL`
+ * that already carried one, so every call 404'd on every deployment that set the variable — and its
+ * own changelog entry says untagged messages "silently stopped being routed and nothing said why".
+ * The URL is fixed. The blindness that let it go unnoticed is this field.
+ *
+ * Named rather than free text so a trail can be counted: "this deployment routed nothing by inference
+ * for a week" is a question `select ... where payload->>'undecided' = 'unreachable'` answers, and a
+ * sentence is not.
+ */
+export type RoutingUndecided =
+  /** The model call threw. An endpoint being down, a bad key, a gateway 404. */
+  | "unreachable"
+  /** It answered, and the answer was not JSON this could read. */
+  | "unparsed"
+  /** It named a coworker that is not on the roster it was given. */
+  | "off-roster"
+  /** It answered honestly that it was not sure. The feature working, not failing. */
+  | "unconfident"
+  /** Nothing to decide between, so no call was made. */
+  | "one-candidate";
+
 export type RoutingDecision = {
   agentId: string;
   name: string;
@@ -41,6 +70,14 @@ export type RoutingDecision = {
   reason: string;
   /** True when this is the default rather than an inferred match: an honest "we were not sure". */
   fallback: boolean;
+  /**
+   * Why it was not decided, or null when it was.
+   *
+   * Survives the reach-based answer below. Landing on the one coworker that can reach the system a
+   * message names is a good outcome and says nothing about whether the router answered, so replacing
+   * this with that would hide exactly the failure it exists to count.
+   */
+  undecided: RoutingUndecided | null;
 };
 
 /** Below this the match is a guess, and a guess should defer to the default rather than surprise. */
@@ -138,7 +175,10 @@ export function createIntentRouter(deps: {
       defaultId: string,
     ): Promise<RoutingDecision> {
       const byId = new Map(candidates.map((c) => [c.id, c]));
-      const fallback = (reason: string): RoutingDecision => {
+      const fallback = (
+        reason: string,
+        undecided: RoutingUndecided,
+      ): RoutingDecision => {
         /*
          * Before the default, ask whether the message named a system only one coworker can reach.
          *
@@ -157,53 +197,102 @@ export function createIntentRouter(deps: {
             name: reachable.name,
             reason: `唯一能够访问 ${reachable.system} 的协作者`,
             fallback: true,
+            // Carried through. Reach answered where the message went; it did not answer whether the
+            // router did, and a router that has been down for a week must not read as this.
+            undecided,
           };
         }
         const chosen = byId.get(defaultId) ?? candidates[0];
         return chosen
-          ? { agentId: chosen.id, name: chosen.name, reason, fallback: true }
+          ? {
+              agentId: chosen.id,
+              name: chosen.name,
+              reason,
+              fallback: true,
+              undecided,
+            }
           : // No roster at all is a misconfiguration, not a routing outcome; surface the default id.
-            { agentId: defaultId, name: defaultId, reason, fallback: true };
+            {
+              agentId: defaultId,
+              name: defaultId,
+              reason,
+              fallback: true,
+              undecided,
+            };
       };
 
       // Nothing to decide between: one coworker, or none but the default.
       if (candidates.length <= 1) {
-        return fallback("唯一可用的协作者");
+        return fallback("唯一可用的协作者", "one-candidate");
       }
 
       let raw: string;
       try {
         raw = await this._complete(text, candidates);
       } catch {
-        return fallback("路由器不可访问，已发送给你的默认协作者");
+        return fallback(
+          "路由器不可访问，已发送给你的默认协作者",
+          "unreachable",
+        );
       }
 
       let parsed: { agentId?: unknown; reason?: unknown; confidence?: unknown };
+      // The model is asked for bare JSON, but tolerate a fenced or padded answer. Named `jsonPart`
+      // rather than `match`, which is the roster lookup a few lines below.
+      const jsonPart = raw.match(/\{[\s\S]*\}/);
+      /*
+       * An answer with no object in it at all is unparsed, not off-roster.
+       *
+       * This used to fall through as `{}`, so a model replying in prose — "I think Risk Analyst is
+       * best" — reached the roster check, found no id, and was recorded as the router having named a
+       * coworker that does not exist. That points whoever reads it at their roster, when what is
+       * wrong is that the model is not answering in the format it was asked for.
+       */
+      if (!jsonPart) {
+        return fallback(
+          "路由器的回答无法解析，已发送给你的默认协作者",
+          "unparsed",
+        );
+      }
       try {
-        // The model is asked for bare JSON, but tolerate a fenced or padded answer.
-        const match = raw.match(/\{[\s\S]*\}/);
-        parsed = match ? JSON.parse(match[0]) : {};
+        parsed = JSON.parse(jsonPart[0]);
       } catch {
-        return fallback("路由器的回答无法解析，已发送给你的默认协作者");
+        return fallback(
+          "路由器的回答无法解析，已发送给你的默认协作者",
+          "unparsed",
+        );
       }
 
       const id = typeof parsed.agentId === "string" ? parsed.agentId : "";
       const match = byId.get(id);
       if (!match) {
         // A returned id that is not on the roster is the dangerous case: never act on it.
-        return fallback("路由器没有指定名册中的协作者，已发送给你的默认协作者");
+        return fallback(
+          "路由器没有指定名册中的协作者，已发送给你的默认协作者",
+          "off-roster",
+        );
       }
       const confidence =
         typeof parsed.confidence === "number" ? parsed.confidence : 0;
       if (confidence < MIN_CONFIDENCE) {
-        return fallback("没有足够匹配的专业协作者，已发送给你的默认协作者");
+        return fallback(
+          "没有足够匹配的专业协作者，已发送给你的默认协作者",
+          "unconfident",
+        );
       }
 
       const reason =
         typeof parsed.reason === "string" && parsed.reason.trim()
           ? parsed.reason.trim()
           : `与 ${match.name} 匹配`;
-      return { agentId: match.id, name: match.name, reason, fallback: false };
+      // The router answered, on the roster, confidently. The only path where nothing was undecided.
+      return {
+        agentId: match.id,
+        name: match.name,
+        reason,
+        fallback: false,
+        undecided: null,
+      };
     },
 
     // Split out so the prompt-build + call is one seam the tests can leave alone.

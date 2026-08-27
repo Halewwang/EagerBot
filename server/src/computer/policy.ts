@@ -314,7 +314,9 @@ function describeRefusal(context: PolicyContext, expression: string): string {
     return `此部署的策略不允许该操作：命令 \`${context.command}\` 被规则 \`${expression}\` 阻止。`;
   }
 
-  if (context.mcp) {
+  // The gateway adds a neutral empty `mcp` context to browser actions. Only a real MCP call has
+  // server or tool data, so empty values must fall through to the browser/file wording below.
+  if (context.mcp?.server || context.mcp?.tool) {
     return `此部署的策略不允许该操作：${context.mcp.server} 上的 ${context.mcp.tool} 被规则 \`${expression}\` 阻止。`;
   }
   // A file refusal must not be phrased as happening "on <host>": the workspace has nothing to do with
