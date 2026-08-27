@@ -13,7 +13,7 @@
 - 合并提交：`ef028360f8698fa2afca3ec99daa9b4365a8a067`，使用 `--no-ff` 合并；保留 EMKE Bot 品牌与现有简体中文文案，并以上游实现为主解决冲突。
 - 冲突处理：共 4 个文件：`server/src/computer/policy.ts`、`server/src/plugins/store.ts`、`server/src/routing/classify.ts`、`server/src/routing/routes.ts`。保留上游的空 MCP 上下文识别、凭据归属与地址保护、路由未决原因记录等行为；将新增用户可见提示恢复为中文。
 - 中文化补齐：上游新增的待处理事项页面、边界规则预演、频道已读和请求失败提示已翻译为简体中文；协议字段、数据库值、路由和审计枚举保持上游兼容值不变。
-- 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；策略、路由和路由审计定向测试 78 pass、0 fail。构建仅输出已有的大包体积及浏览器兼容性 warning。
+- 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；上游新增功能及相关中文化定向测试共 174 pass、0 fail（14 个文件）。构建仅输出已有的大包体积及浏览器兼容性 warning。
 - 数据库边界：本次未修改 `.env`、未停止本地预览、未替换运行中的数据库；完整集成测试仍需在本地测试库应用上游新增的 `0019_channel_read_marker.sql` 与 `0020_attention_resolutions.sql` 后再执行。
 
 ## 2026-08-26 上游同步
