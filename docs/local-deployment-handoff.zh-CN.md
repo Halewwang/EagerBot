@@ -13,8 +13,8 @@
 - 合并提交：`ef028360f8698fa2afca3ec99daa9b4365a8a067`，使用 `--no-ff` 合并；保留 EMKE Bot 品牌与现有简体中文文案，并以上游实现为主解决冲突。
 - 冲突处理：共 4 个文件：`server/src/computer/policy.ts`、`server/src/plugins/store.ts`、`server/src/routing/classify.ts`、`server/src/routing/routes.ts`。保留上游的空 MCP 上下文识别、凭据归属与地址保护、路由未决原因记录等行为；将新增用户可见提示恢复为中文。
 - 中文化补齐：上游新增的待处理事项页面、边界规则预演、频道已读和请求失败提示已翻译为简体中文；协议字段、数据库值、路由和审计枚举保持上游兼容值不变。
-- 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；上游新增功能及相关中文化定向测试共 174 pass、0 fail（14 个文件）。构建仅输出已有的大包体积及浏览器兼容性 warning。
-- 数据库边界：本次未修改 `.env`、未删除或重置本地数据；已在本地开发 PostgreSQL 应用上游新增的 `0019_channel_read_marker.sql` 与 `0020_attention_resolutions.sql` 加法迁移。注意事项与频道活动集成定向测试共 19 pass；完整集成测试套件尚未重跑。
+- 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；完整 `bun run test` 通过 1704 项、跳过 10 项、失败 0 项（145 个文件），其中上游新增功能及相关中文化定向测试为 174 pass、0 fail（14 个文件）。构建仅输出已有的大包体积及浏览器兼容性 warning。
+- 数据库边界：本次未修改 `.env`、未删除或重置本地数据；已在本地开发 PostgreSQL 应用上游新增的 `0019_channel_read_marker.sql` 与 `0020_attention_resolutions.sql` 加法迁移，并通过注意事项与频道活动集成测试 19 pass。完整测试套件也已在迁移后复核通过。
 
 ## 2026-08-26 上游同步
 
@@ -61,6 +61,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
   - `ab83050 Translate upstream attention UI and document sync`
   - `279e3d6 Update upstream sync verification`
   - `c450b54 Document applied upstream migrations`
+  - `e966ddf Align localized route test expectations`
 - 上述提交已推送至 fork 的 `origin/main`；发布到线上环境仍需单独执行部署流程并验收正式地址。
 - `.env` 已由仓库规则忽略；`.copilotkit/` 已在本机 `.git/info/exclude` 中排除。
 
