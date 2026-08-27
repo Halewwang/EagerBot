@@ -170,7 +170,7 @@ describe("adding a curated server over HTTP", () => {
     // Not a 500. An administrator who picked the wrong row is told what to do about it.
     expect(response.status).toBe(400);
     expect((await response.json()).error).toContain(
-      "takes no credential when it is added",
+      "添加时不需要凭据",
     );
 
     // And the refusal stopped the write rather than reporting on it.
