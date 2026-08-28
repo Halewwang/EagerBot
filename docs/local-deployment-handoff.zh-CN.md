@@ -1,10 +1,21 @@
 # EMKE Bot 本地开发交接
 
-更新时间：2026-08-27（Asia/Shanghai）
+更新时间：2026-08-28（Asia/Shanghai）
 
 ## 目标与当前结论
 
 目标是在当前 Mac 上基于 `Halewwang/EagerBot` fork 开发 EMKE Bot，并用真实浏览器验收品牌、中文界面、主要导航和运行日志。
+
+## 2026-08-28 上游同步
+
+- 上游远端：`https://github.com/CopilotKit/OpenBot.git`（`upstream`）；已执行 `git fetch upstream --prune`，并清理已删除的远端分支。
+- 上游基线：从 `1a7b60a3839c4cc833953c4036891c05587fdb69` 更新至 `e725f1885da99c02164a1f1cbf284638eb8b807a`，纳入 6 个上游提交。主要包括例行任务（routines）及定时运行、智能体之间的工作转交与人工升级、Computer 会话与温池保护、部署截图清理、Responses API 模型选项，以及对应的 Kubernetes 任务配置。
+- 合并提交：`9c9b3914df3819c2d4fa9e75f1d3083cb3143b87`，采用 `--no-ff` merge；以上游功能为主，并保留 EMKE Bot 品牌和全局简体中文。
+- 冲突处理：共 9 个冲突文件。侧栏、页面壳、智能体页、技能页、插件详情和 `server/src/plugins/routes.ts` 保留上游组件/API、例行任务入口、Bot 授权和运行时校验，并将用户可见标签与拒绝提示恢复为中文；上游删除的 `app/src/lib/attention/*`、待处理事项路由及其服务端实现按上游删除，已检查 `routeTree` 和源码无悬空 attention 引用。
+- 中文化补齐：新增例行任务列表、删除对话框、工作转交/升级状态和内置插件连接提示已翻译为简体中文；协议标记、数据库值、路由、环境变量和机器可读错误边界保持兼容值不变。插件路由测试断言同步为中文文案。
+- 数据库边界：未修改 `.env`，未重置或删除本地数据。已在本地开发 PostgreSQL 中仅应用加法迁移 `0021_routines.sql` 与 `0023_routines_owner_index.sql`，并验证 `routines`、`routine_runs` 及 `routines_by_owner_idx` 存在；上游 `0022_drop_attention_resolutions.sql` 会删除旧的 `attention_resolutions` 表，按“只做加法迁移”要求暂缓，旧表继续保留。后续正式部署前须明确是否接受该破坏性迁移，再按上游顺序处理。
+- 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；定向插件路由测试 15 pass、0 fail；完整 `bun test` 通过 2027 项、跳过 10 项、失败 0 项（166 个文件）。构建仅输出已有的浏览器 Node 模块 externalize 与大 chunk warning。
+- 运行边界：本次没有主动停止本地预览服务；由于执行同步前预览进程已不在运行，本次只启动 PostgreSQL 以完成加法迁移，未启动或停止 Vite/API。重新启动完整预览前，请先决定如何处理待暂缓的 `0022` 迁移，并复核 `.env` 与服务状态。
 
 ## 2026-08-27 上游同步
 
