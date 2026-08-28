@@ -13,7 +13,7 @@
 - 合并提交：`9c9b3914df3819c2d4fa9e75f1d3083cb3143b87`，采用 `--no-ff` merge；以上游功能为主，并保留 EMKE Bot 品牌和全局简体中文。
 - 冲突处理：共 9 个冲突文件。侧栏、页面壳、智能体页、技能页、插件详情和 `server/src/plugins/routes.ts` 保留上游组件/API、例行任务入口、Bot 授权和运行时校验，并将用户可见标签与拒绝提示恢复为中文；上游删除的 `app/src/lib/attention/*`、待处理事项路由及其服务端实现按上游删除，已检查 `routeTree` 和源码无悬空 attention 引用。
 - 中文化补齐：新增例行任务列表、删除对话框、工作转交/升级状态和内置插件连接提示已翻译为简体中文；协议标记、数据库值、路由、环境变量和机器可读错误边界保持兼容值不变。插件路由测试断言同步为中文文案。
-- 数据库边界：未修改 `.env`，未重置或删除本地数据。已在本地开发 PostgreSQL 中仅应用加法迁移 `0021_routines.sql` 与 `0023_routines_owner_index.sql`，并验证 `routines`、`routine_runs` 及 `routines_by_owner_idx` 存在；上游 `0022_drop_attention_resolutions.sql` 会删除旧的 `attention_resolutions` 表，按“只做加法迁移”要求暂缓，旧表继续保留。后续正式部署前须明确是否接受该破坏性迁移，再按上游顺序处理。
+- 数据库边界：未修改 `.env`，未重置或删除本地数据。已在本地开发 PostgreSQL 中仅应用加法迁移 `0021_routines.sql` 与 `0023_routines_owner_index.sql`，并验证 `routines`、`routine_runs` 及 `routines_by_owner_idx` 存在；迁移记录未包含 `0022_drop_attention_resolutions.sql` 的文件哈希，旧的 `attention_resolutions` 表仍保留。后续正式部署前须明确是否接受该破坏性迁移，再按上游顺序处理。
 - 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；定向插件路由测试 15 pass、0 fail；完整 `bun test` 通过 2027 项、跳过 10 项、失败 0 项（166 个文件）。构建仅输出已有的浏览器 Node 模块 externalize 与大 chunk warning。
 - 运行边界：同步开始前 Vite/API 进程已不在运行；验收期间未修改 `.env`，按当前代码重新启动了 PostgreSQL、Agent 容器、API、Vite 和例行任务 worker。网页、API 与各 Agent 健康检查均通过。启动脚本的页面身份探针已兼容 `OpenBot` 与 `EMKE Bot` 标题，避免品牌改名后把正常网页误报为未就绪。
 
@@ -51,7 +51,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 
 - fork（`origin`）：`Halewwang/EagerBot`
 - 原始上游（`upstream`）：`CopilotKit/OpenBot`
-- 上游基线：`1a7b60a Pin the formatter, and stop format-gating generated migrations (#267)`
+- 当前上游基线：`e725f188 Refuse a warm pool no Bot can be handed a computer from (#273)`
 - 本地分支：`main`
 - 本地部署提交：
   - `953a95a Fix tenant package paths with spaces`
@@ -75,6 +75,9 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
   - `e966ddf Align localized route test expectations`
   - `dc194a6 Record full upstream test verification`
   - `6e72f65 Format localized route assertion`
+  - `9c9b391 Merge upstream OpenBot main into EMKE Bot`
+  - `e8cbb74 Document upstream sync handoff`
+  - `5cce698 Keep local startup compatible with EMKE Bot branding`
 - 上述提交已推送至 fork 的 `origin/main`；发布到线上环境仍需单独执行部署流程并验收正式地址。
 - `.env` 已由仓库规则忽略；`.copilotkit/` 已在本机 `.git/info/exclude` 中排除。
 
