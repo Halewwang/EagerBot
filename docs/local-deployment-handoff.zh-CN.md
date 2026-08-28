@@ -13,6 +13,7 @@
 - 合并提交：`9c9b3914df3819c2d4fa9e75f1d3083cb3143b87`，采用 `--no-ff` merge；以上游功能为主，并保留 EMKE Bot 品牌和全局简体中文。
 - 冲突处理：共 9 个冲突文件。侧栏、页面壳、智能体页、技能页、插件详情和 `server/src/plugins/routes.ts` 保留上游组件/API、例行任务入口、Bot 授权和运行时校验，并将用户可见标签与拒绝提示恢复为中文；上游删除的 `app/src/lib/attention/*`、待处理事项路由及其服务端实现按上游删除，已检查 `routeTree` 和源码无悬空 attention 引用。
 - 中文化补齐：新增例行任务列表、删除对话框、工作转交/升级状态和内置插件连接提示已翻译为简体中文；协议标记、数据库值、路由、环境变量和机器可读错误边界保持兼容值不变。插件路由测试断言同步为中文文案。
+- 插件目录中文化：Google Drive、Notion 和例行任务的目录摘要及例行任务标题已改为简体中文；稳定键、厂商元数据和协议值保持不变。真实浏览器访问 `/admin/plugins` 与 `/admin/plugins/routines` 均显示中文，页面标题为 `EMKE Bot`，未出现应用级控制台错误。
 - 数据库边界：未修改 `.env`，未重置或删除本地数据。已在本地开发 PostgreSQL 中仅应用加法迁移 `0021_routines.sql` 与 `0023_routines_owner_index.sql`，并验证 `routines`、`routine_runs` 及 `routines_by_owner_idx` 存在；迁移记录未包含 `0022_drop_attention_resolutions.sql` 的文件哈希，旧的 `attention_resolutions` 表仍保留。后续正式部署前须明确是否接受该破坏性迁移，再按上游顺序处理。
 - 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；定向插件路由测试 15 pass、0 fail；完整 `bun test` 通过 2027 项、跳过 10 项、失败 0 项（166 个文件）。构建仅输出已有的浏览器 Node 模块 externalize 与大 chunk warning。
 - 运行边界：同步开始前 Vite/API 进程已不在运行；验收期间未修改 `.env`，按当前代码重新启动了 PostgreSQL、Agent 容器、API、Vite 和例行任务 worker。网页、API 与各 Agent 健康检查均通过。启动脚本的页面身份探针已兼容 `OpenBot` 与 `EMKE Bot` 标题，避免品牌改名后把正常网页误报为未就绪。
@@ -78,10 +79,13 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
   - `9c9b391 Merge upstream OpenBot main into EMKE Bot`
   - `e8cbb74 Document upstream sync handoff`
   - `5cce698 Keep local startup compatible with EMKE Bot branding`
+  - `4c4f5cc Record current upstream and migration state`
+  - `a906821 Preserve native links for localized navigation`
+  - `5c275f0 Translate curated plugin catalogue labels`
 - 上述提交已推送至 fork 的 `origin/main`；发布到线上环境仍需单独执行部署流程并验收正式地址。
 - `.env` 已由仓库规则忽略；`.copilotkit/` 已在本机 `.git/info/exclude` 中排除。
 
-`953a95a` 只修复测试夹具在含空格仓库路径中使用 URL `pathname` 的问题，改用 Node 标准库 `fileURLToPath`。`4a601d8` 将 6 处实际渲染为链接的 Base UI Button 改成仓库已有 `buttonVariants` 样式的原生链接，并为纯图标“新建频道”链接补充可访问名称。`f0436f4` 让首次生成本机 token 时也能正确重启带 `--watch` 的开发 API；`8917c69` 仅对白名单中的默认受管 Agent 地址 `localhost:<LANGGRAPH_PORT>` 放行，没有开启全局私网访问。所有修复都复用了现有配置入口，没有增加依赖或新抽象。
+`953a95a` 只修复测试夹具在含空格仓库路径中使用 URL `pathname` 的问题，改用 Node 标准库 `fileURLToPath`。`4a601d8` 与 `a906821` 将实际渲染为链接的 Base UI Button 改成仓库已有 `buttonVariants` 样式的原生链接，并为纯图标“新建频道”链接补充可访问名称；`5c275f0` 补齐审核插件目录的中文标题与摘要。`f0436f4` 让首次生成本机 token 时也能正确重启带 `--watch` 的开发 API；`8917c69` 仅对白名单中的默认受管 Agent 地址 `localhost:<LANGGRAPH_PORT>` 放行，没有开启全局私网访问。所有修复都复用了现有配置入口，没有增加依赖或新抽象。
 
 ## 架构摘要
 
@@ -133,7 +137,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 | 移动端布局 | 390×844 下首页无页面级横向溢出，主要内容与智能体卡片正常显示 |
 | 内置模型回复 | `knowledge` 返回非空中文回复并完成运行 |
 | 远程模型回复 | `risk-analyst` 经 `agent-langgraph` 返回非空中文职责说明并完成运行 |
-| 浏览器控制台 | 首页、智能体、设置和管理页面无应用错误；只剩 Lit 开发模式提示 |
+| 浏览器控制台 | 首页、智能体、设置和管理页面无应用错误；开发环境仅有 Lit 开发模式提示 |
 | 新建频道链接 | DOM 为带 `href="/channel/new"` 的 `<a>`，无伪造 button role，并有 `aria-label` |
 
 ## 当前运行状态
