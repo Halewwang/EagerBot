@@ -155,7 +155,7 @@ export const CATALOGUE: readonly CatalogueEntry[] = Object.freeze([
     key: "google-drive",
     title: "Google Drive",
     vendor: "Google",
-    summary: "Files in the Drive of whoever is asking.",
+    summary: "提问者在 Google Drive 中的文件。",
     /*
      * Google publishes one MCP server per Workspace product, each on its own host: Gmail, Docs,
      * Sheets, Slides, Calendar, Chat and People have their own. Drive is here because it is the one
@@ -216,7 +216,7 @@ export const CATALOGUE: readonly CatalogueEntry[] = Object.freeze([
     key: "notion",
     title: "Notion",
     vendor: "Notion",
-    summary: "Pages and databases of whoever is asking.",
+    summary: "提问者可访问的页面和数据库。",
     /*
      * The hosted MCP server Notion runs, on the default MCP transport — the first entry to use
      * it. Drive's REST adapter is a workaround for a preview-gated vendor; Notion's server is
@@ -268,10 +268,9 @@ export const CATALOGUE: readonly CatalogueEntry[] = Object.freeze([
   },
   {
     key: "routines",
-    title: "Routines",
+    title: "例行任务",
     vendor: "OpenBot",
-    summary:
-      "Standing instructions a Bot runs on a schedule, as whoever scheduled them.",
+    summary: "智能体按排期代表创建者执行的固定指令。",
     /*
      * First-party and in-process: no host to dial, no credential to hold. In the catalogue anyway,
      * because the catalogue is where a deployment decides WHICH Bots may do WHAT — and scheduling
