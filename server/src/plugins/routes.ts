@@ -7,17 +7,18 @@ import { CATALOGUE, catalogueEntry } from "./catalogue";
 import {
   authorizationUrlFor,
   challengeFor,
+  connectedAccountsUrlFor,
   createVerifier,
   readConnectState,
   redeemAuthorizationCode,
   redirectUriFor,
-  connectedAccountsUrlFor,
   sealConnectState,
 } from "./oauth";
 import {
   CatalogueEntryUnknownError,
   CustomServerRefusedError,
   type OAuthClient,
+  type PluginKind,
   PluginRefusedError,
   type PluginStore,
 } from "./store";
@@ -615,6 +616,19 @@ export function createPluginRoutes(
    */
 
   /**
+   * The kinds of grant this API will act on.
+   *
+   * CHECKED AT RUNTIME, not only in the types. `kind` arrives in a JSON body, so a type annotation
+   * on it is a comment: before this, anything at all could be written into the grant table through
+   * the ordinary endpoint, and one kind that was never meant to be settable this way already could.
+   */
+  const GRANT_KINDS = new Set<PluginKind>(["mcp", "skill", "bot"]);
+  const asGrantKind = (value: unknown): PluginKind | null =>
+    typeof value === "string" && GRANT_KINDS.has(value as PluginKind)
+      ? (value as PluginKind)
+      : null;
+
+  /**
    * May this person put this on that Bot?
    *
    * MCP is an administrator's, always: it reaches another company's system with a stored credential.
@@ -624,15 +638,74 @@ export function createPluginRoutes(
    */
   async function enablementRefusal(
     context: { var: AppVariables },
-    kind: "mcp" | "skill",
+    kind: PluginKind,
     ref: string,
     agentId: string,
+    /**
+     * Which way this is going, because they are not symmetric.
+     *
+     * TAKING SOMETHING AWAY IS ALWAYS ALLOWED. The checks below decide whether a grant should exist,
+     * and applying them to a revoke turns every one of them into a trap: a `bot` grant made before
+     * the grantee moved to its own endpoint — or before this check existed — could never be removed,
+     * because the reason it is wrong is the same reason the revoke was refused. An administrator
+     * looking at a dead row in the UI would have had no way to delete it.
+     */
+    intent: "grant" | "revoke",
   ): Promise<string | null> {
     const actor = skillActor(context);
-    if (actor.isAdmin) return null;
+
     if (kind === "mcp") {
-      return "由管理员决定哪些智能体可以访问工具。";
+      return actor.isAdmin ? null : "由管理员决定哪些智能体可以访问工具。";
     }
+
+    if (kind === "bot") {
+      /*
+       * THE ROLE IS CHECKED BEFORE ANYTHING IS LOOKED UP, and that ordering is the point.
+       *
+       * One Bot reaching another lets it spend that Bot's model calls, wake its computer and reach
+       * whatever it may reach, so it is an administrator's decision rather than something somebody
+       * attaches to a coworker they own. But this route only requires a signed-in user, so every
+       * refusal below is readable by anybody: checking whether the Bot exists, and whether it runs
+       * here, before this line handed out three distinguishable answers and turned a 403 into an
+       * oracle for other people's private Bots. `handoff.ts` in this same feature collapses exactly
+       * this, deliberately, and this had it backwards.
+       */
+      if (!actor.isAdmin) {
+        return "由管理员决定哪些智能体可以将工作交给其他智能体。";
+      }
+      // Taking something away is always allowed: see the note on `intent`.
+      if (intent === "revoke") return null;
+
+      /*
+       * A grant that could never do anything is refused rather than stored, from both ends.
+       *
+       * The GRANTEE has to run here, because handing work on is a tool this deployment executes: a
+       * Bot at an endpoint runs its own loop and is handed descriptions of what it may call back
+       * for, and there is no callback path that would execute a hop.
+       *
+       * The TARGET only has to exist. Being handed work is not the same as being able to hand it on,
+       * so a target at its own endpoint is perfectly ordinary — but `ref` is bare text with no
+       * foreign key, so a typo stored happily and every hop then refused as not-granted.
+       */
+      /*
+       * A Bot cannot be granted itself. The desk refuses a self-hop outright — "a Bot cannot hand
+       * work to itself" — so the row is dead the moment it is written, and reads as configured.
+       */
+      if (ref === agentId) {
+        return "智能体不能将自己授权给自己来转交工作。";
+      }
+      const runsHere = await store.agentRunsHere(agentId);
+      if (runsHere === undefined) return "找不到该智能体。";
+      if (!runsHere) {
+        return `${agentId} 运行在自己的端点上，因此此部署无法为它提供转交工作所需的工具。只有运行在此处的智能体才能获得该工具。`;
+      }
+      if (!(await store.agentIsRegistered(ref))) {
+        return `找不到名为 ${ref} 的智能体，无法将工作交给它。`;
+      }
+      return null;
+    }
+
+    if (actor.isAdmin) return null;
 
     const owner = await store.skillOwner(ref);
     if (owner === undefined) return `找不到名为 ${ref} 的技能。`;
@@ -654,33 +727,41 @@ export function createPluginRoutes(
 
   routes.post("/grants", requireUser, async (context) => {
     const body = (await context.req.json().catch(() => null)) as {
-      kind?: "mcp" | "skill";
+      kind?: unknown;
       ref?: string;
       agentId?: string;
     } | null;
-    if (!body?.kind || !body.ref || !body.agentId) {
+    const kind = asGrantKind(body?.kind);
+    if (!kind || !body?.ref || !body.agentId) {
       return context.json({ error: "必须提供类型、引用和智能体。" }, 400);
     }
     const refusal = await enablementRefusal(
       context,
-      body.kind,
+      kind,
       body.ref,
       body.agentId,
+      "grant",
     );
     if (refusal) return context.json({ error: refusal }, 403);
 
-    await store.grant(body.kind, body.ref, body.agentId, actorEmail(context));
+    await store.grant(kind, body.ref, body.agentId, actorEmail(context));
     return context.json({ ok: true });
   });
 
   routes.delete("/grants", requireUser, async (context) => {
-    const kind = context.req.query("kind");
+    const kind = asGrantKind(context.req.query("kind"));
     const ref = context.req.query("ref");
     const agentId = context.req.query("agentId");
-    if ((kind !== "mcp" && kind !== "skill") || !ref || !agentId) {
+    if (!kind || !ref || !agentId) {
       return context.json({ error: "必须提供类型、引用和智能体。" }, 400);
     }
-    const refusal = await enablementRefusal(context, kind, ref, agentId);
+    const refusal = await enablementRefusal(
+      context,
+      kind,
+      ref,
+      agentId,
+      "revoke",
+    );
     if (refusal) return context.json({ error: refusal }, 403);
 
     await store.revoke(kind, ref, agentId, actorEmail(context));

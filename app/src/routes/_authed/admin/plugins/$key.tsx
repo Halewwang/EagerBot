@@ -320,22 +320,48 @@ function RouteComponent() {
           description={
             auth === "user-oauth"
               ? "此服务提供商会以请求者身份响应。部署注册 OAuth 客户端，每个人连接自己的账户，因此智能体只能看到该用户能看到的内容。"
-              : "此部署向服务提供商提供的内容。所有人共用一个凭据。"
+              : auth === "builtin"
+                ? "内置于此部署。无需访问服务提供商，也无需保存凭据；调用会以发起请求者身份执行。"
+                : "此部署向服务提供商提供的内容。所有人共用一个凭据。"
           }
           title="连接"
         >
           {/*
-           * Rows that DO something, and nothing else — with one admitted exception. The layout
+           * Rows that DO something, and nothing else — with two admitted exceptions. The layout
            * skill's third row kind — a value with no chevron and nothing to click — earns its
            * place on a screen full of them, but among four actionable rows a dead one reads as a
            * control that has stopped working. The redirect URI is prose under the card instead.
            *
-           * The exception is the OAuth client row for a vendor with a dynamic client: there is a
-           * real fact to state — this deployment registers itself, nobody configures it — right
-           * where the actionable client row would otherwise sit. Leaving that slot empty would
-           * read as a missing setup step, not as nothing to do.
+           * The first exception is the OAuth client row for a vendor with a dynamic client: there
+           * is a real fact to state — this deployment registers itself, nobody configures it —
+           * right where the actionable client row would otherwise sit. Leaving that slot empty
+           * would read as a missing setup step, not as nothing to do.
+           *
+           * The second is the whole Connection card for a builtin server: there is nothing to
+           * configure, but a card of nothing under a "Connection" heading reads as a missing setup
+           * step rather than as the answer. The row states that plainly instead of leaving the
+           * card empty — and being first, it also gives the docsUrl row below something other than
+           * the card's own top border to sit its leading separator against.
            */}
           <PageRows>
+            {auth === "builtin" ? (
+              /*
+               * Nothing to click. A builtin server runs inside this deployment, on tables it
+               * already owns — there is no vendor to authenticate to and no credential to store.
+               */
+              <Item size="sm">
+                <ItemContent>
+                  <ItemTitle>连接</ItemTitle>
+                  <ItemDescription>
+                    无需配置。这些工具在此部署内部运行，使用其已有的数据表。
+                  </ItemDescription>
+                </ItemContent>
+                <ItemActions>
+                  <span className="text-muted-foreground text-xs">内置</span>
+                </ItemActions>
+              </Item>
+            ) : null}
+
             {auth === "deployment-bearer" ? (
               <Item
                 render={
@@ -503,9 +529,13 @@ function RouteComponent() {
                   size="sm"
                 >
                   <ItemContent>
-                    <ItemTitle>服务提供商文档</ItemTitle>
+                    <ItemTitle>
+                      {auth === "builtin" ? "文档" : "服务提供商文档"}
+                    </ItemTitle>
                     <ItemDescription>
-                      由维护此服务器的团队提供的能力说明。
+                      {auth === "builtin"
+                        ? "由维护这些工具的团队说明其能力。"
+                        : "由维护此服务器的团队提供的能力说明。"}
                     </ItemDescription>
                   </ItemContent>
                   <ItemActions>

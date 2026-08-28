@@ -1,9 +1,8 @@
-import type * as React from "react";
-
-import { cn } from "@/lib/utils";
-import { Link, type LinkProps } from "@tanstack/react-router";
-import { buttonVariants } from "../ui/button";
 import { IconChevronLeft } from "@tabler/icons-react";
+import { Link, type LinkProps } from "@tanstack/react-router";
+import type * as React from "react";
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 
 /**
  * The frame every configuration screen sits in.
@@ -61,13 +60,13 @@ export function PageShell({
     <>
       {!!backButton && (
         <div className="max-w-7xl w-full h-14 flex items-center px-3">
-          <Link
-            {...backButton.linkProps}
-            className={buttonVariants({ variant: "ghost" })}
+          <Button
+            variant="ghost"
+            render={(props) => <Link {...backButton.linkProps} {...props} />}
           >
             <IconChevronLeft />
             {backButton.label}
-          </Link>
+          </Button>
         </div>
       )}
       <div

@@ -3,11 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { AgentCard } from "@/components/agents/agent-card";
-import { StaggerItem } from "@/components/layout/stagger";
 import { AgentProfile as AgentProfileDetail } from "@/components/agents/agent-profile";
 import { NewAgent } from "@/components/agents/new-agent";
 import { DetailPanel } from "@/components/layout/detail-panel";
-import { buttonVariants } from "@/components/ui/button";
+import { StaggerItem } from "@/components/layout/stagger";
+import { Button } from "@/components/ui/button";
 import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { agentListQueryOptions } from "@/lib/agents/queries";
 
@@ -53,14 +53,16 @@ function AgentsScreen() {
         <div className="mt-12 w-full max-w-2xl">
           <div className="flex flex-row w-full items-center justify-between">
             <h2 className="font-bold text-lg">我的智能体</h2>
-            <Link
-              className={buttonVariants({ size: "sm", variant: "ghost" })}
-              to="/agents"
-              search={{ new: true }}
+            <Button
+              variant="ghost"
+              size="sm"
+              render={(props) => (
+                <Link to="/agents" search={{ new: true }} {...props} />
+              )}
             >
               <IconPlus />
               新建智能体
-            </Link>
+            </Button>
           </div>
           <div className="flex flex-row mt-4">
             {!!mine?.length && (

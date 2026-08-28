@@ -1,8 +1,8 @@
+import { IconDots, IconPlus } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
-import { IconPlus } from "@tabler/icons-react";
 import { DetailPanel } from "@/components/layout/detail-panel";
 import {
   PageRows,
@@ -12,18 +12,7 @@ import {
 import { StaggerItem } from "@/components/layout/stagger";
 import { EditSkill } from "@/components/skills/edit-skill";
 import { NewSkill } from "@/components/skills/new-skill";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
-import { currentUserQueryOptions } from "@/lib/auth/queries";
-import { removeSkillMutationOptions } from "@/lib/plugins/mutations";
-import { pluginsPageQueryOptions } from "@/lib/plugins/queries";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@/components/ui/item";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,8 +20,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IconDots } from "@tabler/icons-react";
+import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
+import { currentUserQueryOptions } from "@/lib/auth/queries";
+import { removeSkillMutationOptions } from "@/lib/plugins/mutations";
+import { pluginsPageQueryOptions } from "@/lib/plugins/queries";
 
 /**
  * Personal `/` skills. They are instructions, not capabilities, and can only be granted to Bots the
@@ -124,14 +123,16 @@ function SkillsPage() {
 
         <PageSection
           action={
-            <Link
-              className={buttonVariants({ size: "sm", variant: "ghost" })}
-              search={{ new: true }}
-              to="/skills"
+            <Button
+              render={(props) => (
+                <Link search={{ new: true }} to="/skills" {...props} />
+              )}
+              size="sm"
+              variant="ghost"
             >
               <IconPlus />
               新建技能
-            </Link>
+            </Button>
           }
           title="我的技能"
         >

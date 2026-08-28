@@ -1,7 +1,7 @@
 import {
-  IconBellRinging,
   IconBolt,
   IconBox,
+  IconClock,
   IconLogout,
   IconPlus,
   IconSearch,
@@ -46,7 +46,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { signOutMutationOptions } from "@/lib/auth/mutations";
-import { attentionListQueryOptions } from "@/lib/attention/queries";
 import { currentUserQueryOptions } from "@/lib/auth/queries";
 import {
   type ChannelSummary,
@@ -55,7 +54,8 @@ import {
 import { useChannelEvents } from "@/lib/channels/use-channel-events";
 import { appConfig } from "@/lib/generated/application-config";
 import { EASE_OUT, ENTRANCE_SECONDS } from "@/lib/motion";
-import { buttonVariants } from "../ui/button";
+import { relativeTime } from "@/lib/relative-time";
+import { Button } from "../ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "../ui/empty";
 import { Channel } from "./channel";
 
@@ -206,9 +206,6 @@ function ChannelRow({
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: currentUser } = useQuery(currentUserQueryOptions());
-  // Unhandled attention items this person may see; drawn as a badge only when nonzero.
-  const attentionCount =
-    useQuery(attentionListQueryOptions()).data?.length ?? 0;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const signOut = useMutation(signOutMutationOptions(queryClient));
@@ -245,16 +242,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </Link>
               )}
             />
-            <Link
+            <Button
               aria-label="新建频道"
-              className={buttonVariants({ size: "icon", variant: "ghost" })}
-              to="/channel/new"
-              activeProps={{
-                className: "bg-foreground/5",
-              }}
+              size="icon"
+              variant="ghost"
+              render={(props) => (
+                <Link
+                  {...props}
+                  to="/channel/new"
+                  activeProps={{
+                    className: "bg-foreground/5",
+                  }}
+                />
+              )}
             >
               <IconPlus />
-            </Link>
+            </Button>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -320,35 +323,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <SidebarMenu className="gap-px">
           <SidebarMenuItem>
-            {/*
-             * Above Skills because it is the row that can be urgent. The count is the number of
-             * unhandled items this person may see; zero draws no badge, because an empty inbox
-             * asking for attention is the boy who cried wolf.
-             */}
-            <SidebarMenuButton
-              className="hover:bg-foreground/5 h-10"
-              render={(props) => (
-                <Link
-                  {...props}
-                  to="/attention"
-                  activeProps={{
-                    className: "bg-foreground/5",
-                  }}
-                />
-              )}
-            >
-              <div className="size-[28px] flex items-center justify-center">
-                <IconBellRinging />
-              </div>
-              <span className="text-sm trackint-tight">待处理</span>
-              {attentionCount > 0 ? (
-                <span className="ml-auto rounded-full bg-destructive px-1.5 text-destructive-foreground text-xs tabular-nums">
-                  {attentionCount}
-                </span>
-              ) : null}
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
             {/* Beside Agents rather than inside Admin: writing a skill is something anybody does. */}
             <SidebarMenuButton
               className="hover:bg-foreground/5 h-10"
@@ -385,6 +359,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <IconBolt />
               </div>
               <span className="text-sm trackint-tight">智能体</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            {/* Beside Skills and Agents rather than inside Admin: a routine is something anybody has. */}
+            <SidebarMenuButton
+              className="hover:bg-foreground/5 h-10"
+              render={(props) => (
+                <Link
+                  {...props}
+                  to="/routines"
+                  activeProps={{
+                    className: "bg-foreground/5",
+                  }}
+                />
+              )}
+            >
+              <div className="size-[28px] flex items-center justify-center">
+                <IconClock />
+              </div>
+              <span className="text-sm trackint-tight">例行任务</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -438,29 +432,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  );
-}
-
-const RELATIVE_UNITS = [
-  { limit: 60_000, divisor: 1_000, unit: "second" },
-  { limit: 3_600_000, divisor: 60_000, unit: "minute" },
-  { limit: 86_400_000, divisor: 3_600_000, unit: "hour" },
-  { limit: 604_800_000, divisor: 86_400_000, unit: "day" },
-  { limit: Number.POSITIVE_INFINITY, divisor: 604_800_000, unit: "week" },
-] as const;
-
-const relativeFormat = new Intl.RelativeTimeFormat("zh-CN", {
-  numeric: "auto",
-});
-
-/** Locale-aware relative timestamp, e.g. "2 minutes ago". */
-function relativeTime(iso: string) {
-  const elapsed = Date.now() - new Date(iso).getTime();
-  const scale =
-    RELATIVE_UNITS.find(({ limit }) => Math.abs(elapsed) < limit) ??
-    RELATIVE_UNITS[RELATIVE_UNITS.length - 1];
-  return relativeFormat.format(
-    -Math.round(elapsed / scale.divisor),
-    scale.unit,
   );
 }
