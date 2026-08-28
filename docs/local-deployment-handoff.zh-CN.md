@@ -137,7 +137,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 | 移动端布局 | 390×844 下首页无页面级横向溢出，主要内容与智能体卡片正常显示 |
 | 内置模型回复 | `knowledge` 返回非空中文回复并完成运行 |
 | 远程模型回复 | `risk-analyst` 经 `agent-langgraph` 返回非空中文职责说明并完成运行 |
-| 浏览器控制台 | 首页、智能体、设置和管理页面无应用错误；开发环境仅有 Lit 开发模式提示 |
+| 浏览器控制台 | 首页、智能体、设置和管理页面无应用错误；开发环境有 Lit 开发模式提示，首次导航时偶有 WebSocket 重连提示 |
 | 新建频道链接 | DOM 为带 `href="/channel/new"` 的 `<a>`，无伪造 button role，并有 `aria-label` |
 
 ## 当前运行状态
