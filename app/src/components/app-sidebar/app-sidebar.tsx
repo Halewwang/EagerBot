@@ -55,7 +55,7 @@ import { useChannelEvents } from "@/lib/channels/use-channel-events";
 import { appConfig } from "@/lib/generated/application-config";
 import { EASE_OUT, ENTRANCE_SECONDS } from "@/lib/motion";
 import { relativeTime } from "@/lib/relative-time";
-import { Button } from "../ui/button";
+import { buttonVariants } from "../ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "../ui/empty";
 import { Channel } from "./channel";
 
@@ -242,22 +242,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </Link>
               )}
             />
-            <Button
+            <Link
               aria-label="新建频道"
-              size="icon"
-              variant="ghost"
-              render={(props) => (
-                <Link
-                  {...props}
-                  to="/channel/new"
-                  activeProps={{
-                    className: "bg-foreground/5",
-                  }}
-                />
-              )}
+              className={buttonVariants({ size: "icon", variant: "ghost" })}
+              to="/channel/new"
+              activeProps={{
+                className: "bg-foreground/5",
+              }}
             >
               <IconPlus />
-            </Button>
+            </Link>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

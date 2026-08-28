@@ -12,7 +12,7 @@ import {
 import { StaggerItem } from "@/components/layout/stagger";
 import { EditSkill } from "@/components/skills/edit-skill";
 import { NewSkill } from "@/components/skills/new-skill";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -123,16 +123,14 @@ function SkillsPage() {
 
         <PageSection
           action={
-            <Button
-              render={(props) => (
-                <Link search={{ new: true }} to="/skills" {...props} />
-              )}
-              size="sm"
-              variant="ghost"
+            <Link
+              className={buttonVariants({ size: "sm", variant: "ghost" })}
+              search={{ new: true }}
+              to="/skills"
             >
               <IconPlus />
               新建技能
-            </Button>
+            </Link>
           }
           title="我的技能"
         >
