@@ -149,7 +149,7 @@ identifies_as_openbot() {
     # The app is static HTML with nothing to interrogate, so its title is the identity available.
     app)
       curl -fsS --max-time 3 "http://localhost:$port/" 2>/dev/null \
-        | grep -qi '<title>[^<]*OpenBot'
+        | grep -Eqi '<title>[^<]*(OpenBot|EMKE Bot)'
       ;;
     # Compose services on dedicated loopback ports, answering a route named for this stack.
     *)

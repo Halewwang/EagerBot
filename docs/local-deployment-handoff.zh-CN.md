@@ -15,7 +15,7 @@
 - 中文化补齐：新增例行任务列表、删除对话框、工作转交/升级状态和内置插件连接提示已翻译为简体中文；协议标记、数据库值、路由、环境变量和机器可读错误边界保持兼容值不变。插件路由测试断言同步为中文文案。
 - 数据库边界：未修改 `.env`，未重置或删除本地数据。已在本地开发 PostgreSQL 中仅应用加法迁移 `0021_routines.sql` 与 `0023_routines_owner_index.sql`，并验证 `routines`、`routine_runs` 及 `routines_by_owner_idx` 存在；上游 `0022_drop_attention_resolutions.sql` 会删除旧的 `attention_resolutions` 表，按“只做加法迁移”要求暂缓，旧表继续保留。后续正式部署前须明确是否接受该破坏性迁移，再按上游顺序处理。
 - 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；定向插件路由测试 15 pass、0 fail；完整 `bun test` 通过 2027 项、跳过 10 项、失败 0 项（166 个文件）。构建仅输出已有的浏览器 Node 模块 externalize 与大 chunk warning。
-- 运行边界：本次没有主动停止本地预览服务；由于执行同步前预览进程已不在运行，本次只启动 PostgreSQL 以完成加法迁移，未启动或停止 Vite/API。重新启动完整预览前，请先决定如何处理待暂缓的 `0022` 迁移，并复核 `.env` 与服务状态。
+- 运行边界：同步开始前 Vite/API 进程已不在运行；验收期间未修改 `.env`，按当前代码重新启动了 PostgreSQL、Agent 容器、API、Vite 和例行任务 worker。网页、API 与各 Agent 健康检查均通过。启动脚本的页面身份探针已兼容 `OpenBot` 与 `EMKE Bot` 标题，避免品牌改名后把正常网页误报为未就绪。
 
 ## 2026-08-27 上游同步
 
@@ -146,6 +146,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 - `openbot-agent-langgraph-1`：运行中，healthy；
 - `openbot-supervisor-1`：运行中，healthy；
 - `openbot-computer-risk-analyst`：由 Supervisor 创建，运行中，healthy；
+- 例行任务 worker：运行中，连接本地 API 与 PostgreSQL；
 - 真实模型回复、Computer gateway、策略与审计：已验证。
 
 ## 重启与后续
