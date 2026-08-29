@@ -1,10 +1,21 @@
 # EMKE Bot 本地开发交接
 
-更新时间：2026-08-28（Asia/Shanghai）
+更新时间：2026-08-29（Asia/Shanghai）
 
 ## 目标与当前结论
 
 目标是在当前 Mac 上基于 `Halewwang/EagerBot` fork 开发 EMKE Bot，并用真实浏览器验收品牌、中文界面、主要导航和运行日志。
+
+## 2026-08-29 上游同步
+
+- 上游远端：`https://github.com/CopilotKit/OpenBot.git`（`upstream`）；已执行 `git fetch upstream --prune`，并确认远端 `main` 的最新提交为 `fb0c797ed2e6d1228e9f5b0ca237d2f6723b71e0`。
+- 上游基线：从 `e725f1885da99c02164a1f1cbf284638eb8b807a` 更新至 `fb0c797ed2e6d1228e9f5b0ca237d2f6723b71e0`，纳入 8 个上游提交。主要包括从零重建部署与嵌入式 PostgreSQL 初始化、死对话和接管登录修复、浏览器弹窗跟随、按 socket 管理实时屏幕、停止计算机时结束屏幕、culler 防护、部署网络策略和 `v0.0.5` 发布记录。
+- 合并提交：`e4ef28f5e5085e3f0a5bd7ab8d0b3a89dea42b87`，采用 `--no-ff` merge；以上游运行时与安全修复为主，并保留 EMKE Bot 品牌和全局简体中文。上游变更涉及本地交接文档删除，但该 fork 专用文档已保留。
+- 冲突处理：共 2 个内容冲突：`app/src/routes/_authed/_app/agents/index.tsx` 保留上游自适应网格，同时恢复“探索智能体”；`app/src/routes/_authed/_app/bot.tsx` 保留上游按实际智能体名称显示标题，同时保留中文聊天标签。新增的 Bot 工作转交面板、开关无障碍名称、加载失败提示和智能体不存在提示均已本地化。
+- 中文化补齐：`HandoffPanel` 的工作转交说明、空状态、权限说明和动态 `aria-label` 改为简体中文；服务端转交查询的“智能体不存在”和客户端加载失败兜底提示同步为中文。机器协议值、路由、数据库字段、环境变量、审计事件和模型工具描述保持兼容。
+- 数据库边界：本轮上游没有新增迁移，未修改 `.env`，未重置或删除本地数据，也未执行破坏性的 `0022_drop_attention_resolutions.sql`；现有 `routines`、`routine_runs` 和 `attention_resolutions` 状态保持不变。
+- 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；完整 `bun test` 通过 2066 项、跳过 23 项、失败 0 项（170 个文件、2089 个测试）。构建仅输出已有的浏览器 Node 模块 externalize 与大 chunk warning。
+- 运行边界：本轮没有主动停止本地预览服务，也没有启动或停止数据库容器；提交前会单独复核当前预览与 PostgreSQL 状态。
 
 ## 2026-08-28 上游同步
 
@@ -52,7 +63,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 
 - fork（`origin`）：`Halewwang/EagerBot`
 - 原始上游（`upstream`）：`CopilotKit/OpenBot`
-- 当前上游基线：`e725f188 Refuse a warm pool no Bot can be handed a computer from (#273)`
+- 当前上游基线：`fb0c797 Refuse a shell the database, show a screen that ended, and unblock a taken-over sign-in (#289)`
 - 本地分支：`main`
 - 本地部署提交：
   - `953a95a Fix tenant package paths with spaces`
@@ -82,6 +93,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
   - `4c4f5cc Record current upstream and migration state`
   - `a906821 Preserve native links for localized navigation`
   - `5c275f0 Translate curated plugin catalogue labels`
+  - `e4ef28f Merge upstream OpenBot main into EMKE Bot`
 - 上述提交已推送至 fork 的 `origin/main`；发布到线上环境仍需单独执行部署流程并验收正式地址。
 - `.env` 已由仓库规则忽略；`.copilotkit/` 已在本机 `.git/info/exclude` 中排除。
 
