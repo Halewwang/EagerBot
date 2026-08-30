@@ -1,6 +1,6 @@
 # EMKE Bot 本地开发交接
 
-更新时间：2026-08-29（Asia/Shanghai）
+更新时间：2026-08-30（Asia/Shanghai）
 
 ## 目标与当前结论
 
@@ -16,6 +16,13 @@
 - 数据库边界：本轮上游没有新增迁移，未修改 `.env`，未重置或删除本地数据，也未执行破坏性的 `0022_drop_attention_resolutions.sql`；现有 `routines`、`routine_runs` 和 `attention_resolutions` 状态保持不变。
 - 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；完整 `bun test` 通过 2066 项、跳过 23 项、失败 0 项（170 个文件、2089 个测试）。构建仅输出已有的浏览器 Node 模块 externalize 与大 chunk warning。
 - 运行边界：本轮没有主动停止本地预览服务，也没有启动或停止数据库容器；提交前会单独复核当前预览与 PostgreSQL 状态。
+
+## 2026-08-30 上游复核
+
+- 已再次执行 `git fetch upstream --prune`、`git fetch origin --prune` 并核对远端；`upstream/main` 仍为 `fb0c797ed2e6d1228e9f5b0ca237d2f6723b71e0`，没有新增上游提交，因此没有创建空的合并提交。
+- 当前 `HEAD` 与 `origin/main` 仍为 `eb6aaeb78d24c7c3abcb981f923e7672d3a5c3b9`，上游已包含在本地历史中，工作区干净且无未解决冲突。
+- `bun run format:check` 与 `bun run typecheck` 再次通过。完整 `bun test` 本次因 Colima/Docker 未运行而无法连接 PostgreSQL，结果为 1638 pass、23 skip、311 fail；失败集中为 `PostgresError: Connection closed`，不作为代码回归结论。上一轮在相同代码上完整测试为 2066 pass、23 skip、0 fail。
+- 本次未启动本地预览；当前 Colima 未运行。需要预览时先运行 `colima start`，再运行 `bash scripts/start.sh`，并重新检查 `3010`、`3001` 与 Agent 健康状态。
 
 ## 2026-08-28 上游同步
 
