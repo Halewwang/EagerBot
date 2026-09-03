@@ -15,7 +15,7 @@
 - 中文化边界：新增智能体向导、智能体设置分区、onboarding、侧栏切换、审计筛选、组件试验场、问卷默认按钮、相对时间和动态 `aria-label` 已本地化；机器协议值、路由、数据库标识、环境变量、HTTP 头、第三方厂商名、用户自建名称和模型/技能动态内容保持兼容，不进行臆译。
 - 数据库与环境边界：上游新增 `server/drizzle/0024_onboarding.sql` 与 `0025_backfill_existing_users_have_onboarded.sql` 已随代码保留，但本轮没有运行任何迁移；破坏性的 `server/drizzle/0022_drop_attention_resolutions.sql` 明确未执行。未修改 `.env`，未删除或重置本地数据，也未停止现有本地预览。当前 Colima 未运行，因此没有声称数据库集成测试通过。
 - 验证结果：`git diff --cached --check`、`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；定向测试 `bun test app/tests agent-langgraph/tests server/tests/onboarding-routes.test.ts server/tests/config.test.ts server/tests/routing-classify.test.ts server/tests/policy-dry-run.test.ts` 为 351 pass、0 fail（42 个文件），其中新增 `app/tests/relative-time.test.ts` 通过。构建仅有上游已有的浏览器 Node 模块 externalize 与 bundle size warning。由于 Colima/Docker 未运行，未执行依赖 PostgreSQL 的集成测试；此前同环境完整套件的数据库连接失败不作为本轮代码回归结论。
-- 推送状态：代码 merge commit 后续的本交接文档提交会记录最终 `origin/main`；提交文档后将一并推送 `origin main`，并再次核对本地工作区、`origin/main` 与 `upstream/main`。
+- 推送状态：合并提交 `123d62b61093db0289132e7ff0828747cb361c51` 与本交接文档提交 `f1be7c868d450621de1bda81898c93c63942cd77` 均已推送到 `origin/main`；最终已核对本地工作区干净，且 `upstream/main` 已是当前提交的祖先。
 
 ## 2026-08-29 上游同步
 
@@ -81,7 +81,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 
 - fork（`origin`）：`Halewwang/EagerBot`
 - 原始上游（`upstream`）：`CopilotKit/OpenBot`
-- 当前上游基线：`fb0c797 Refuse a shell the database, show a screen that ended, and unblock a taken-over sign-in (#289)`
+- 当前上游基线：`257c128 Update zizmorcore/zizmor-action action to v0.6.3 (#300)`
 - 本地分支：`main`
 - 本地部署提交：
   - `953a95a Fix tenant package paths with spaces`
@@ -170,21 +170,12 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 | 浏览器控制台 | 首页、智能体、设置和管理页面无应用错误；开发环境有 Lit 开发模式提示，首次导航时偶有 WebSocket 重连提示 |
 | 新建频道链接 | DOM 为带 `href="/channel/new"` 的 `<a>`，无伪造 button role，并有 `aria-label` |
 
-## 当前运行状态
+## 当前运行状态（2026-09-03 复核）
 
-- `openbot-postgres-1`：运行中，`127.0.0.1:5432`，healthy；
-- Vite app：运行中，`http://localhost:3010/`；
-- API server：运行中，`http://localhost:3001/`；
-- `INTELLIGENCE_API_KEY`：已配置；
-- `COPILOTKIT_LICENSE_TOKEN`：已配置且验证有效；
-- `OPENAI_API_KEY` 与 `OPENAI_BASE_URL`：已配置；
-- `openbot-agent-computer-1`：运行中，healthy；
-- `openbot-agent-bot-1`：运行中，healthy；
-- `openbot-agent-langgraph-1`：运行中，healthy；
-- `openbot-supervisor-1`：运行中，healthy；
-- `openbot-computer-risk-analyst`：由 Supervisor 创建，运行中，healthy；
-- 例行任务 worker：运行中，连接本地 API 与 PostgreSQL；
-- 真实模型回复、Computer gateway、策略与审计：已验证。
+- Colima 未运行（`colima status` 返回未运行）；因此 Docker、PostgreSQL、Agent 容器和例行任务 worker 均未运行；
+- `3010`、`3001`、`4200`、`4201`、`5432` 当前均没有监听；本轮没有启动或停止这些服务；
+- 本机 `.env` 未修改；其中的凭据状态沿用此前本地配置，不能从本轮离线检查推断为可用；
+- 上一轮真实浏览器、模型回复、Computer gateway、策略与审计验收仍是历史证据，重启后须重新验收。
 
 ## 重启与后续
 
