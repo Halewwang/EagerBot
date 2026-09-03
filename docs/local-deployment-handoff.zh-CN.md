@@ -1,10 +1,21 @@
 # EMKE Bot 本地开发交接
 
-更新时间：2026-08-30（Asia/Shanghai）
+更新时间：2026-09-03（Asia/Shanghai）
 
 ## 目标与当前结论
 
 目标是在当前 Mac 上基于 `Halewwang/EagerBot` fork 开发 EMKE Bot，并用真实浏览器验收品牌、中文界面、主要导航和运行日志。
+
+## 2026-09-03 上游同步
+
+- 上游远端：`https://github.com/CopilotKit/OpenBot.git`（`upstream`）；已执行 `git fetch upstream --prune`。本次同步前 fork 的 `main`/`origin/main` 为 `9f42027d50f7661d40061f0001d4f33f1546157c`，上游基线为 `fb0c797ed2e6d1228e9f5b0ca237d2f6723b71e0`，最新 `upstream/main` 为 `257c1280d684089be9adb0b35cce262efc7064bf`。
+- 上游变更：从 `fb0c797` 到 `257c128` 共纳入 19 个提交、110 个文件（约 13,569 行新增、1,387 行删除），包括智能体创建与管理对话框、侧栏折叠及移动端智能体列表、生成式 UI、改进的例行任务/频道流处理、`SERVER_PORT` 与可信来源配置，以及新的 onboarding 数据与接口。
+- 合并提交：`123d62b61093db0289132e7ff0828747cb361c51`，父提交为本地 `9f42027` 与上游 `257c128`；以上游行为和安全边界为主，并保留 EMKE Bot 品牌与全局简体中文。合并后补充的本地化包括固定 `Intl.RelativeTimeFormat("zh-CN")`、无时间戳例行任务的“刚刚”、智能体资料编辑按钮的中文无障碍标签和工作转交计数。
+- 冲突处理：共 13 个 UI 冲突文件：`app/src/components/agents/agent-fields.tsx`、`app/src/components/agents/new-agent.tsx`（按上游删除，改由 `agent-dialog.tsx`/`create-agent-dialog.tsx` 承担）、`app/src/components/agents/agent-profile.tsx`、`app/src/components/agents/handoff-panel.tsx`、`app/src/components/app-sidebar/app-sidebar.tsx`、`app/src/components/channels/composer/composer.tsx`、`app/src/components/layout/page-shell.tsx`、`app/src/components/routines/routines-list.tsx`、`app/src/routes/_authed/_app/agents/index.tsx`、`app/src/routes/_authed/_app/channel/new.tsx`、`app/src/routes/_authed/_app/index.tsx`、`app/src/routes/_authed/admin/audit.tsx`、`app/src/routes/_authed/admin/playground.tsx`。冲突均采用上游新功能优先，再恢复用户可见中文/EMKE 文案；已用 `rg` 确认旧组件没有悬空导入或引用，也没有未解决冲突标记。
+- 中文化边界：新增智能体向导、智能体设置分区、onboarding、侧栏切换、审计筛选、组件试验场、问卷默认按钮、相对时间和动态 `aria-label` 已本地化；机器协议值、路由、数据库标识、环境变量、HTTP 头、第三方厂商名、用户自建名称和模型/技能动态内容保持兼容，不进行臆译。
+- 数据库与环境边界：上游新增 `server/drizzle/0024_onboarding.sql` 与 `0025_backfill_existing_users_have_onboarded.sql` 已随代码保留，但本轮没有运行任何迁移；破坏性的 `server/drizzle/0022_drop_attention_resolutions.sql` 明确未执行。未修改 `.env`，未删除或重置本地数据，也未停止现有本地预览。当前 Colima 未运行，因此没有声称数据库集成测试通过。
+- 验证结果：`git diff --cached --check`、`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；定向测试 `bun test app/tests agent-langgraph/tests server/tests/onboarding-routes.test.ts server/tests/config.test.ts server/tests/routing-classify.test.ts server/tests/policy-dry-run.test.ts` 为 351 pass、0 fail（42 个文件），其中新增 `app/tests/relative-time.test.ts` 通过。构建仅有上游已有的浏览器 Node 模块 externalize 与 bundle size warning。由于 Colima/Docker 未运行，未执行依赖 PostgreSQL 的集成测试；此前同环境完整套件的数据库连接失败不作为本轮代码回归结论。
+- 推送状态：代码 merge commit 后续的本交接文档提交会记录最终 `origin/main`；提交文档后将一并推送 `origin main`，并再次核对本地工作区、`origin/main` 与 `upstream/main`。
 
 ## 2026-08-29 上游同步
 
