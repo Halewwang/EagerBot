@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AgentCard } from "@/components/agents/agent-card";
 import { Composer, toAgentOptions } from "@/components/channels/composer";
+import { SidebarToggleBar } from "@/components/layout/sidebar-toggle";
 import { agentListQueryOptions } from "@/lib/agents/queries";
 import { routeMessage } from "@/lib/channels/route";
 import { useStartChannel } from "@/lib/channels/start";
@@ -22,86 +23,91 @@ function RouteComponent() {
   const fallback = explore?.[0] ?? agents?.[0];
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center w-full p-4 mt-8">
-      <div className="flex flex-col items-center">
-        <h2 className="text-sm uppercase text-muted-foreground font-medium tracking-tight text-center">
-          {appConfig.brand.productName}
-        </h2>
-        <h1 className="text-2xl font-bold tracking-tight mt-1.5 text-center">
-          新建频道
-        </h1>
-      </div>
-      <div className="mt-8 w-full flex flex-col items-center">
-        <Composer
-          agents={toAgentOptions(agents)}
-          className="w-full max-w-2xl"
-          disabled={!fallback}
-          onSubmit={async (draft) => {
-            // A channel is pinned to one coworker for the life of its thread, so the coworker is
-            // chosen now, before it is created. An `@` is an explicit choice and is honoured as-is.
-            // With no `@`, the message is routed to the coworker it is for; if that routing cannot
-            // run, it falls back to the same default the composer used to always use.
-            setError(null);
-            try {
-              let agentId: string | undefined = draft.agentId ?? undefined;
-              if (agentId) {
-                /*
-                 * Told to the server so the choice is recorded, and its answer thrown away: the
-                 * person already decided and nothing here may change that. Failing to write the
-                 * audit row must not stop the conversation, so a rejection is swallowed whole.
-                 */
-                await routeMessage(draft.text, agentId).catch(() => undefined);
-              } else {
-                try {
-                  agentId = (await routeMessage(draft.text)).agentId;
-                } catch {
-                  agentId = fallback?.id;
+    <>
+      <SidebarToggleBar />
+      <div className="flex-1 flex flex-col items-center justify-center w-full p-4 mt-8">
+        <div className="flex flex-col items-center">
+          <h2 className="text-sm uppercase text-muted-foreground font-medium tracking-tight text-center">
+            {appConfig.brand.productName}
+          </h2>
+          <h1 className="text-2xl font-bold tracking-tight mt-1.5 text-center">
+            新建频道
+          </h1>
+        </div>
+        <div className="mt-8 w-full flex flex-col items-center">
+          <Composer
+            agents={toAgentOptions(agents)}
+            className="w-full max-w-2xl"
+            disabled={!fallback}
+            onSubmit={async (draft) => {
+              // A channel is pinned to one coworker for the life of its thread, so the coworker is
+              // chosen now, before it is created. An `@` is an explicit choice and is honoured as-is.
+              // With no `@`, the message is routed to the coworker it is for; if that routing cannot
+              // run, it falls back to the same default the composer used to always use.
+              setError(null);
+              try {
+                let agentId: string | undefined = draft.agentId ?? undefined;
+                if (agentId) {
+                  /*
+                   * Told to the server so the choice is recorded, and its answer thrown away: the
+                   * person already decided and nothing here may change that. Failing to write the
+                   * audit row must not stop the conversation, so a rejection is swallowed whole.
+                   */
+                  await routeMessage(draft.text, agentId).catch(
+                    () => undefined,
+                  );
+                } else {
+                  try {
+                    agentId = (await routeMessage(draft.text)).agentId;
+                  } catch {
+                    agentId = fallback?.id;
+                  }
                 }
+                if (!agentId) return;
+                await start(agentId, draft.text);
+              } catch (caught) {
+                setError(
+                  caught instanceof Error ? caught.message : "无法开始对话。",
+                );
+                throw caught;
               }
-              if (!agentId) return;
-              await start(agentId, draft.text);
-            } catch (caught) {
-              setError(
-                caught instanceof Error ? caught.message : "无法开始对话。",
-              );
-              throw caught;
-            }
-          }}
-          pending={pending}
-        />
-        {fallback ? (
-          // Said out loud: a message that silently reaches somebody you did not choose is the
-          // kind of surprise that costs trust the first time it happens.
-          <p className="mt-2 w-full max-w-2xl text-xs text-muted-foreground text-center">
-            将发送给最匹配的智能体。输入 <code>@</code> 可自行选择。
-          </p>
-        ) : null}
-        {error ? (
-          <p
-            className="mt-2 w-full max-w-2xl text-sm text-destructive"
-            role="alert"
-          >
-            {error}
-          </p>
-        ) : null}
-      </div>
-      <div className="mt-10 w-full max-w-2xl">
-        <h2 className="font-bold text-lg">探索智能体</h2>
-        <div className="flex flex-row gap-4 mt-4">
-          {!!explore?.length &&
-            explore.map((agent) => (
-              <Link
-                key={agent.id}
-                to="/channel/new"
-                search={{
-                  agent: agent.id,
-                }}
-              >
-                <AgentCard agent={agent} />
-              </Link>
-            ))}
+            }}
+            pending={pending}
+          />
+          {fallback ? (
+            // Said out loud: a message that silently reaches somebody you did not choose is the
+            // kind of surprise that costs trust the first time it happens.
+            <p className="mt-2 w-full max-w-2xl text-xs text-muted-foreground text-center">
+              将发送给最匹配的智能体。输入 <code>@</code> 可自行选择。
+            </p>
+          ) : null}
+          {error ? (
+            <p
+              className="mt-2 w-full max-w-2xl text-sm text-destructive"
+              role="alert"
+            >
+              {error}
+            </p>
+          ) : null}
+        </div>
+        <div className="mt-10 w-full max-w-2xl">
+          <h2 className="font-bold text-lg">探索智能体</h2>
+          <div className="flex flex-row gap-4 mt-4">
+            {!!explore?.length &&
+              explore.map((agent) => (
+                <Link
+                  key={agent.id}
+                  to="/channel/new"
+                  search={{
+                    agent: agent.id,
+                  }}
+                >
+                  <AgentCard agent={agent} />
+                </Link>
+              ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

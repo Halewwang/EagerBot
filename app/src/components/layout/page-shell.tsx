@@ -2,10 +2,12 @@ import { IconChevronLeft } from "@tabler/icons-react";
 import { Link, type LinkProps } from "@tanstack/react-router";
 import type * as React from "react";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "../ui/button";
+import { Button } from "../ui/button";
+import { useOptionalSidebar } from "../ui/sidebar";
+import { SidebarToggle } from "./sidebar-toggle";
 
 /**
- * The frame every configuration screen sits in.
+ * 所有配置页面共用的页面框架。
  *
  * WHAT THIS IS FIXING. Admin was nine pages that shared no layout: four container widths plus three
  * pages with no container at all, four heading sizes, four padding schemes, and a sidebar 20px wider
@@ -56,23 +58,42 @@ export function PageShell({
     label: string;
   };
 }) {
+  /*
+   * Whether this screen has a sidebar at all. `/assist` and `/link/slack` draw PageShell directly
+   * under `_authed`, which mounts no provider, so there is nothing for a toggle to act on there.
+   */
+  const hasSidebar = useOptionalSidebar() !== null;
+  /*
+   * The bar carries the toggle and the Back link, and is drawn when it has at least one of them.
+   * The screens with a Back link already drew exactly this bar, so for them nothing changes; what
+   * changed is that a sidebar is now reason enough on its own, because the toggle has to sit at the
+   * pane's left edge in both states and the prose column is centred — a control inside it would be
+   * 400px from the edge it belongs to on a wide screen. Drawing it with neither would be a 56px
+   * band holding nothing, which reads as a layout bug rather than as chrome.
+   */
+  const bar = hasSidebar || !!backButton;
+
   return (
     <>
-      {!!backButton && (
-        <div className="max-w-7xl w-full h-14 flex items-center px-3">
-          <Link
-            {...backButton.linkProps}
-            className={buttonVariants({ variant: "ghost" })}
-          >
-            <IconChevronLeft />
-            {backButton.label}
-          </Link>
+      {bar ? (
+        <div className="max-w-7xl w-full h-14 flex items-center gap-1 px-3">
+          {hasSidebar ? <SidebarToggle /> : null}
+          {!!backButton && (
+            <Button
+              variant="ghost"
+              render={(props) => <Link {...backButton.linkProps} {...props} />}
+            >
+              <IconChevronLeft />
+              {backButton.label}
+            </Button>
+          )}
         </div>
-      )}
+      ) : null}
       <div
         className={cn(
-          "mx-auto flex w-full flex-col px-4 py-12",
-          { "pt-8": !!backButton },
+          "mx-auto flex w-full flex-col px-4 pb-12",
+          // Without a bar above it the heading keeps the full original space.
+          bar ? "pt-8" : "pt-12",
           WIDTHS[width],
           className,
         )}

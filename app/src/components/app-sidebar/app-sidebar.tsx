@@ -1,7 +1,6 @@
 import {
   IconBolt,
   IconBox,
-  IconClock,
   IconLogout,
   IconPlus,
   IconSearch,
@@ -55,7 +54,7 @@ import { useChannelEvents } from "@/lib/channels/use-channel-events";
 import { appConfig } from "@/lib/generated/application-config";
 import { EASE_OUT, ENTRANCE_SECONDS } from "@/lib/motion";
 import { relativeTime } from "@/lib/relative-time";
-import { buttonVariants } from "../ui/button";
+import { Button } from "../ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "../ui/empty";
 import { Channel } from "./channel";
 
@@ -199,6 +198,7 @@ function ChannelRow({
         }
         pinned={channel.pinned}
         unread={unread}
+        busy={channel.busy ?? false}
       />
     </motion.div>
   );
@@ -242,16 +242,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </Link>
               )}
             />
-            <Link
-              aria-label="新建频道"
-              className={buttonVariants({ size: "icon", variant: "ghost" })}
-              to="/channel/new"
-              activeProps={{
-                className: "bg-foreground/5",
-              }}
+            <Button
+              size="icon"
+              variant="ghost"
+              render={(props) => (
+                <Link
+                  {...props}
+                  to="/channel/new"
+                  activeProps={{
+                    className: "bg-foreground/5",
+                  }}
+                />
+              )}
             >
               <IconPlus />
-            </Link>
+            </Button>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -263,7 +268,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <InputGroupInput
                   aria-label="搜索频道"
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="搜索..."
+                  placeholder="搜索…"
                   value={search}
                 />
                 <InputGroupAddon>
@@ -284,7 +289,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <EmptyHeader>
                     <EmptyTitle>没有匹配的频道</EmptyTitle>
                     <EmptyDescription className="text-pretty">
-                      没有名为“{search.trim()}”的频道，最近也没有人提到它。
+                      没有名为“{search.trim()}”的频道，最近也没有相关消息。
                     </EmptyDescription>
                   </EmptyHeader>
                 </Empty>
@@ -294,9 +299,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <div className="py-4">
                 <Empty className="border border-dashed min-h-[40dvh]">
                   <EmptyHeader>
-                    <EmptyTitle>还没有频道</EmptyTitle>
+                    <EmptyTitle>你还没有频道</EmptyTitle>
                     <EmptyDescription className="text-pretty">
-                      开始与智能体对话，频道会显示在这里。
+                      开始与智能体对话后，频道会显示在这里。
                     </EmptyDescription>
                   </EmptyHeader>
                 </Empty>
@@ -355,26 +360,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <span className="text-sm trackint-tight">智能体</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
-            {/* Beside Skills and Agents rather than inside Admin: a routine is something anybody has. */}
-            <SidebarMenuButton
-              className="hover:bg-foreground/5 h-10"
-              render={(props) => (
-                <Link
-                  {...props}
-                  to="/routines"
-                  activeProps={{
-                    className: "bg-foreground/5",
-                  }}
-                />
-              )}
-            >
-              <div className="size-[28px] flex items-center justify-center">
-                <IconClock />
-              </div>
-              <span className="text-sm trackint-tight">例行任务</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {/* Routines live on each coworker's own dialog now, not as a nav destination: the
+              question "what does this Bot do on a schedule" is asked while looking at the Bot.
+              The /routines route still answers a direct link. */}
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger

@@ -6,11 +6,11 @@ const RELATIVE_UNITS = [
   { limit: Number.POSITIVE_INFINITY, divisor: 604_800_000, unit: "week" },
 ] as const;
 
-const relativeFormat = new Intl.RelativeTimeFormat(undefined, {
+const relativeFormat = new Intl.RelativeTimeFormat("zh-CN", {
   numeric: "auto",
 });
 
-/** Locale-aware relative timestamp, e.g. "2 minutes ago". */
+/** 将相对时间固定为简体中文，例如“2 分钟前”。 */
 export function relativeTime(iso: string): string {
   const elapsed = Date.now() - new Date(iso).getTime();
   const scale =

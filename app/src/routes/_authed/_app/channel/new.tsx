@@ -6,6 +6,7 @@ import { ChannelAvatar } from "@/components/channels/avatar";
 import { canSend, type Recipient } from "@/components/channels/compose-state";
 import { ConversationView } from "@/components/channels/conversation-view";
 import { seedMessage } from "@/components/channels/transcript-messages";
+import { SidebarToggle } from "@/components/layout/sidebar-toggle";
 import {
   Combobox,
   ComboboxContent,
@@ -64,6 +65,7 @@ function RouteComponent() {
   return (
     <div className="flex h-full flex-col">
       <div className="h-12 border-b border-border sticky top-0 flex flex-row px-2 items-center">
+        <SidebarToggle className="mr-1" />
         <span className="text-sm text-muted-foreground">发送给：</span>
         <Combobox
           // Do not auto-open when the recipient came from the URL; the field is already answered.
@@ -85,13 +87,17 @@ function RouteComponent() {
           value={chosen ?? null}
         >
           <ComboboxInput
+            // The popup opening is not enough on its own: typing filters through this input, so
+            // the caret starts here whenever the recipient question is still open. Same condition
+            // as `defaultOpen` — a recipient from the URL means the composer takes focus instead.
+            autoFocus={!agent}
             placeholder="选择智能体…"
             // InputGroup owns focus rings via `has-[…:focus-visible]`; disable that wrapper ring here.
             className="border-none w-full bg-transparent! text-sm has-[[data-slot=input-group-control]:focus-visible]:ring-0"
           />
           {/* Allow max-w to constrain the popup even though its anchor is full-width. */}
           <ComboboxContent className="min-w-0 max-w-lg" sideOffset={12}>
-            <ComboboxEmpty>未找到智能体。</ComboboxEmpty>
+            <ComboboxEmpty>没有找到智能体。</ComboboxEmpty>
             <ComboboxList>
               {(item: AgentProfile) => (
                 <ComboboxItem key={item.id} value={item} className="h-10">

@@ -2,6 +2,7 @@ import { OpenGenerativeUIActivityRenderer } from "@copilotkit/react-core/v2";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useId, useState } from "react";
+import { SidebarToggle } from "@/components/layout/sidebar-toggle";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -37,11 +38,11 @@ const STARTER = {
   slug: "",
   title: "",
   description: "",
-  html: `<div class="card">\n  <h3 id="title">未命名</h3>\n  <p id="body"></p>\n</div>`,
+  html: `<div class="card">\n  <h3 id="title">Untitled</h3>\n  <p id="body"></p>\n</div>`,
   css: `.card { font: 14px system-ui; border: 1px solid #e5e5e5; border-radius: 8px; padding: 12px; }\n.card h3 { margin: 0 0 4px; font-size: 15px; }`,
-  jsFunctions: `// 运行到这里时，参数已位于 window.__args。\nconst args = window.__args || {};\ndocument.getElementById("title").textContent = args.title || "未命名";\ndocument.getElementById("body").textContent = args.body || "";`,
+  jsFunctions: `// The arguments are on window.__args by the time this runs.\nconst args = window.__args || {};\ndocument.getElementById("title").textContent = args.title || "Untitled";\ndocument.getElementById("body").textContent = args.body || "";`,
   argumentSchema: `{\n  "type": "object",\n  "properties": {\n    "title": { "type": "string" },\n    "body": { "type": "string" }\n  }\n}`,
-  sampleArguments: `{\n  "title": "示例",\n  "body": "编辑左侧面板，这里会重新绘制。"\n}`,
+  sampleArguments: `{\n  "title": "A worked example",\n  "body": "Edit the panels on the left and this redraws."\n}`,
 };
 
 type Draft = typeof STARTER;
@@ -127,11 +128,16 @@ function PlaygroundPage() {
      */
     <div className="flex h-screen flex-col">
       <header className="flex flex-wrap items-start justify-between gap-4 border-border border-b px-6 py-4">
-        <div>
-          <h1 className="font-bold text-2xl">组件试验场</h1>
-          <p className="mt-1 max-w-prose text-pretty text-muted-foreground text-sm leading-relaxed">
-            在此编写组件并发布，无需重新部署。你编辑的是草稿；对话只会绘制已发布的内容。
-          </p>
+        {/* Inline rather than in a band of its own: this screen is an editor beside a live preview
+            and every 48px of height is taken from the thing being previewed. */}
+        <div className="flex items-start gap-2">
+          <SidebarToggle className="-ml-2 shrink-0" />
+          <div>
+            <h1 className="font-bold text-2xl">组件试验场</h1>
+            <p className="mt-1 max-w-prose text-pretty text-muted-foreground text-sm leading-relaxed">
+              在此编写组件并发布，无需重新部署。你编辑的是草稿；对话只会绘制已发布的内容。
+            </p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Button
@@ -212,7 +218,7 @@ function PlaygroundPage() {
             <div className="mb-2 text-sm font-medium">预览</div>
             {sample === null ? (
               <p className="text-sm text-destructive">
-                示例参数不是有效的 JSON，因此没有可用于绘制的内容。
+                示例参数不是有效的 JSON，因此没有可用于预览的内容。
               </p>
             ) : (
               <OpenGenerativeUIActivityRenderer
@@ -283,9 +289,7 @@ function PlaygroundPage() {
               </ul>
             )}
             <p className="border-border border-t px-4 py-2 text-muted-foreground text-xs">
-              发布后所有 Bot
-              都可以使用。和此构建自带的组件一样，可在组件页面为特定 Bot
-              关闭使用权限。
+              发布后所有智能体都可以使用。和此部署自带的组件一样，可在组件页面为特定智能体关闭使用权限。
             </p>
           </div>
         </div>
@@ -305,8 +309,7 @@ function PlaygroundPage() {
           <DialogHeader>
             <DialogTitle>要删除 {deleting} 吗？</DialogTitle>
             <DialogDescription>
-              它会从此部署中移除。原本可以绘制它的 Bot
-              将无法继续使用，且此操作无法撤销。
+              它会从此部署中移除。原本可以绘制它的智能体将无法继续使用，且此操作无法撤销。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

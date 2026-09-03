@@ -1,20 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { type ReactNode, useState } from "react";
 import { AbstractAvatar } from "@/components/agents/abstract-avatar";
-import { AgentFields } from "@/components/agents/agent-fields";
-import { CallbackTokenPanel } from "@/components/agents/callback-token-panel";
-import { HandoffPanel } from "@/components/agents/handoff-panel";
+import { AgentDialog } from "@/components/agents/agent-dialog";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { agentInputFrom } from "@/lib/agents/form";
-import {
-  deleteAgentMutationOptions,
-  duplicateAgentMutationOptions,
-  setAgentHiddenMutationOptions,
-  updateAgentMutationOptions,
-} from "@/lib/agents/mutations";
 import { agentQueryOptions } from "@/lib/agents/queries";
 
 function Tag({ children }: { children: ReactNode }) {
@@ -44,33 +34,24 @@ function ProfileSkeleton() {
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-2/3" />
       </div>
-      <div className="flex flex-col gap-2">
-        <Skeleton className="h-9 w-full" />
-        <Skeleton className="h-9 w-full" />
-        <Skeleton className="h-9 w-full" />
-      </div>
+      <Skeleton className="h-9 w-full" />
     </div>
   );
 }
 
+/**
+ * Who this coworker is, beside a conversation with it.
+ *
+ * A card, not a control panel: the panel answers "who am I talking to" — avatar, name, role — and
+ * everything that changes the coworker lives in its own dialog, opened from the one button here.
+ * It used to duplicate that dialog's whole surface (edit form, tokens, grants, delete), which made
+ * two places to maintain and a sidebar that scrolled past the conversation it sat beside.
+ */
 export function AgentProfile({ agentId }: { agentId: string }) {
-  const queryClient = useQueryClient();
+  /** The full dialog, opened over the chat rather than navigating away from it. */
+  const [managing, setManaging] = useState(false);
   const navigate = useNavigate();
-  // State is keyed by coworker id because this panel can remain open while its target changes.
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(
-    null,
-  );
-  const isEditing = editingId === agentId;
-  const isConfirmingDelete = confirmingDeleteId === agentId;
-
   const agent = useQuery(agentQueryOptions(agentId));
-  const updateAgent = useMutation(updateAgentMutationOptions(queryClient));
-  const duplicateAgent = useMutation(
-    duplicateAgentMutationOptions(queryClient),
-  );
-  const setHidden = useMutation(setAgentHiddenMutationOptions(queryClient));
-  const deleteAgent = useMutation(deleteAgentMutationOptions(queryClient));
 
   if (agent.isPending) {
     return <ProfileSkeleton />;
@@ -84,8 +65,6 @@ export function AgentProfile({ agentId }: { agentId: string }) {
   }
 
   const profile = agent.data;
-  const actionError =
-    duplicateAgent.error ?? setHidden.error ?? deleteAgent.error;
 
   return (
     <div className="flex w-full flex-col gap-6 p-8">
@@ -106,175 +85,42 @@ export function AgentProfile({ agentId }: { agentId: string }) {
 
         <div className="flex flex-wrap justify-center gap-1.5">
           <Tag>{profile.visibility === "private" ? "私有" : "公开"}</Tag>
-          {profile.systemOwned ? <Tag>系统拥有</Tag> : null}
+          {profile.systemOwned ? <Tag>系统智能体</Tag> : null}
         </div>
       </header>
 
-      {isEditing ? (
-        <AgentFields
-          defaultValues={{
-            name: profile.name,
-            roleDescription: profile.roleDescription,
-            title: profile.title,
-            visibility: profile.visibility,
-            endpoint: profile.endpoint ?? "",
-            // The server never sends credentials back to the client.
-            authValue: "",
-          }}
-          hasAuth={profile.hasAuth}
-          error={updateAgent.error}
-          onCancel={() => setEditingId(null)}
-          onSubmit={async (values) => {
-            await updateAgent.mutateAsync({
-              agentId,
-              input: agentInputFrom(values),
-            });
-            setEditingId(null);
-          }}
-          submitLabel="保存更改"
-        />
-      ) : (
-        <section className="grid gap-2">
-          <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            角色
-          </h2>
-          <p className="text-sm whitespace-pre-wrap text-pretty">
-            {profile.roleDescription}
-          </p>
-        </section>
-      )}
-
-      {/*
-       * Only for a coworker that runs somewhere else, and only for somebody who may change it.
-       * The Bot in the box has no endpoint and nothing to authenticate as.
-       */}
-      {!isEditing && profile.endpoint && profile.canManage ? (
-        <CallbackTokenPanel
-          agentId={agentId}
-          hasToken={profile.hasCallbackToken}
-        />
-      ) : null}
-
-      {/*
-       * Not while editing, for the same reason the panel above is not: the form owns the screen, and
-       * these switches write immediately rather than on save, which would make one half of an open
-       * form apply and the other half not.
-       */}
-      {isEditing ? null : <HandoffPanel agentId={agentId} />}
-
-      {actionError ? (
-        <p className="text-sm text-destructive" role="alert">
-          {actionError.message}
+      <section className="grid gap-2">
+        <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          角色
+        </h2>
+        <p className="text-sm whitespace-pre-wrap text-pretty">
+          {profile.roleDescription}
         </p>
-      ) : null}
+      </section>
 
-      {isEditing ? null : (
-        <div className="flex flex-col gap-2 w-full mt-6">
-          <Button
-            className="w-full text-sm!"
-            onClick={async () => {
-              await navigate({
-                search: { agent: agentId },
-                to: "/channel/new",
-              });
-            }}
-          >
-            开始频道
-          </Button>
+      <div className="flex flex-col gap-2">
+        <Button
+          className="w-full text-sm!"
+          onClick={() =>
+            void navigate({ search: { agent: agentId }, to: "/channel/new" })
+          }
+        >
+          开始新频道
+        </Button>
+        <Button
+          className="w-full text-sm!"
+          onClick={() => setManaging(true)}
+          variant="outline"
+        >
+          管理智能体
+        </Button>
+      </div>
 
-          <Button
-            className="w-full text-sm!"
-            disabled={duplicateAgent.isPending}
-            onClick={async () => {
-              const copy = await duplicateAgent.mutateAsync(agentId);
-              await navigate({ search: { agent: copy.id }, to: "/agents" });
-            }}
-            variant="outline"
-          >
-            {duplicateAgent.isPending ? "复制中…" : "复制"}
-          </Button>
-
-          <Button
-            className="w-full text-sm!"
-            disabled={setHidden.isPending}
-            onClick={async () => {
-              await setHidden.mutateAsync({
-                agentId,
-                hidden: !profile.hidden,
-              });
-              if (!profile.hidden)
-                await navigate({ search: {}, to: "/agents" });
-            }}
-            variant="outline"
-          >
-            {setHidden.isPending
-              ? profile.hidden
-                ? "取消隐藏中…"
-                : "隐藏中…"
-              : profile.hidden
-                ? "取消隐藏"
-                : "隐藏"}
-          </Button>
-
-          {profile.hidden ? (
-            <p className="-mt-1 text-xs text-muted-foreground">
-              已从你的智能体列表中隐藏。此操作不会影响其他人。
-            </p>
-          ) : null}
-
-          {profile.canManage ? (
-            <Button
-              className="w-full text-sm!"
-              onClick={() => setEditingId(agentId)}
-              variant="outline"
-            >
-              编辑
-            </Button>
-          ) : null}
-
-          {profile.canManage ? (
-            <>
-              <Separator className="my-1" />
-
-              {isConfirmingDelete ? (
-                <div className="flex flex-col gap-2">
-                  <p className="text-sm">
-                    确定删除 <span className="font-medium">{profile.name}</span>
-                    ？ 此操作无法撤销。
-                  </p>
-                  {/* Cancel remains closest to the original Delete button position. */}
-                  <Button
-                    className="w-full text-sm!"
-                    onClick={() => setConfirmingDeleteId(null)}
-                    variant="outline"
-                  >
-                    取消
-                  </Button>
-                  <Button
-                    className="w-full text-sm!"
-                    disabled={deleteAgent.isPending}
-                    onClick={async () => {
-                      await deleteAgent.mutateAsync(agentId);
-                      await navigate({ search: {}, to: "/agents" });
-                    }}
-                    variant="destructive"
-                  >
-                    {deleteAgent.isPending ? "删除中…" : "删除"}
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  className="w-full text-sm!"
-                  onClick={() => setConfirmingDeleteId(agentId)}
-                  variant="destructive"
-                >
-                  删除
-                </Button>
-              )}
-            </>
-          ) : null}
-        </div>
-      )}
+      <AgentDialog
+        agentId={agentId}
+        onClose={() => setManaging(false)}
+        open={managing}
+      />
     </div>
   );
 }

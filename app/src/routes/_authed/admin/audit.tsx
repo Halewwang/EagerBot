@@ -9,6 +9,12 @@ import {
 } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
 import { useBotNames } from "@/lib/agents/bot-names";
+import {
+  DID_NOT_HAPPEN_EVENT_TYPES,
+  eventTypeFilter,
+  outcomeOf,
+  REFUSED_EVENT_TYPES,
+} from "@/lib/audit/outcome";
 import { auditEventsQueryOptions } from "@/lib/audit/queries";
 import { silenceOf } from "@/lib/audit/silence";
 
@@ -30,32 +36,21 @@ type AuditEvent = {
   createdAt: string;
 };
 
+/*
+ * The saved views, built from the same lists the row label and colour are decided by.
+ *
+ * Written out by hand here and again below, they had already drifted: a refusal on one list and not
+ * the other is a row drawn as "Allowed" or a row missing from the view somebody clicks to ask what
+ * this deployment refused. See `@/lib/audit/outcome`, which is now the only place either question is
+ * answered.
+ */
 const FILTERS = [
   { label: "全部", search: "" },
   { label: "计算机操作", search: "?eventType=computer.action_allowed" },
-  {
-    label: "已阻止",
-    /*
-     * Include every refusal family, not only browser policy refusals.
-     *
-     * `mcp.callback_refused` is here because it is a refusal, even though nothing about a Bot was
-     * judged: a caller could not prove which Bot it was. Somebody filtering for what this deployment
-     * turned away wants that in the list, and it is the one refusal with no policy behind it, so
-     * leaving it out would hide the only evidence that anything was attempted.
-     *
-     * `routines.dispatch_refused` is the same shape one boundary over: the worker, not a Bot, and a
-     * stale or missing secret rather than a policy decision. The same reasoning that put
-     * `mcp.callback_refused` here applies unchanged — nobody was judged, something was still turned
-     * away, and the saved view a person clicks for "what did this deployment block" should show it.
-     */
-    search:
-      "?eventType=computer.action_refused,mcp.call_rejected,mcp.callback_refused,component.refused,component.function_refused,routines.dispatch_refused",
-  },
+  { label: "已阻止", search: eventTypeFilter(REFUSED_EVENT_TYPES) },
   {
     label: "未执行",
-    // A stalled stream belongs here. It is the same complaint as an action that was allowed and then
-    // did not take: nothing was refused, and nothing came of it either.
-    search: "?eventType=computer.action_failed,agent.stream_stalled",
+    search: eventTypeFilter(DID_NOT_HAPPEN_EVENT_TYPES),
   },
 ] as const;
 
@@ -79,8 +74,8 @@ function AuditPage() {
           刷新
         </Button>
       }
-      description="每个智能体执行的操作，以及此部署策略拒绝的操作。"
-      title="审计"
+      description="记录智能体执行的每项操作，以及此部署策略拒绝的每项操作。"
+      title="审计日志"
       width="wide"
     >
       <PageSection>
@@ -101,20 +96,20 @@ function AuditPage() {
 
         {events.isPending ? null : events.isError ? (
           <p className="mt-4 text-destructive text-sm" role="alert">
-            审计记录加载失败。
+            无法加载审计记录。
           </p>
         ) : rows.length === 0 ? (
-          <PageEmpty>暂无匹配此筛选条件的事件。</PageEmpty>
+          <PageEmpty>当前筛选条件下还没有事件。</PageEmpty>
         ) : (
           <div className="mt-4 overflow-x-auto rounded-lg border border-border bg-card">
             <table className="w-full text-left text-sm">
               <thead className="text-muted-foreground text-xs uppercase">
                 <tr className="border-border border-b">
                   <th className="px-4 py-2 font-medium">时间</th>
-                  <th className="px-4 py-2 font-medium">操作</th>
+                  <th className="px-4 py-2 font-medium">事件</th>
                   <th className="px-4 py-2 font-medium">对象</th>
                   <th className="px-4 py-2 font-medium">智能体</th>
-                  <th className="px-4 py-2 font-medium">决定</th>
+                  <th className="px-4 py-2 font-medium">结果</th>
                 </tr>
               </thead>
               <tbody>
@@ -148,19 +143,8 @@ function Row({
     | { role?: string; name?: string }
     | string
     | undefined;
-  const refused =
-    event.eventType === "computer.action_refused" ||
-    event.eventType === "component.refused" ||
-    event.eventType === "component.function_refused" ||
-    event.eventType === "mcp.call_rejected" ||
-    /*
-     * A caller that could not prove which Bot it was. Refused like the others, and it has to read
-     * that way here: the fallback below calls anything it does not recognise "Allowed", which for a
-     * refusal is the one wrong answer. A trail that is confidently wrong is worse than a silent one.
-     */
-    event.eventType === "mcp.callback_refused" ||
-    // The worker turned away at the door, same reasoning as the caller above.
-    event.eventType === "routines.dispatch_refused";
+  const outcome = outcomeOf(event.eventType);
+  const refused = outcome === "refused";
   const stalled = event.eventType === "agent.stream_stalled";
   /*
    * Three different things, and the difference is what somebody comes to this row to find out.
@@ -173,21 +157,21 @@ function Row({
   const routed =
     event.eventType === "channel.routed"
       ? payload.viaMention === true
-        ? "用户选择了该协作者"
+        ? "用户选择了该智能体"
         : payload.fallback === true
-          ? "已发送给默认协作者"
-          : "已发送给指定协作者"
+          ? "已发送给默认智能体"
+          : "已发送给匹配的智能体"
       : null;
   // Allowed by policy but not carried out. A stalled turn belongs in the same family: the Bot was
   // asked and the answer never arrived. Colour is how this table is read, and a row left in the
   // muted foreground reads as "Allowed", which a turn nobody ever got an answer to was not.
-  const failed = event.eventType === "computer.action_failed" || stalled;
+  const failed = outcome === "did-not-happen";
   const silence = stalled ? silenceOf(payload) : null;
 
   return (
     <tr className="border-border border-t align-top">
       <td className="whitespace-nowrap px-4 py-2 text-muted-foreground">
-        {new Date(event.createdAt).toLocaleTimeString("zh-CN")}
+        {new Date(event.createdAt).toLocaleTimeString()}
       </td>
       <td className="px-4 py-2 font-medium">
         {/* Strip the internal computer tool namespace for display. */}
@@ -214,7 +198,7 @@ function Row({
           <span className="font-mono text-xs">
             {typeof payload.offered === "number" &&
             typeof payload.granted === "number"
-              ? `${payload.offered}/${payload.granted} 个工具`
+              ? `${payload.offered} 个工具中授予了 ${payload.granted} 个`
               : "-"}
           </span>
         ) : /* Named targets and file paths are the audit subject before page elements. */
@@ -328,7 +312,7 @@ function Row({
         typeof payload.reason === "string" ? (
           <div className="mt-0.5 text-xs text-muted-foreground">
             {payload.reason}
-            <span className="italic">，由智能体自身报告</span>
+            <span className="italic">，由智能体自行报告</span>
           </div>
         ) : null}
         {failed && typeof payload.failure === "string" ? (
@@ -352,7 +336,7 @@ function Row({
         ) : null}
         {decision.mode === "dry-run" && decision.carriedOut ? (
           <div className="text-xs text-muted-foreground">
-            试运行：已记录，未执行
+            dry-run: recorded, not enforced
           </div>
         ) : null}
       </td>
@@ -376,7 +360,7 @@ const DISCOVERY_REASONS: Record<string, string> = {
   "under-floor": "工具数量较少，全部提供",
   "nothing-declared": "没有技能声明这些工具",
   unavailable: "无法选择，因此全部提供",
-  "nothing-chosen": "没有应用技能，因此全部提供",
+  "nothing-chosen": "没有匹配技能，因此全部提供",
   selected: "由技能选择",
 };
 
@@ -389,24 +373,24 @@ const NAMED_TARGETS = new Set([
 ]);
 
 const DECISIONS: Record<string, string> = {
-  "bot.declined": "智能体已拒绝",
+  "bot.declined": "智能体拒绝了请求",
   // Not a refusal, so not the refusal colour: nothing was blocked. The Bot was asked and never
   // answered, which is the same complaint as an action that was allowed and then did not happen.
   "agent.stream_stalled": "智能体停止响应",
   "computer.policy_loaded": "启动时加载边界",
   "computer.isolation_loaded": "启动时加载隔离设置",
-  "computer.control_taken": "用户接管控制权",
-  "computer.control_released": "控制权已交还",
+  "computer.control_taken": "用户接管了计算机",
+  "computer.control_released": "已将控制权交还",
   "computer.help_requested": "智能体请求帮助",
-  "computer.secret_requested": "智能体请求秘密",
-  "computer.secret_supplied": "用户提供了秘密",
+  "computer.secret_requested": "智能体请求输入密钥",
+  "computer.secret_supplied": "用户提供了密钥",
   "computer.reset": "计算机已重置",
   "computer.stopped": "用户按下了停止",
 
-  "component.granted": "已授予此智能体",
-  "component.revoked": "已从此智能体撤销",
-  "component.published": "已发布，所有智能体都可使用",
-  "component.unpublished": "已取消发布，所有智能体都无法使用",
+  "component.granted": "已授予该智能体",
+  "component.revoked": "已撤销该智能体的权限",
+  "component.published": "已发布，所有智能体都可以使用",
+  "component.unpublished": "已取消发布，智能体无法继续使用",
   "component.draft_saved": "草稿已保存，尚未发布",
   "component.refused": "已拒绝",
   "component.function_granted": "可以读取此内容",
@@ -414,16 +398,16 @@ const DECISIONS: Record<string, string> = {
   "component.function_called": "已读取真实数据",
   "component.function_refused": "已拒绝",
   // A function failure is execution failure, not a policy refusal.
-  "component.function_failed": "读取失败",
+  "component.function_failed": "无法读取",
 
   // Not a call and not a decision: the tools this run was allowed to see. Worded so nobody reads it
   // as permission, which it is not — everything named was already granted.
   "mcp.tools_discovered": "本次运行提供的工具",
-  "mcp.call_succeeded": "已代表此智能体调用",
+  "mcp.call_succeeded": "已代表该智能体调用",
   "mcp.call_rejected": "已阻止",
   "mcp.call_failed": "服务器未响应",
   // Not "Blocked": nothing about the Bot was judged, because nothing proved which Bot it was.
-  "mcp.callback_refused": "无法确认对应的智能体",
+  "mcp.callback_refused": "无法确认请求来自哪个智能体",
 
   "configuration.changed": "配置已更改",
   "credential.created": "凭据已保存",
