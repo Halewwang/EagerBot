@@ -1,10 +1,19 @@
 # EMKE Bot 本地开发交接
 
-更新时间：2026-09-03（Asia/Shanghai）
+更新时间：2026-09-04（Asia/Shanghai）
 
 ## 目标与当前结论
 
 目标是在当前 Mac 上基于 `Halewwang/EagerBot` fork 开发 EMKE Bot，并用真实浏览器验收品牌、中文界面、主要导航和运行日志。
+
+## 2026-09-04 上游同步
+
+- 上游远端：`https://github.com/CopilotKit/OpenBot.git`（`upstream`）；已执行 `git fetch upstream --prune` 与 `git fetch origin --prune`。本次同步前本地 `main`/`origin/main` 为 `49835730026bda7991bec40d073e702bc925f960`，上游基线为 `257c1280d684089be9adb0b35cce262efc7064bf`，最新 `upstream/main` 为 `d00f65cf954b77d0b7fdc7bae231f1f4ed79d9a3`。
+- 上游变更：从 `257c128` 到 `d00f65c` 共纳入 13 个上游提交、34 个文件，包含工具调用历史清理、频道历史与滚动行为修复、频道路由记录、OAuth/MCP 连接失败处理、端口解析与 IPv6 白名单修复，以及智能体 endpoint 复制行为修复。
+- 合并提交：`9ed409bece7affbdf36039e4f6904996c4308c0d`，父提交为本地 `4983573` 与上游 `d00f65c`；以上游功能与安全修复为主，保留 EMKE Bot 品牌、现有简体中文界面和本文件。唯一内容冲突为 `server/src/channels/routes.ts`：保留上游服务端时间戳不得超过服务器时钟的修复，同时保留中文错误提示；上游新增测试断言已同步为中文。
+- 兼容性边界：机器协议值、路由、数据库标识、环境变量、HTTP 头和第三方厂商名保持不变；未修改 `.env`，未执行任何数据库迁移，尤其未执行破坏性的 `server/drizzle/0022_drop_attention_resolutions.sql`。新增代码未改变历史表或迁移日志。
+- 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；受影响单元测试共 247 pass、0 fail（16 个文件），覆盖频道活动时间、频道历史/滚动、路由记录、智能体历史清理、OAuth/MCP、配置端口、智能体调用和 Supervisor 端口。构建仍仅有既有的浏览器 Node 模块 externalize 与 bundle size warning。
+- 推送状态：合并提交待随本次交接文档提交一起推送到 `origin/main`；主任务完成本地服务启动后须再次核对 `HEAD`、`origin/main`、运行端口和真实浏览器状态。本轮同步本身未启动或停止服务。
 
 ## 2026-09-03 上游同步
 
