@@ -11,9 +11,19 @@
 - 上游远端：`https://github.com/CopilotKit/OpenBot.git`（`upstream`）；已执行 `git fetch upstream --prune` 与 `git fetch origin --prune`。本次同步前本地 `main`/`origin/main` 为 `49835730026bda7991bec40d073e702bc925f960`，上游基线为 `257c1280d684089be9adb0b35cce262efc7064bf`，最新 `upstream/main` 为 `d00f65cf954b77d0b7fdc7bae231f1f4ed79d9a3`。
 - 上游变更：从 `257c128` 到 `d00f65c` 共纳入 13 个上游提交、34 个文件，包含工具调用历史清理、频道历史与滚动行为修复、频道路由记录、OAuth/MCP 连接失败处理、端口解析与 IPv6 白名单修复，以及智能体 endpoint 复制行为修复。
 - 合并提交：`9ed409bece7affbdf36039e4f6904996c4308c0d`，父提交为本地 `4983573` 与上游 `d00f65c`；以上游功能与安全修复为主，保留 EMKE Bot 品牌、现有简体中文界面和本文件。唯一内容冲突为 `server/src/channels/routes.ts`：保留上游服务端时间戳不得超过服务器时钟的修复，同时保留中文错误提示；上游新增测试断言已同步为中文。
-- 兼容性边界：机器协议值、路由、数据库标识、环境变量、HTTP 头和第三方厂商名保持不变；未修改 `.env`，未执行任何数据库迁移，尤其未执行破坏性的 `server/drizzle/0022_drop_attention_resolutions.sql`。新增代码未改变历史表或迁移日志。
+- 兼容性边界：机器协议值、路由、数据库标识、环境变量、HTTP 头和第三方厂商名保持不变；未修改 `.env`。同步阶段没有直接执行迁移；随后启动本地服务时仅在已有 `0023` 记录之后应用了 `0024_onboarding.sql` 与 `0025_backfill_existing_users_have_onboarded.sql`，破坏性的 `server/drizzle/0022_drop_attention_resolutions.sql` 仍未执行，`attention_resolutions` 表仍保留。
 - 验证结果：`git diff --check`、`bun run format:check`、`bun run typecheck`、`bun run build` 通过；受影响单元测试共 247 pass、0 fail（16 个文件），覆盖频道活动时间、频道历史/滚动、路由记录、智能体历史清理、OAuth/MCP、配置端口、智能体调用和 Supervisor 端口。构建仍仅有既有的浏览器 Node 模块 externalize 与 bundle size warning。
-- 推送状态：合并提交待随本次交接文档提交一起推送到 `origin/main`；主任务完成本地服务启动后须再次核对 `HEAD`、`origin/main`、运行端口和真实浏览器状态。本轮同步本身未启动或停止服务。
+- 推送状态：合并提交 `9ed409bece7affbdf36039e4f6904996c4308c0d` 与交接文档提交 `3572719742553829967f1a91781590727b2cc103` 均已推送到 `origin/main`；本轮启动后再次核对，最终本地 `HEAD`/`origin/main` 为 `3572719742553829967f1a91781590727b2cc103`，`upstream/main` 为其祖先。
+
+## 2026-09-04 本地服务启动与运行时复核
+
+- 已启动 Colima；PostgreSQL、`agent-computer`、`agent-bot`、`agent-langgraph` 和 Supervisor 容器均为 `running/healthy`。宿主机服务器、例行任务 worker 和 Vite 前端由当前开发守护会话保持运行。
+- 已确认端口：前端 `3010`、服务器 `3001`、Computer `4100`、Bot `4200`、LangGraph `4201`、Supervisor `4500`、PostgreSQL `5432`；对应健康检查均返回 `200`。
+- `GET /api/copilotkit/info` 返回许可证 `valid`、运行模式 `intelligence`，并注册 `knowledge`、`general-assistant`、`risk-analyst` 及现有 Agent；前端根页面标题为 `EMKE Bot`。
+- 真实浏览器已打开并保留 `http://localhost:3010/`：无障碍树显示 `EMKE Bot`、`技能`、`智能体`、`新建频道`、`探索智能体` 等中文界面内容。
+- 启动迁移记录已到 25，`agent_profiles`、`agent_preferences`、`routines` 与 `attention_resolutions` 均存在；数据库迁移日志没有 `0022_drop_attention_resolutions.sql` 的哈希。
+- 本次独立复核：`bun run format:check`、`bun run lint`、`bun run typecheck`、`bun run build` 均通过；构建仅有既有的浏览器 Node 模块 externalize 与 bundle size warning。上游变更专项测试为 247 pass、0 fail（16 个文件）。
+- 本地凭据仍只存在于 `.env`，未写入仓库；Colima 或宿主机重启后，需重新运行 `colima start` 和 `bash scripts/start.sh`。
 
 ## 2026-09-03 上游同步
 
@@ -179,7 +189,7 @@ CopilotKit 托管项目已创建并选中为 `openbot-local`。Runtime key、lic
 | 浏览器控制台 | 首页、智能体、设置和管理页面无应用错误；开发环境有 Lit 开发模式提示，首次导航时偶有 WebSocket 重连提示 |
 | 新建频道链接 | DOM 为带 `href="/channel/new"` 的 `<a>`，无伪造 button role，并有 `aria-label` |
 
-## 当前运行状态（2026-09-03 复核）
+## 历史运行状态（2026-09-03 复核）
 
 - Colima 未运行（`colima status` 返回未运行）；因此 Docker、PostgreSQL、Agent 容器和例行任务 worker 均未运行；
 - `3010`、`3001`、`4200`、`4201`、`5432` 当前均没有监听；本轮没有启动或停止这些服务；
